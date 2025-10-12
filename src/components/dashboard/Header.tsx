@@ -32,7 +32,7 @@ export default function Header({ user }: { user: any }) {
           </div>
 
           <button
-            onClick={() => signOut({ callbackUrl: '/login' })}
+            onClick={() => signOut({ callbackUrl: '/' })}
             className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
           >
             <LogOut className="w-4 h-4" />

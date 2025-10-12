@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
-
-// Import the in-memory store from the main route
-// In production, this will query D1 database
-const getProjectsStore = () => {
-  // This is a workaround for development
-  // In production with D1, we'll query the database directly
-  return [];
-};
+import { getDatabase } from '@/lib/db/client';
+import { getProjectWithTasks } from '@/lib/db/queries';
 
 export async function GET(
   request: NextRequest,
@@ -19,15 +13,34 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // Try to get D1 database
+  const db = getDatabase((request as any).env);
+  const userId = session.user.id || session.user.email!;
+
   try {
     const projectId = parseInt(params.id);
 
-    // In production, query from D1
-    // For now, return a placeholder
+    if (!db) {
+      return NextResponse.json({
+        error: 'Database not connected',
+        message: 'Please set up D1 database to view project details',
+        setupRequired: true,
+      }, { status: 503 });
+    }
+
+    const project = await getProjectWithTasks(db, projectId, userId);
+
+    if (!project) {
+      return NextResponse.json({
+        error: 'Project not found',
+        message: 'This project does not exist or you do not have access to it',
+      }, { status: 404 });
+    }
+
     return NextResponse.json({
-      error: 'Project not found',
-      message: 'Database not yet connected. Please set up D1 first.',
-    }, { status: 404 });
+      project,
+      usingDatabase: true,
+    });
   } catch (error) {
     console.error('Error fetching project:', error);
     return NextResponse.json(

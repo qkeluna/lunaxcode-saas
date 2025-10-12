@@ -1,16 +1,21 @@
 'use client';
 
 import { signIn } from 'next-auth/react';
-import { useState } from 'react';
-import { Chrome } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Chrome, Sparkles } from 'lucide-react';
 
 export default function LoginPage() {
   const [loading, setLoading] = useState(false);
+  const searchParams = useSearchParams();
+  const fromOnboarding = searchParams.get('from') === 'onboarding';
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      await signIn('google', { callbackUrl: '/dashboard' });
+      // If coming from onboarding, redirect to project creation page
+      const callbackUrl = fromOnboarding ? '/dashboard/create-project' : '/dashboard';
+      await signIn('google', { callbackUrl });
     } catch (error) {
       console.error('Sign in error:', error);
     } finally {
@@ -26,6 +31,21 @@ export default function LoginPage() {
           <h1 className="text-4xl font-bold text-gray-900">Lunaxcode</h1>
           <p className="mt-2 text-gray-600">AI-Powered Project Management</p>
         </div>
+
+        {/* Onboarding message */}
+        {fromOnboarding && (
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <Sparkles className="w-5 h-5 text-purple-600 mt-0.5" />
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-1">Almost there!</h3>
+                <p className="text-sm text-gray-600">
+                  Sign in to create your account and we'll generate your personalized project plan using AI.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Sign in button */}
         <div className="mt-8">

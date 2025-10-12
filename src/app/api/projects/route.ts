@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { generatePRD, generateTasks, estimatePrice } from '@/lib/gemini';
+import { getDatabase } from '@/lib/db/client';
+import { createProject, createTasks, getProjectsByUserId } from '@/lib/db/queries';
 
-// For now, we'll use a simple in-memory store
-// In production with Cloudflare, this will use D1 database
+// Fallback in-memory store for when D1 is not available
 let projectsStore: any[] = [];
 let tasksStore: any[] = [];
 let projectIdCounter = 1;
@@ -14,6 +15,16 @@ export async function POST(request: NextRequest) {
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  // Try to get D1 database
+  const db = getDatabase((request as any).env);
+  const useDatabase = db !== null;
+
+  if (useDatabase) {
+    console.log('✅ Using D1 database');
+  } else {
+    console.log('⚠️  Using in-memory storage (D1 not available)');
   }
 
   try {
@@ -67,10 +78,11 @@ export async function POST(request: NextRequest) {
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + timeline);
 
-    // Create project
-    const project = {
-      id: projectIdCounter++,
-      userId: session.user.id || session.user.email,
+    const userId = session.user.id || session.user.email!;
+
+    // Create project data
+    const projectData = {
+      userId,
       name: `${service} for ${clientName}`,
       service,
       description,
@@ -81,37 +93,71 @@ export async function POST(request: NextRequest) {
       timeline,
       budget,
       price: estimatedPrice,
-      paymentStatus: 'pending',
+      paymentStatus: 'pending' as const,
       depositAmount: 0,
-      status: 'pending',
-      startDate: startDate.toISOString(),
-      endDate: endDate.toISOString(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      status: 'pending' as const,
+      startDate: Math.floor(startDate.getTime()),
+      endDate: Math.floor(endDate.getTime()),
+      createdAt: Math.floor(Date.now()),
+      updatedAt: Math.floor(Date.now()),
     };
 
-    projectsStore.push(project);
+    let project: any;
 
-    // Create tasks
-    const projectTasks = generatedTasks.map((task, index) => ({
-      id: taskIdCounter++,
-      projectId: project.id,
-      title: task.title,
-      description: task.description,
-      section: task.section,
-      priority: task.priority,
-      status: 'pending',
-      estimatedHours: task.estimatedHours,
-      dependencies: task.dependencies,
-      order: task.order !== undefined ? task.order : index,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }));
+    if (useDatabase) {
+      // Use D1 database
+      project = await createProject(db, projectData);
 
-    tasksStore.push(...projectTasks);
+      // Create tasks in database
+      const taskData = generatedTasks.map((task, index) => ({
+        projectId: project.id,
+        title: task.title,
+        description: task.description,
+        section: task.section,
+        priority: task.priority,
+        status: 'pending' as const,
+        estimatedHours: task.estimatedHours,
+        dependencies: task.dependencies,
+        order: task.order !== undefined ? task.order : index,
+        createdAt: Math.floor(Date.now()),
+        updatedAt: Math.floor(Date.now()),
+      }));
+
+      await createTasks(db, taskData);
+    } else {
+      // Use in-memory store
+      project = {
+        id: projectIdCounter++,
+        ...projectData,
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+
+      projectsStore.push(project);
+
+      // Create tasks in memory
+      const projectTasks = generatedTasks.map((task, index) => ({
+        id: taskIdCounter++,
+        projectId: project.id,
+        title: task.title,
+        description: task.description,
+        section: task.section,
+        priority: task.priority,
+        status: 'pending',
+        estimatedHours: task.estimatedHours,
+        dependencies: task.dependencies,
+        order: task.order !== undefined ? task.order : index,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      }));
+
+      tasksStore.push(...projectTasks);
+    }
 
     console.log('✅ Project created successfully:', project.id);
-    console.log(`📊 Total tasks: ${projectTasks.length}`);
+    console.log(`📊 Total tasks: ${generatedTasks.length}`);
 
     return NextResponse.json({
       success: true,
@@ -120,8 +166,9 @@ export async function POST(request: NextRequest) {
       project: {
         id: project.id,
         name: project.name,
-        tasksCount: projectTasks.length,
+        tasksCount: generatedTasks.length,
       },
+      usingDatabase: useDatabase,
     });
   } catch (error: any) {
     console.error('❌ Error creating project:', error);
@@ -140,13 +187,27 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  try {
-    const userId = session.user.id || session.user.email;
-    const userProjects = projectsStore
-      .filter((p) => p.userId === userId)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  // Try to get D1 database
+  const db = getDatabase((request as any).env);
+  const userId = session.user.id || session.user.email!;
 
-    return NextResponse.json({ projects: userProjects });
+  try {
+    let userProjects;
+
+    if (db) {
+      // Use D1 database
+      userProjects = await getProjectsByUserId(db, userId);
+    } else {
+      // Use in-memory store
+      userProjects = projectsStore
+        .filter((p) => p.userId === userId)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }
+
+    return NextResponse.json({
+      projects: userProjects,
+      usingDatabase: db !== null,
+    });
   } catch (error) {
     console.error('Error fetching projects:', error);
     return NextResponse.json(

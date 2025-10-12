@@ -1,22 +1,33 @@
-import Link from 'next/link';
+import Header from '@/components/landing/Header';
+import Hero from '@/components/landing/Hero';
+import TrustBadges from '@/components/landing/TrustBadges';
+import Portfolio from '@/components/landing/Portfolio';
+import Features from '@/components/landing/Features';
+import Process from '@/components/landing/Process';
+import Pricing from '@/components/landing/Pricing';
+import Testimonials from '@/components/landing/Testimonials';
+import FAQ from '@/components/landing/FAQ';
+import ContactCTA from '@/components/landing/ContactCTA';
+import Footer from '@/components/landing/Footer';
+import FloatingButtons from '@/components/landing/FloatingButtons';
 
-export default function HomePage() {
+export default function LandingPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="text-center space-y-6">
-        <h1 className="text-6xl font-bold text-gray-900">Lunaxcode</h1>
-        <p className="text-xl text-gray-600">
-          AI-Powered Project Management for Filipino Web Agencies
-        </p>
-        <div className="flex gap-4 justify-center mt-8">
-          <Link
-            href="/login"
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Get Started
-          </Link>
-        </div>
-      </div>
-    </div>
+    <>
+      <Header />
+      <main className="min-h-screen">
+        <Hero />
+        <TrustBadges />
+        <Portfolio />
+        <Features />
+        <Process />
+        <Pricing />
+        <Testimonials />
+        <FAQ />
+        <ContactCTA />
+        <Footer />
+        <FloatingButtons />
+      </main>
+    </>
   );
 }

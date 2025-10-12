@@ -34,7 +34,6 @@ export const config = {
     '/dashboard/:path*',
     '/admin/:path*',
     '/projects/:path*',
-    '/onboarding/:path*',
     '/login',
     '/signup',
   ],
