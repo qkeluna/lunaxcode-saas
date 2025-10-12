@@ -109,6 +109,46 @@ export const faqs = sqliteTable('faqs', {
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
+// Portfolio table (case studies/project showcase)
+export const portfolio = sqliteTable('portfolio', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  client: text('client').notNull(),
+  category: text('category').notNull(), // 'web-app' | 'mobile-app' | 'saas' | 'e-commerce'
+  imageUrl: text('image_url'),
+  liveUrl: text('live_url'),
+  technologies: text('technologies'), // JSON string array
+  results: text('results'), // JSON string with metrics
+  testimonial: text('testimonial'),
+  order: integer('order').default(0),
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+// Process Steps table (how we work section)
+export const processSteps = sqliteTable('process_steps', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  icon: text('icon'), // Icon name or emoji
+  order: integer('order').notNull(),
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+// Features table (landing page features)
+export const features = sqliteTable('features', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  icon: text('icon'), // Icon name or emoji
+  category: text('category'), // 'core' | 'technical' | 'business'
+  order: integer('order').default(0),
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
 // NextAuth Session table
 export const sessions = sqliteTable('sessions', {
   sessionToken: text('session_token').primaryKey(),
@@ -163,3 +203,12 @@ export type NewServiceType = typeof serviceTypes.$inferInsert;
 
 export type FAQ = typeof faqs.$inferSelect;
 export type NewFAQ = typeof faqs.$inferInsert;
+
+export type Portfolio = typeof portfolio.$inferSelect;
+export type NewPortfolio = typeof portfolio.$inferInsert;
+
+export type ProcessStep = typeof processSteps.$inferSelect;
+export type NewProcessStep = typeof processSteps.$inferInsert;
+
+export type Feature = typeof features.$inferSelect;
+export type NewFeature = typeof features.$inferInsert;
