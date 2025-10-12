@@ -16,6 +16,7 @@ bucket_name = "lunaxcode-files-dev"
 
 [vars]
 ENVIRONMENT = "development"
+NEXTAUTH_URL = "http://localhost:3000"
 
 # Production Environment
 [env.production]
@@ -31,3 +32,4 @@ bucket_name = "lunaxcode-files-prod"
 
 [env.production.vars]
 ENVIRONMENT = "production"
+NEXTAUTH_URL = "https://lunaxcode-saas.pages.dev"
