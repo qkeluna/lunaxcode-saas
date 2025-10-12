@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth';
+import { auth } from '@/auth';
 import Link from 'next/link';
 import { FolderKanban } from 'lucide-react';
 
@@ -20,7 +20,7 @@ async function getProjects() {
 }
 
 export default async function ProjectsPage() {
-  const session = await getServerSession();
+  const session = await auth();
   const { projects, usingDatabase } = await getProjects();
 
   return (
@@ -124,3 +124,5 @@ export default async function ProjectsPage() {
     </div>
   );
 }
+
+export const runtime = 'edge';

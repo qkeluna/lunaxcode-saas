@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { auth } from '@/auth';
 import { generatePRD, generateTasks, estimatePrice } from '@/lib/gemini';
 import { getDatabase } from '@/lib/db/client';
 import { createProject, createTasks, getProjectsByUserId } from '@/lib/db/queries';
@@ -11,7 +11,7 @@ let projectIdCounter = 1;
 let taskIdCounter = 1;
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession();
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -181,7 +181,7 @@ export async function POST(request: NextRequest) {
 
 // Get all projects for current user
 export async function GET(request: NextRequest) {
-  const session = await getServerSession();
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -229,3 +229,5 @@ async function getProjectById(projectId: number) {
     tasks: projectTasks,
   };
 }
+
+export const runtime = 'edge';

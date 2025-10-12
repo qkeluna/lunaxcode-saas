@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth';
+import { auth } from '@/auth';
 import { redirect, notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
@@ -46,7 +46,7 @@ export default async function ProjectDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const session = await getServerSession();
+  const session = await auth();
 
   if (!session) {
     redirect('/login');
@@ -275,3 +275,5 @@ export default async function ProjectDetailPage({
     </div>
   );
 }
+
+export const runtime = 'edge';

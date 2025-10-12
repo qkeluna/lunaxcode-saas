@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth';
+import { auth } from '@/auth';
 import Link from 'next/link';
 import { FolderKanban, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
@@ -20,7 +20,7 @@ async function getProjects() {
 }
 
 export default async function DashboardPage() {
-  const session = await getServerSession();
+  const session = await auth();
   const { projects, usingDatabase } = await getProjects();
 
   // Calculate stats
@@ -168,3 +168,5 @@ export default async function DashboardPage() {
     </div>
   );
 }
+
+export const runtime = 'edge';

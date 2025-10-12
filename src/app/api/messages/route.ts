@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { auth } from '@/auth';
 import { getDatabase } from '@/lib/db/client';
 import { messages } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
@@ -10,7 +10,7 @@ let messageIdCounter = 1;
 
 // Send a message
 export async function POST(request: NextRequest) {
-  const session = await getServerSession();
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
 // Get messages for a project
 export async function GET(request: NextRequest) {
-  const session = await getServerSession();
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -122,3 +122,5 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export const runtime = 'edge';

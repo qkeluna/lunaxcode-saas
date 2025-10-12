@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { auth } from '@/auth';
 import { getDatabase } from '@/lib/db/client';
 import { files } from '@/lib/db/schema';
 
@@ -8,7 +8,7 @@ let filesStore: any[] = [];
 let fileIdCounter = 1;
 
 export async function POST(request: NextRequest) {
-  const session = await getServerSession();
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
 
 // Get files for a project
 export async function GET(request: NextRequest) {
-  const session = await getServerSession();
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -168,3 +168,5 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export const runtime = 'edge';

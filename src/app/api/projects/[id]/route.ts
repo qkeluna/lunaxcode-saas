@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { auth } from '@/auth';
 import { getDatabase } from '@/lib/db/client';
 import { getProjectWithTasks } from '@/lib/db/queries';
 
@@ -7,7 +7,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getServerSession();
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -50,3 +50,5 @@ export async function GET(
     );
   }
 }
+
+export const runtime = 'edge';
