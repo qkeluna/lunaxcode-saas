@@ -13,12 +13,24 @@ export const users = sqliteTable('users', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
+// Service Types table (must be before projects for foreign key)
+export const serviceTypes = sqliteTable('service_types', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  description: text('description'),
+  basePrice: integer('base_price').notNull(),
+  features: text('features'), // JSON string
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
 // Projects table
 export const projects = sqliteTable('projects', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   userId: text('user_id').notNull().references(() => users.id),
+  serviceTypeId: integer('service_type_id').references(() => serviceTypes.id),
   name: text('name').notNull(),
-  service: text('service').notNull(),
+  service: text('service').notNull(), // Keep for backward compatibility, but use serviceTypeId
   description: text('description'),
   prd: text('prd').notNull(), // Generated PRD
   clientName: text('client_name').notNull(),
@@ -84,17 +96,6 @@ export const messages = sqliteTable('messages', {
   projectId: integer('project_id').notNull().references(() => projects.id),
   senderId: text('sender_id').notNull(),
   content: text('content').notNull(),
-  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
-});
-
-// Service Types table
-export const serviceTypes = sqliteTable('service_types', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
-  name: text('name').notNull(),
-  description: text('description'),
-  basePrice: integer('base_price').notNull(),
-  features: text('features'), // JSON string
-  isActive: integer('is_active', { mode: 'boolean' }).default(true),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
