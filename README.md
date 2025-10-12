@@ -1,129 +1,181 @@
-# 🚀 Full-Stack Cloudflare SaaS Kit
+# Lunaxcode - AI-Powered Project Management SaaS
 
-**_Build and deploy scalable products on Cloudflare with ease._**
+AI-powered project management system for Filipino web development agencies using Next.js 15, Cloudflare Workers, D1, R2, and Google Gemini AI.
 
-An opinionated, batteries-included starter kit for quickly building and deploying SaaS products on Cloudflare. This is a [Next.js](https://nextjs.org/) project bootstrapped with [`c3`](https://developers.cloudflare.com/pages/get-started/c3).
+## Quick Start
 
-This is the same stack used to build [Supermemory.ai](https://Supermemory.ai) which is open source at [git.new/memory](https://git.new/memory)
+### Prerequisites
 
-Supermemory now has 20k+ users and it runs on $5/month. safe to say, it's _very_ effective.
+- Node.js 18+
+- Cloudflare account
+- Wrangler CLI (`npm install -g wrangler`)
+- Google Cloud project (for OAuth and Gemini API)
+- PayMongo account (for payments)
 
-## The stack includes:
+### Installation
 
-- [Next.js](https://nextjs.org/) for frontend
-- [TailwindCSS](https://tailwindcss.com/) for styling
-- [Drizzle ORM](https://orm.drizzle.team/) for database access
-- [NextAuth](https://next-auth.js.org/) for authentication
-- [Cloudflare D1](https://www.cloudflare.com/developer-platform/d1/) for serverless databases
-- [Cloudflare Pages](https://pages.cloudflare.com/) for hosting
-- [ShadcnUI](https://shadcn.com/) as the component library
+```bash
+# 1. Clone repository
+git clone <repo-url>
+cd lunaxcode-saas
 
-## Getting Started
+# 2. Install dependencies
+npm install
 
-1. Make sure that you have [Wrangler](https://developers.cloudflare.com/workers/wrangler/install-and-update/#installupdate-wrangler) installed. And also that you have logged in with `wrangler login` (You'll need a Cloudflare account)
+# 3. Setup environment variables
+cp .env.example .env.local
+# Edit .env.local with your API keys
 
-2. Clone the repository and install dependencies:
-   ```bash
-   git clone https://github.com/Dhravya/cloudflare-saas-stack
-   cd cloudflare-saas-stack
-   npm i -g bun
-   bun install
-   bun run setup
-   ```
+# 4. Login to Cloudflare
+wrangler login
 
-3. Run the development server:
-   ```bash
-   bun run dev
-   ```
+# 5. Create D1 database
+wrangler d1 create lunaxcode-dev
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# 6. Update wrangler.toml with database ID from output
 
-## Cloudflare Integration
+# 7. Run migrations
+wrangler d1 migrations apply lunaxcode-dev --local
 
-Besides the `dev` script, `c3` has added extra scripts for Cloudflare Pages integration:
-- `pages:build`: Build the application for Pages using [`@cloudflare/next-on-pages`](https://github.com/cloudflare/next-on-pages) CLI
-- `preview`: Locally preview your Pages application using [Wrangler](https://developers.cloudflare.com/workers/wrangler/) CLI
-- `deploy`: Deploy your Pages application using Wrangler CLI
-- `cf-typegen`: Generate typescript types for Cloudflare env.
+# 8. Create R2 bucket
+wrangler r2 bucket create lunaxcode-files
 
-> __Note:__ While the `dev` script is optimal for local development, you should preview your Pages application periodically to ensure it works properly in the Pages environment.
-
-## Bindings
-
-Cloudflare [Bindings](https://developers.cloudflare.com/pages/functions/bindings/) allow you to interact with Cloudflare Platform resources. You can use bindings during development, local preview, and in the deployed application.
-
-For detailed instructions on setting up bindings, refer to the Cloudflare documentation.
-
-## Database Migrations
-Quick explaination of D1 set up:
-- D1 is a serverless database that follows SQLite convention.
-- Within Cloudflare pages and workers, you can directly query d1 with [client api](https://developers.cloudflare.com/d1/build-with-d1/d1-client-api/) exposed by bindings (eg. `env.BINDING`)
-- You can also query d1 via [rest api](https://developers.cloudflare.com/api/operations/cloudflare-d1-create-database)
-- Locally, wrangler auto generates sqlite files at `.wrangler/state/v3/d1` after `bun run dev`.
-- Local dev environment (`bun run dev`) interact with [local d1 session](https://developers.cloudflare.com/d1/build-with-d1/local-development/#start-a-local-development-session), which is based on some SQlite files located at `.wrangler/state/v3/d1`.
-- In dev mode (`bun run db:<migrate or studio>:dev`), Drizzle-kit (migrate and studio) directly modifies these files as regular SQlite db. While `bun run db:<migrate or studio>:prod` use d1-http driver to interact with remote d1 via rest api. Therefore we need to set env var at `.env.example`
-
-To generate migrations files:
-- `bun run db:generate`
-
-To apply database migrations:
-- For development: `bun run db:migrate:dev`
-- For production: `bun run db:migrate:prd`
-
-To inspect database:
-- For local database `bun run db:studio:dev`
-- For remote database `bun run db:studio:prod`
-
-## Cloudflare R2 Bucket CORS / File Upload
-
-Don't forget to add the CORS policy to the R2 bucket. The CORS policy should look like this:
-
-```json
-[
-  {
-    "AllowedOrigins": [
-      "http://localhost:3000",
-      "https://your-domain.com"
-    ],
-    "AllowedMethods": [
-      "GET",
-      "PUT"
-    ],
-    "AllowedHeaders": [
-      "Content-Type"
-    ],
-    "ExposeHeaders": [
-      "ETag"
-    ]
-  }
-]
+# 9. Start development server
+npm run dev
 ```
 
-You can now even set up object upload.
+### Create First Admin User
 
-## Manual Setup
+```bash
+# 1. Start dev server
+npm run dev
 
-If you prefer manual setup:
+# 2. Go to http://localhost:3000/login and sign in with Google
 
-1. Create a Cloudflare account and install Wrangler CLI.
-2. Create a D1 database: `bunx wrangler d1 create ${dbName}`
-3. Create a `.dev.vars` file in the project root with your Google OAuth credentials and NextAuth secret.
-   1. `AUTH_SECRET`, generate by command `openssl rand -base64 32` or `bunx auth secret`
-   2. `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET` for google oauth.
-      1. First create [OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent). Tips: no wait time if you skip logo upload.
-      2. Create [credential](https://console.cloud.google.com/apis/credentials). Put `https://your-domain` and `http://localhost:3000` at "Authorized JavaScript origins". Put `https://your-domain/api/auth/callback/google` and `http://localhost:3000/api/auth/callback/google` at "Authorized redirect URIs".
-4. Generate db migration files: `bun run db:generate`
-5. Run local migration: `bunx wrangler d1 execute ${dbName} --local --file=migrations/0000_setup.sql` or using drizzle `bun run db:migrate:dev`
-6. Run remote migration: `bunx wrangler d1 execute ${dbName} --remote --file=migrations/0000_setup.sql` or using drizzle `bun run db:migrate:prod`
-7. Start development server: `bun run dev`
-8. Deploy: `bun run deploy`
+# 3. Set admin role
+wrangler d1 execute lunaxcode-dev --local --command="UPDATE users SET role='admin' WHERE email='YOUR_EMAIL@gmail.com'"
+```
 
-## The Beauty of This Stack
+## Tech Stack
 
-- Fully scalable and composable
-- No environment variables needed (use `env.DB`, `env.KV`, `env.Queue`, `env.AI`, etc.)
-- Powerful tools like Wrangler for database management and migrations
-- Cost-effective scaling (e.g., $5/month for multiple high-traffic projects)
+- **Framework**: Next.js 15 (App Router)
+- **Language**: TypeScript
+- **Runtime**: Cloudflare Workers (Edge)
+- **Database**: Cloudflare D1 (SQLite)
+- **ORM**: Drizzle ORM
+- **Storage**: Cloudflare R2
+- **Auth**: NextAuth.js + Google OAuth
+- **AI**: Google Gemini API
+- **Payments**: PayMongo
+- **Styling**: Tailwind CSS
+- **UI**: shadcn/ui components
 
-Just change your Cloudflare account ID in the project settings, and you're good to go!
+## Project Structure
 
+```
+lunaxcode/
+├── src/
+│   ├── app/              # Next.js App Router
+│   │   ├── (auth)/       # Auth pages (login)
+│   │   ├── (dashboard)/  # Client dashboard
+│   │   ├── (admin)/      # Admin dashboard
+│   │   └── api/          # API routes
+│   ├── components/       # React components
+│   │   ├── ui/          # shadcn/ui components
+│   │   └── dashboard/   # Dashboard components
+│   └── lib/             # Utilities
+│       ├── db/          # Database schema & client
+│       ├── auth.ts      # NextAuth config
+│       └── utils.ts     # Helper functions
+├── migrations/          # D1 database migrations
+├── scripts/            # Utility scripts
+└── public/            # Static assets
+```
+
+## Development Commands
+
+```bash
+npm run dev           # Start dev server
+npm run build         # Build for production
+npm run start         # Start production server
+npm run lint          # Run ESLint
+
+# Database
+npm run db:generate   # Generate migrations
+npm run db:migrate    # Run migrations
+npm run db:push       # Push schema changes
+npm run db:studio     # Open Drizzle Studio
+```
+
+## Features
+
+### Current (Phase 1 - Foundation)
+- ✅ Next.js 15 with TypeScript
+- ✅ Cloudflare Workers deployment
+- ✅ D1 database with Drizzle ORM
+- ✅ Google OAuth authentication
+- ✅ Protected routes with middleware
+- ✅ Dashboard layout with sidebar
+- ✅ Responsive design
+
+### Next Steps (Phase 2-7)
+- 🔄 Google Gemini AI integration
+- 🔄 Project onboarding form
+- 🔄 AI-generated PRD & tasks
+- 🔄 Task management system
+- 🔄 PayMongo payment integration
+- 🔄 Admin dashboard
+- 🔄 CMS system
+
+## Environment Variables
+
+See `.env.example` for required environment variables.
+
+### Required API Keys
+
+1. **NextAuth Secret**: Generate with `openssl rand -base64 32`
+2. **Google OAuth**: Get from [Google Cloud Console](https://console.cloud.google.com)
+3. **Gemini API**: Get from [Google AI Studio](https://makersuite.google.com/app/apikey)
+4. **PayMongo**: Get from [PayMongo Dashboard](https://dashboard.paymongo.com)
+
+## Deployment
+
+### Production Deployment
+
+```bash
+# 1. Create production database
+wrangler d1 create lunaxcode-prod
+
+# 2. Update wrangler.toml with production database ID
+
+# 3. Run migrations
+wrangler d1 migrations apply lunaxcode-prod
+
+# 4. Set production secrets
+wrangler secret put NEXTAUTH_SECRET
+wrangler secret put GOOGLE_CLIENT_ID
+wrangler secret put GOOGLE_CLIENT_SECRET
+wrangler secret put GEMINI_API_KEY
+wrangler secret put PAYMONGO_PUBLIC_KEY
+wrangler secret put PAYMONGO_SECRET_KEY
+wrangler secret put PAYMONGO_WEBHOOK_SECRET
+
+# 5. Build and deploy
+npm run build
+wrangler pages deploy .vercel/output/static
+```
+
+## Documentation
+
+See `docs/` directory for complete development plan and implementation details.
+
+- `lunaxcode_complete_plan.txt` - Complete 34-task development plan
+- `CLAUDE.md` - Claude Code integration guide
+
+## License
+
+MIT
+
+## Support
+
+For issues and questions, please check the documentation in `docs/` or refer to `CLAUDE.md` for AI-assisted development guidance.

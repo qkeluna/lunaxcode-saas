@@ -1,0 +1,3037 @@
+# Lunaxcode - Complete Development Plan
+**AI-Powered Project Management System using Cloudflare Stack**
+
+Version: 1.0 Final  
+Last Updated: October 2025  
+Stack: Next.js 15 + Cloudflare Pages + D1 + R2
+
+---
+
+## 📋 Table of Contents
+
+1. [Executive Summary](#executive-summary)
+2. [Project Overview](#project-overview)
+3. [System Architecture](#system-architecture)
+4. [Technology Stack](#technology-stack)
+5. [Database Schema](#database-schema)
+6. [Project Structure](#project-structure)
+7. [Development Setup](#development-setup)
+8. [Phase 1: Foundation & Authentication](#phase-1-foundation--authentication)
+9. [Phase 2: AI Generation System](#phase-2-ai-generation-system)
+10. [Phase 3: Client Dashboard](#phase-3-client-dashboard)
+11. [Phase 4: Payment Integration](#phase-4-payment-integration)
+12. [Phase 5: Admin Dashboard](#phase-5-admin-dashboard)
+13. [Phase 6: CMS System](#phase-6-cms-system)
+14. [Phase 7: Testing & Launch](#phase-7-testing--launch)
+15. [Summary & Timeline](#summary--timeline)
+
+---
+
+## 1. Executive Summary
+
+### 1.1 What is Lunaxcode?
+
+Lunaxcode is an **AI-powered project management platform** that helps Filipino web development agencies manage client projects efficiently. The system automatically generates Project Requirements Documents (PRDs) and task breakdowns using Google Gemini AI.
+
+### 1.2 Key Features
+
+- **AI-Powered Generation**: Automatic PRD and task creation
+- **Client Portal**: Dashboard for project tracking and payments
+- **Admin Dashboard**: Complete project and client management
+- **Payment Integration**: PayMongo for Philippine payment methods
+- **Real-time Updates**: Live project status and task tracking
+- **File Management**: Cloudflare R2 for secure file storage
+- **Communication**: Built-in messaging system
+- **CMS**: Customizable content and settings
+
+### 1.3 Target Users
+
+- **Primary**: Philippine web development agencies
+- **Secondary**: Freelance developers and small tech teams
+- **End Users**: Their clients who need project visibility
+
+### 1.4 Success Metrics
+
+- Generate PRD in < 30 seconds
+- 50+ concurrent projects support
+- < 2 second page load times
+- 99.9% payment processing success
+- < $50/month hosting costs (Cloudflare free tier)
+
+---
+
+## 2. Project Overview
+
+### 2.1 Problem Statement
+
+Web agencies struggle with:
+- Manual PRD creation (2-4 hours per project)
+- Unclear task breakdowns
+- Client communication overhead
+- Payment tracking complexity
+- Project visibility issues
+
+### 2.2 Solution
+
+Lunaxcode automates:
+1. **PRD Generation**: AI creates comprehensive requirements
+2. **Task Breakdown**: Structured development tasks with estimates
+3. **Payment Workflow**: Integrated payment gateway
+4. **Progress Tracking**: Real-time project visibility
+5. **Communication**: Centralized client messaging
+
+### 2.3 User Flow
+
+```
+Client Onboarding → AI Generation → Payment → Development → Delivery
+        ↓                ↓              ↓           ↓           ↓
+   Form Submit      PRD + Tasks    Deposit     Task Updates  Completion
+```
+
+### 2.4 MVP Scope
+
+**Included in MVP**:
+- User authentication (Google OAuth)
+- AI project generation
+- Client dashboard
+- Admin dashboard
+- PayMongo integration
+- File uploads
+- Basic CMS
+
+**Post-MVP Features**:
+- Team collaboration
+- Time tracking
+- Invoice generation
+- Advanced analytics
+- Mobile apps
+- Zapier integration
+
+---
+
+## 3. System Architecture
+
+### 3.1 High-Level Architecture
+
+```
+┌─────────────────┐
+│   Client        │
+│   Browser       │
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────────────────────┐
+│   Cloudflare Edge Network       │
+│   (Next.js 15 App Router)       │
+└────────┬────────────────────────┘
+         │
+         ├→ Google OAuth (Auth)
+         ├→ Google Gemini (AI)
+         ├→ PayMongo (Payments)
+         │
+         ↓
+┌─────────────────────────────────┐
+│   Cloudflare D1 (SQLite)        │
+│   + R2 (Object Storage)         │
+└─────────────────────────────────┘
+```
+
+### 3.2 Data Flow
+
+1. **Project Creation Flow**:
+```
+User Input → Gemini AI → PRD + Tasks → D1 Database → Client Dashboard
+```
+
+2. **Payment Flow**:
+```
+Payment Form → PayMongo API → Webhook → Update D1 → Notification
+```
+
+3. **File Upload Flow**:
+```
+File Upload → R2 Bucket → File URL → D1 Reference → Display
+```
+
+### 3.3 Security Architecture
+
+- **Authentication**: NextAuth with secure sessions
+- **Authorization**: Role-based access control (RBAC)
+- **Data Protection**: Encrypted connections (TLS)
+- **API Security**: Rate limiting and CSRF protection
+- **Payment Security**: PCI-compliant via PayMongo
+- **File Security**: Signed URLs for R2 objects
+
+---
+
+## 4. Technology Stack
+
+### 4.1 Frontend
+
+```json
+{
+  "framework": "Next.js 15",
+  "language": "TypeScript",
+  "styling": "Tailwind CSS",
+  "ui_components": "shadcn/ui",
+  "icons": "Lucide React",
+  "forms": "React Hook Form",
+  "validation": "Zod"
+}
+```
+
+### 4.2 Backend
+
+```json
+{
+  "runtime": "Cloudflare Workers (Edge)",
+  "database": "Cloudflare D1 (SQLite)",
+  "storage": "Cloudflare R2 (S3-compatible)",
+  "orm": "Drizzle ORM",
+  "auth": "NextAuth.js",
+  "api": "Next.js API Routes"
+}
+```
+
+### 4.3 External Services
+
+```json
+{
+  "ai": "Google Gemini API",
+  "payments": "PayMongo",
+  "authentication": "Google OAuth 2.0",
+  "hosting": "Cloudflare Pages",
+  "cdn": "Cloudflare CDN"
+}
+```
+
+### 4.4 Development Tools
+
+```json
+{
+  "package_manager": "npm",
+  "cli": "Wrangler CLI",
+  "linting": "ESLint",
+  "formatting": "Prettier",
+  "type_checking": "TypeScript"
+}
+```
+
+---
+
+## 5. Database Schema
+
+### 5.1 Complete Schema (Drizzle ORM)
+
+```typescript
+// lib/db/schema.ts
+import { pgTable, serial, text, integer, timestamp, boolean, jsonb } from 'drizzle-orm/pg-core';
+
+// Users table
+export const users = pgTable('users', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  password: text('password'),
+  role: text('role').notNull().default('client'), // 'admin' | 'client'
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Projects table
+export const projects = pgTable('projects', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => users.id),
+  name: text('name').notNull(),
+  service: text('service').notNull(),
+  description: text('description'),
+  prd: text('prd').notNull(), // Generated PRD
+  clientName: text('client_name').notNull(),
+  clientEmail: text('client_email').notNull(),
+  clientPhone: text('client_phone'),
+  timeline: integer('timeline').notNull(), // days
+  budget: integer('budget').notNull(),
+  price: integer('price').notNull(),
+  paymentStatus: text('payment_status').default('pending'), // 'pending' | 'partially-paid' | 'paid'
+  depositAmount: integer('deposit_amount').default(0),
+  status: text('status').default('pending'), // 'pending' | 'in-progress' | 'completed' | 'on-hold'
+  startDate: timestamp('start_date'),
+  endDate: timestamp('end_date'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Tasks table
+export const tasks = pgTable('tasks', {
+  id: serial('id').primaryKey(),
+  projectId: integer('project_id').references(() => projects.id),
+  title: text('title').notNull(),
+  description: text('description').notNull(),
+  section: text('section').notNull(),
+  priority: text('priority').notNull(), // 'low' | 'medium' | 'high'
+  status: text('status').default('pending'), // 'pending' | 'in-progress' | 'completed'
+  estimatedHours: integer('estimated_hours').notNull(),
+  dependencies: text('dependencies'),
+  order: integer('order').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Payments table
+export const payments = pgTable('payments', {
+  id: serial('id').primaryKey(),
+  projectId: integer('project_id').references(() => projects.id),
+  userId: text('user_id').notNull(),
+  amount: integer('amount').notNull(),
+  paymentMethod: text('payment_method').notNull(), // 'card' | 'gcash' | 'paymaya'
+  paymentIntentId: text('payment_intent_id').notNull(),
+  status: text('status').notNull(), // 'processing' | 'succeeded' | 'failed'
+  metadata: jsonb('metadata'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+// Files table
+export const files = pgTable('files', {
+  id: serial('id').primaryKey(),
+  projectId: integer('project_id').references(() => projects.id),
+  filename: text('filename').notNull(),
+  filepath: text('filepath').notNull(),
+  filesize: integer('filesize').notNull(),
+  mimetype: text('mimetype').notNull(),
+  uploadedBy: text('uploaded_by').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Messages table
+export const messages = pgTable('messages', {
+  id: serial('id').primaryKey(),
+  projectId: integer('project_id').references(() => projects.id),
+  senderId: text('sender_id').notNull(),
+  content: text('content').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// Service Types table
+export const serviceTypes = pgTable('service_types', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  description: text('description'),
+  basePrice: integer('base_price').notNull(),
+  features: jsonb('features'),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+
+// FAQs table
+export const faqs = pgTable('faqs', {
+  id: serial('id').primaryKey(),
+  question: text('question').notNull(),
+  answer: text('answer').notNull(),
+  category: text('category'),
+  order: integer('order').default(0),
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow(),
+});
+```
+
+### 5.2 Relationships
+
+```typescript
+// lib/db/relations.ts
+import { relations } from 'drizzle-orm';
+import { users, projects, tasks, payments, files, messages } from './schema';
+
+export const usersRelations = relations(users, ({ many }) => ({
+  projects: many(projects),
+}));
+
+export const projectsRelations = relations(projects, ({ one, many }) => ({
+  user: one(users, {
+    fields: [projects.userId],
+    references: [users.id],
+  }),
+  tasks: many(tasks),
+  payments: many(payments),
+  files: many(files),
+  messages: many(messages),
+}));
+
+export const tasksRelations = relations(tasks, ({ one }) => ({
+  project: one(projects, {
+    fields: [tasks.projectId],
+    references: [projects.id],
+  }),
+}));
+
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  project: one(projects, {
+    fields: [payments.projectId],
+    references: [projects.id],
+  }),
+}));
+```
+
+### 5.3 Migrations
+
+```sql
+-- migrations/0001_initial_schema.sql
+CREATE TABLE users (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  password TEXT,
+  role TEXT NOT NULL DEFAULT 'client',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE projects (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  service TEXT NOT NULL,
+  description TEXT,
+  prd TEXT NOT NULL,
+  client_name TEXT NOT NULL,
+  client_email TEXT NOT NULL,
+  client_phone TEXT,
+  timeline INTEGER NOT NULL,
+  budget INTEGER NOT NULL,
+  price INTEGER NOT NULL,
+  payment_status TEXT DEFAULT 'pending',
+  deposit_amount INTEGER DEFAULT 0,
+  status TEXT DEFAULT 'pending',
+  start_date TIMESTAMP,
+  end_date TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+CREATE TABLE tasks (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  project_id INTEGER NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  section TEXT NOT NULL,
+  priority TEXT NOT NULL,
+  status TEXT DEFAULT 'pending',
+  estimated_hours INTEGER NOT NULL,
+  dependencies TEXT,
+  order INTEGER NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (project_id) REFERENCES projects(id)
+);
+
+CREATE TABLE payments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  project_id INTEGER NOT NULL,
+  user_id TEXT NOT NULL,
+  amount INTEGER NOT NULL,
+  payment_method TEXT NOT NULL,
+  payment_intent_id TEXT NOT NULL,
+  status TEXT NOT NULL,
+  metadata TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (project_id) REFERENCES projects(id)
+);
+
+CREATE TABLE files (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  project_id INTEGER NOT NULL,
+  filename TEXT NOT NULL,
+  filepath TEXT NOT NULL,
+  filesize INTEGER NOT NULL,
+  mimetype TEXT NOT NULL,
+  uploaded_by TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (project_id) REFERENCES projects(id)
+);
+
+CREATE TABLE messages (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  project_id INTEGER NOT NULL,
+  sender_id TEXT NOT NULL,
+  content TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (project_id) REFERENCES projects(id)
+);
+
+CREATE TABLE service_types (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  description TEXT,
+  base_price INTEGER NOT NULL,
+  features TEXT,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE faqs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  question TEXT NOT NULL,
+  answer TEXT NOT NULL,
+  category TEXT,
+  order INTEGER DEFAULT 0,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+---
+
+## 6. Project Structure
+
+```
+lunaxcode/
+├── app/
+│   ├── (auth)/
+│   │   ├── login/
+│   │   │   └── page.tsx
+│   │   └── signup/
+│   │       └── page.tsx
+│   ├── (dashboard)/
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── projects/
+│   │   │   ├── page.tsx
+│   │   │   ├── [id]/
+│   │   │   │   ├── page.tsx
+│   │   │   │   ├── messages/
+│   │   │   │   │   └── page.tsx
+│   │   │   │   └── payment/
+│   │   │   │       └── page.tsx
+│   │   └── onboarding/
+│   │       └── page.tsx
+│   ├── (admin)/
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── projects/
+│   │   ├── clients/
+│   │   ├── payments/
+│   │   ├── content/
+│   │   │   ├── services/
+│   │   │   ├── faq/
+│   │   │   ├── terms/
+│   │   │   ├── privacy/
+│   │   │   └── emails/
+│   │   └── settings/
+│   ├── (public)/
+│   │   ├── faq/
+│   │   ├── terms/
+│   │   └── privacy/
+│   ├── api/
+│   │   ├── auth/
+│   │   │   └── [...nextauth]/
+│   │   ├── projects/
+│   │   ├── payment/
+│   │   ├── upload/
+│   │   └── webhooks/
+│   ├── actions/
+│   │   ├── tasks.ts
+│   │   ├── messages.ts
+│   │   └── payment.ts
+│   └── layout.tsx
+├── components/
+│   ├── ui/
+│   ├── auth/
+│   ├── dashboard/
+│   ├── projects/
+│   ├── payment/
+│   ├── admin/
+│   └── messages/
+├── lib/
+│   ├── db/
+│   │   ├── schema.ts
+│   │   ├── relations.ts
+│   │   └── index.ts
+│   ├── gemini.ts
+│   ├── paymongo.ts
+│   └── utils.ts
+├── public/
+├── migrations/
+├── .env.local
+├── .env.example
+├── wrangler.toml
+├── next.config.js
+├── tailwind.config.js
+└── package.json
+```
+
+---
+
+## 7. Development Setup
+
+### 7.1 Prerequisites
+
+```bash
+# Node.js 18+
+node --version
+
+# npm or pnpm
+npm --version
+
+# Wrangler CLI
+npm install -g wrangler
+wrangler --version
+```
+
+### 7.2 Initial Setup
+
+```bash
+# 1. Clone repository
+git clone <repo-url>
+cd lunaxcode
+
+# 2. Install dependencies
+npm install
+
+# 3. Login to Cloudflare
+wrangler login
+
+# 4. Create D1 database
+wrangler d1 create lunaxcode-dev
+
+# 5. Update wrangler.toml with database ID
+# Copy the database_id from the output above
+
+# 6. Run migrations
+wrangler d1 migrations apply lunaxcode-dev --local
+
+# 7. Create R2 bucket
+wrangler r2 bucket create lunaxcode-files
+
+# 8. Setup environment variables
+cp .env.example .env.local
+# Edit .env.local with your API keys
+```
+
+### 7.3 Environment Variables
+
+```env
+# .env.local
+
+# NextAuth
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=your-secret-key-here
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Google Gemini API
+GEMINI_API_KEY=your-gemini-api-key
+
+# PayMongo
+PAYMONGO_PUBLIC_KEY=pk_test_your_public_key
+PAYMONGO_SECRET_KEY=sk_test_your_secret_key
+PAYMONGO_WEBHOOK_SECRET=whsec_your_webhook_secret
+
+# App URL
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### 7.4 Run Development Server
+
+```bash
+# Start local development
+npm run dev
+
+# Access at http://localhost:3000
+
+# Create first admin user
+npm run create-admin
+```
+
+### 7.5 Development Commands
+
+```bash
+# Development
+npm run dev                    # Start dev server
+npm run build                  # Build for production
+npm run start                  # Start production server
+
+# Database
+npm run db:generate           # Generate migrations
+npm run db:migrate           # Run migrations
+npm run db:push              # Push schema changes
+npm run db:studio            # Open Drizzle Studio
+
+# Linting & Formatting
+npm run lint                 # Run ESLint
+npm run format               # Format with Prettier
+
+# Testing
+npm run test                 # Run tests
+npm run test:e2e            # Run E2E tests
+
+# Deployment
+npm run deploy              # Deploy to Cloudflare
+```
+
+---
+
+## 8. Phase 1: Foundation & Authentication
+
+### TASK-001: Setup NextAuth with Google OAuth
+
+**Status**: 🔴 Not Started  
+**Dependencies**: None  
+**Estimated Time**: 45 minutes  
+**Priority**: CRITICAL
+
+**Task Description**:
+Configure NextAuth.js with Google OAuth provider and role-based authentication.
+
+**File**: `app/api/auth/[...nextauth]/route.ts`
+
+**Implementation**:
+
+```typescript
+import NextAuth, { NextAuthOptions } from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
+import { DrizzleAdapter } from '@auth/drizzle-adapter';
+import { db } from '@/lib/db';
+
+export const authOptions: NextAuthOptions = {
+  adapter: DrizzleAdapter(db),
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+  ],
+  callbacks: {
+    async session({ session, user }) {
+      if (session.user) {
+        session.user.id = user.id;
+        session.user.role = user.role || 'client';
+      }
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role || 'client';
+      }
+      return token;
+    },
+  },
+  pages: {
+    signIn: '/login',
+    signOut: '/login',
+    error: '/login',
+  },
+  session: {
+    strategy: 'jwt',
+  },
+};
+
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };
+```
+
+**Success Criteria**:
+- ✅ Google OAuth login works
+- ✅ User session persists
+- ✅ Role assigned to new users
+- ✅ Redirects work correctly
+
+---
+
+### TASK-002: Create Auth Middleware
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-001  
+**Estimated Time**: 30 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Protect routes with middleware for authentication and authorization.
+
+**File**: `middleware.ts`
+
+**Implementation**:
+
+```typescript
+import { withAuth } from 'next-auth/middleware';
+import { NextResponse } from 'next/server';
+
+export default withAuth(
+  function middleware(req) {
+    const token = req.nextauth.token;
+    const isAdmin = token?.role === 'admin';
+    const isAuthPage = req.nextUrl.pathname.startsWith('/login') || 
+                       req.nextUrl.pathname.startsWith('/signup');
+    const isAdminPage = req.nextUrl.pathname.startsWith('/admin');
+
+    // Redirect authenticated users away from auth pages
+    if (isAuthPage && token) {
+      return NextResponse.redirect(new URL('/dashboard', req.url));
+    }
+
+    // Protect admin routes
+    if (isAdminPage && !isAdmin) {
+      return NextResponse.redirect(new URL('/dashboard', req.url));
+    }
+
+    return NextResponse.next();
+  },
+  {
+    callbacks: {
+      authorized: ({ token }) => !!token,
+    },
+  }
+);
+
+export const config = {
+  matcher: [
+    '/dashboard/:path*',
+    '/admin/:path*',
+    '/projects/:path*',
+    '/login',
+    '/signup',
+  ],
+};
+```
+
+**Success Criteria**:
+- ✅ Protects dashboard routes
+- ✅ Protects admin routes
+- ✅ Redirects work correctly
+- ✅ No infinite redirect loops
+
+---
+
+### TASK-003: Build Login Page
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-001  
+**Estimated Time**: 45 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Create user-friendly login page with Google OAuth button.
+
+**File**: `app/(auth)/login/page.tsx`
+
+**Implementation**:
+
+```typescript
+'use client';
+
+import { signIn } from 'next-auth/react';
+import { useState } from 'react';
+import { Chrome } from 'lucide-react';
+
+export default function LoginPage() {
+  const [loading, setLoading] = useState(false);
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    try {
+      await signIn('google', { callbackUrl: '/dashboard' });
+    } catch (error) {
+      console.error('Sign in error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-2xl shadow-xl">
+        {/* Logo */}
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-gray-900">Lunaxcode</h1>
+          <p className="mt-2 text-gray-600">AI-Powered Project Management</p>
+        </div>
+
+        {/* Sign in button */}
+        <div className="mt-8">
+          <button
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-3 px-6 py-3 border border-gray-300 rounded-lg shadow-sm bg-white hover:bg-gray-50 font-medium text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <Chrome className="w-5 h-5" />
+            {loading ? 'Signing in...' : 'Continue with Google'}
+          </button>
+        </div>
+
+        {/* Footer */}
+        <p className="text-center text-sm text-gray-600">
+          By signing in, you agree to our{' '}
+          <a href="/terms" className="text-blue-600 hover:underline">
+            Terms of Service
+          </a>{' '}
+          and{' '}
+          <a href="/privacy" className="text-blue-600 hover:underline">
+            Privacy Policy
+          </a>
+        </p>
+      </div>
+    </div>
+  );
+}
+```
+
+**Success Criteria**:
+- ✅ Clean, professional design
+- ✅ Google sign-in works
+- ✅ Loading states
+- ✅ Error handling
+- ✅ Responsive layout
+
+---
+
+### TASK-004: Create Dashboard Layout
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-002  
+**Estimated Time**: 60 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Build main dashboard layout with sidebar navigation.
+
+**File**: `app/(dashboard)/layout.tsx`
+
+**Implementation**:
+
+```typescript
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { redirect } from 'next/navigation';
+import Sidebar from '@/components/dashboard/Sidebar';
+import Header from '@/components/dashboard/Header';
+
+export default async function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <Sidebar />
+      
+      <div className="lg:pl-64">
+        <Header user={session.user} />
+        
+        <main className="p-8">
+          {children}
+        </main>
+      </div>
+    </div>
+  );
+}
+```
+
+**Sidebar Component** (`components/dashboard/Sidebar.tsx`):
+
+```typescript
+'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { LayoutDashboard, FolderKanban, Plus, Settings } from 'lucide-react';
+
+const navigation = [
+  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Projects', href: '/projects', icon: FolderKanban },
+  { name: 'New Project', href: '/onboarding', icon: Plus },
+  { name: 'Settings', href: '/settings', icon: Settings },
+];
+
+export default function Sidebar() {
+  const pathname = usePathname();
+
+  return (
+    <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
+      <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-y-auto">
+        {/* Logo */}
+        <div className="flex items-center flex-shrink-0 px-6 py-6 border-b">
+          <h1 className="text-2xl font-bold text-gray-900">Lunaxcode</h1>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 px-4 py-4 space-y-1">
+          {navigation.map((item) => {
+            const isActive = pathname === item.href;
+            
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={`
+                  group flex items-center px-4 py-3 text-sm font-medium rounded-lg
+                  ${isActive
+                    ? 'bg-blue-50 text-blue-600'
+                    : 'text-gray-700 hover:bg-gray-50'
+                  }
+                `}
+              >
+                <item.icon className="mr-3 h-5 w-5" />
+                {item.name}
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
+    </div>
+  );
+}
+```
+
+**Success Criteria**:
+- ✅ Sidebar navigation works
+- ✅ Active route highlighted
+- ✅ Responsive design
+- ✅ User info displayed
+- ✅ Logout functionality
+
+---
+
+### TASK-005: Create Admin User Script
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-001  
+**Estimated Time**: 15 minutes  
+**Priority**: MEDIUM
+
+**Task Description**:
+Script to create first admin user for system access.
+
+**File**: `scripts/create-admin.ts`
+
+**Implementation**:
+
+```typescript
+import { db } from '../lib/db';
+import { users } from '../lib/db/schema';
+import * as readline from 'readline';
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+function question(query: string): Promise<string> {
+  return new Promise((resolve) => {
+    rl.question(query, resolve);
+  });
+}
+
+async function createAdmin() {
+  console.log('🔧 Creating Admin User\n');
+
+  const name = await question('Admin Name: ');
+  const email = await question('Admin Email: ');
+
+  try {
+    await db.insert(users).values({
+      id: `admin-${Date.now()}`,
+      name,
+      email,
+      role: 'admin',
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    console.log('\n✅ Admin user created successfully!');
+    console.log(`📧 Email: ${email}`);
+    console.log('🔑 Login with Google OAuth using this email');
+  } catch (error) {
+    console.error('❌ Error creating admin:', error);
+  } finally {
+    rl.close();
+  }
+}
+
+createAdmin();
+```
+
+**package.json script**:
+
+```json
+{
+  "scripts": {
+    "create-admin": "tsx scripts/create-admin.ts"
+  }
+}
+```
+
+**Success Criteria**:
+- ✅ Script runs successfully
+- ✅ Admin user created in database
+- ✅ Can login with Google OAuth
+- ✅ Has admin role
+
+---
+
+## 9. Phase 2: AI Generation System
+
+### TASK-006: Setup Gemini API Service
+
+**Status**: 🔴 Not Started  
+**Dependencies**: None  
+**Estimated Time**: 45 minutes  
+**Priority**: CRITICAL
+
+**Task Description**:
+Create service layer for Google Gemini API to generate PRDs and tasks.
+
+**File**: `lib/gemini.ts`
+
+**Implementation**:
+
+```typescript
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+
+interface ProjectInput {
+  service: string;
+  description: string;
+  timeline: number;
+  budget: number;
+  features: string[];
+}
+
+export async function generatePRD(input: ProjectInput): Promise<string> {
+  const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+
+  const prompt = `
+You are a professional project manager creating a comprehensive Project Requirements Document (PRD).
+
+Project Details:
+- Service Type: ${input.service}
+- Description: ${input.description}
+- Timeline: ${input.timeline} days
+- Budget: ₱${input.budget}
+- Required Features: ${input.features.join(', ')}
+
+Generate a detailed PRD in markdown format with the following sections:
+
+1. Executive Summary
+2. Project Objectives
+3. Target Audience
+4. Scope & Features
+5. Technical Requirements
+6. Design Guidelines
+7. Success Metrics
+8. Risks & Mitigation
+9. Timeline Breakdown
+10. Budget Allocation
+
+Make it professional, detailed, and actionable.
+`;
+
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  return response.text();
+}
+
+export async function generateTasks(
+  prd: string,
+  timeline: number
+): Promise<any[]> {
+  const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+
+  const prompt = `
+Based on the following PRD, generate a detailed task breakdown for development.
+
+PRD:
+${prd}
+
+Timeline: ${timeline} days
+
+Generate tasks in JSON format with the following structure:
+[
+  {
+    "title": "Task title",
+    "description": "Detailed description",
+    "section": "Phase name (e.g., 'Setup', 'Frontend', 'Backend', 'Testing')",
+    "priority": "low" | "medium" | "high",
+    "estimatedHours": number,
+    "dependencies": "comma-separated task titles or null",
+    "order": number
+  }
+]
+
+Guidelines:
+- Break down into 15-25 actionable tasks
+- Include setup, development, testing, and deployment tasks
+- Estimate hours realistically
+- Identify dependencies
+- Group by logical sections
+- Order tasks sequentially
+
+Respond ONLY with valid JSON array, no markdown formatting.
+`;
+
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const text = response.text();
+
+  // Parse JSON from response
+  const jsonMatch = text.match(/\[[\s\S]*\]/);
+  if (!jsonMatch) {
+    throw new Error('Failed to parse tasks from AI response');
+  }
+
+  return JSON.parse(jsonMatch[0]);
+}
+
+export async function estimatePrice(
+  service: string,
+  features: string[]
+): Promise<number> {
+  const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+
+  const prompt = `
+As a Filipino web development agency pricing expert, estimate the cost for:
+
+Service: ${service}
+Features: ${features.join(', ')}
+
+Consider Philippine market rates and provide a reasonable estimate.
+Respond ONLY with a number (the amount in PHP), nothing else.
+`;
+
+  const result = await model.generateContent(prompt);
+  const response = await result.response;
+  const price = parseInt(response.text().replace(/[^0-9]/g, ''));
+
+  return price || 50000; // Default if parsing fails
+}
+```
+
+**Success Criteria**:
+- ✅ Generates comprehensive PRD
+- ✅ Creates detailed task list
+- ✅ Estimates pricing
+- ✅ Error handling
+- ✅ Response validation
+
+---
+
+### TASK-007: Build Onboarding Form
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-006  
+**Estimated Time**: 75 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Create multi-step onboarding form to collect project requirements.
+
+**File**: `app/(dashboard)/onboarding/page.tsx`
+
+**Implementation**:
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ArrowRight, ArrowLeft, Loader2 } from 'lucide-react';
+
+const SERVICES = [
+  'E-commerce Website',
+  'Business Website',
+  'Portfolio Website',
+  'Web Application',
+  'Mobile App',
+  'Custom Development',
+];
+
+const FEATURES = [
+  'User Authentication',
+  'Payment Integration',
+  'Admin Dashboard',
+  'Content Management',
+  'Search Functionality',
+  'Email Notifications',
+  'File Uploads',
+  'Analytics',
+  'API Integration',
+  'Mobile Responsive',
+];
+
+export default function OnboardingPage() {
+  const router = useRouter();
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    service: '',
+    description: '',
+    features: [] as string[],
+    timeline: 30,
+    budget: 50000,
+    clientName: '',
+    clientEmail: '',
+    clientPhone: '',
+  });
+
+  const handleNext = () => {
+    if (step < 3) setStep(step + 1);
+  };
+
+  const handleBack = () => {
+    if (step > 1) setStep(step - 1);
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    try {
+      const response = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) throw new Error('Failed to create project');
+
+      const data = await response.json();
+      router.push(`/projects/${data.projectId}`);
+    } catch (error) {
+      console.error('Error creating project:', error);
+      alert('Failed to create project. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <div className="bg-white rounded-lg shadow-lg p-8">
+        {/* Progress bar */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium">
+              Step {step} of 3
+            </span>
+            <span className="text-sm text-gray-500">
+              {step === 1 && 'Project Details'}
+              {step === 2 && 'Requirements'}
+              {step === 3 && 'Client Information'}
+            </span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-blue-600 h-2 rounded-full transition-all"
+              style={{ width: `${(step / 3) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Step 1: Project Details */}
+        {step === 1 && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">Tell us about your project</h2>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Service Type
+              </label>
+              <select
+                value={formData.service}
+                onChange={(e) => setFormData({ ...formData, service: e.target.value })}
+                className="w-full px-4 py-2 border rounded-lg"
+                required
+              >
+                <option value="">Select a service</option>
+                {SERVICES.map((service) => (
+                  <option key={service} value={service}>
+                    {service}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Project Description
+              </label>
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={4}
+                className="w-full px-4 py-2 border rounded-lg"
+                placeholder="Describe your project in detail..."
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Timeline (days)
+                </label>
+                <input
+                  type="number"
+                  value={formData.timeline}
+                  onChange={(e) => setFormData({ ...formData, timeline: parseInt(e.target.value) })}
+                  min="7"
+                  max="365"
+                  className="w-full px-4 py-2 border rounded-lg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Budget (₱)
+                </label>
+                <input
+                  type="number"
+                  value={formData.budget}
+                  onChange={(e) => setFormData({ ...formData, budget: parseInt(e.target.value) })}
+                  min="10000"
+                  step="5000"
+                  className="w-full px-4 py-2 border rounded-lg"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2: Features */}
+        {step === 2 && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">Select required features</h2>
+
+            <div className="grid grid-cols-2 gap-3">
+              {FEATURES.map((feature) => (
+                <label
+                  key={feature}
+                  className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50"
+                >
+                  <input
+                    type="checkbox"
+                    checked={formData.features.includes(feature)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setFormData({
+                          ...formData,
+                          features: [...formData.features, feature],
+                        });
+                      } else {
+                        setFormData({
+                          ...formData,
+                          features: formData.features.filter((f) => f !== feature),
+                        });
+                      }
+                    }}
+                    className="mr-3"
+                  />
+                  <span className="text-sm">{feature}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Client Info */}
+        {step === 3 && (
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold">Client Information</h2>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Client Name
+              </label>
+              <input
+                type="text"
+                value={formData.clientName}
+                onChange={(e) => setFormData({ ...formData, clientName: e.target.value })}
+                className="w-full px-4 py-2 border rounded-lg"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Client Email
+              </label>
+              <input
+                type="email"
+                value={formData.clientEmail}
+                onChange={(e) => setFormData({ ...formData, clientEmail: e.target.value })}
+                className="w-full px-4 py-2 border rounded-lg"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">
+                Client Phone (Optional)
+              </label>
+              <input
+                type="tel"
+                value={formData.clientPhone}
+                onChange={(e) => setFormData({ ...formData, clientPhone: e.target.value })}
+                className="w-full px-4 py-2 border rounded-lg"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Navigation buttons */}
+        <div className="flex items-center justify-between mt-8">
+          {step > 1 && (
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 px-6 py-2 border rounded-lg hover:bg-gray-50"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </button>
+          )}
+
+          {step < 3 ? (
+            <button
+              onClick={handleNext}
+              disabled={!formData.service || !formData.description}
+              className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 ml-auto"
+            >
+              Next
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          ) : (
+            <button
+              onClick={handleSubmit}
+              disabled={loading || !formData.clientName || !formData.clientEmail}
+              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 ml-auto"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                'Create Project'
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+**Success Criteria**:
+- ✅ Multi-step form works
+- ✅ Progress indicator
+- ✅ Form validation
+- ✅ Loading states
+- ✅ Error handling
+
+---
+
+### TASK-008: Create Project API Route
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-006, TASK-007  
+**Estimated Time**: 60 minutes  
+**Priority**: CRITICAL
+
+**Task Description**:
+API endpoint to process form data and generate project with AI.
+
+**File**: `app/api/projects/route.ts`
+
+**Implementation**:
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { db } from '@/lib/db';
+import { projects, tasks } from '@/lib/db/schema';
+import { generatePRD, generateTasks, estimatePrice } from '@/lib/gemini';
+
+export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const {
+      service,
+      description,
+      features,
+      timeline,
+      budget,
+      clientName,
+      clientEmail,
+      clientPhone,
+    } = body;
+
+    // Validate input
+    if (!service || !description || !clientName || !clientEmail) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
+    console.log('🤖 Generating PRD with Gemini AI...');
+
+    // Generate PRD using AI
+    const prd = await generatePRD({
+      service,
+      description,
+      timeline,
+      budget,
+      features,
+    });
+
+    console.log('✅ PRD generated successfully');
+    console.log('🤖 Generating task breakdown...');
+
+    // Generate tasks using AI
+    const generatedTasks = await generateTasks(prd, timeline);
+
+    console.log(`✅ Generated ${generatedTasks.length} tasks`);
+
+    // Estimate price if not provided
+    const estimatedPrice = budget || await estimatePrice(service, features);
+
+    // Calculate dates
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setDate(endDate.getDate() + timeline);
+
+    // Create project in database
+    const [project] = await db.insert(projects).values({
+      userId: session.user.id,
+      name: `${service} for ${clientName}`,
+      service,
+      description,
+      prd,
+      clientName,
+      clientEmail,
+      clientPhone,
+      timeline,
+      budget,
+      price: estimatedPrice,
+      paymentStatus: 'pending',
+      depositAmount: 0,
+      status: 'pending',
+      startDate,
+      endDate,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }).returning();
+
+    // Create tasks in database
+    await db.insert(tasks).values(
+      generatedTasks.map((task, index) => ({
+        projectId: project.id,
+        title: task.title,
+        description: task.description,
+        section: task.section,
+        priority: task.priority,
+        status: 'pending',
+        estimatedHours: task.estimatedHours,
+        dependencies: task.dependencies || null,
+        order: task.order || index,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }))
+    );
+
+    console.log('✅ Project created successfully:', project.id);
+
+    return NextResponse.json({
+      success: true,
+      projectId: project.id,
+      message: 'Project created successfully',
+    });
+
+  } catch (error: any) {
+    console.error('❌ Error creating project:', error);
+    return NextResponse.json(
+      { error: error.message || 'Failed to create project' },
+      { status: 500 }
+    );
+  }
+}
+
+// Get all projects for current user
+export async function GET(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const userProjects = await db.query.projects.findMany({
+      where: (projects, { eq }) => eq(projects.userId, session.user.id),
+      orderBy: (projects, { desc }) => [desc(projects.createdAt)],
+    });
+
+    return NextResponse.json({ projects: userProjects });
+  } catch (error) {
+    console.error('Error fetching projects:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch projects' },
+      { status: 500 }
+    );
+  }
+}
+```
+
+**Success Criteria**:
+- ✅ Generates PRD in < 30 seconds
+- ✅ Creates 15-25 tasks
+- ✅ Saves to database
+- ✅ Returns project ID
+- ✅ Error handling
+
+---
+
+## 10. Phase 3: Client Dashboard
+
+### TASK-009: Build Dashboard Home
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-004  
+**Estimated Time**: 45 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Create main dashboard with overview stats and recent projects.
+
+**File**: `app/(dashboard)/page.tsx`
+
+**Implementation**:
+
+```typescript
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { db } from '@/lib/db';
+import { projects } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
+import StatsOverview from '@/components/dashboard/StatsOverview';
+import RecentProjects from '@/components/dashboard/RecentProjects';
+import QuickActions from '@/components/dashboard/QuickActions';
+
+export default async function DashboardPage() {
+  const session = await getServerSession(authOptions);
+
+  // Fetch user's projects
+  const userProjects = await db.query.projects.findMany({
+    where: eq(projects.userId, session!.user.id),
+    orderBy: (projects, { desc }) => [desc(projects.updatedAt)],
+    limit: 5,
+  });
+
+  // Calculate stats
+  const stats = {
+    total: userProjects.length,
+    active: userProjects.filter((p) => p.status === 'in-progress').length,
+    completed: userProjects.filter((p) => p.status === 'completed').length,
+    pending: userProjects.filter((p) => p.paymentStatus === 'pending').length,
+  };
+
+  return (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">
+          Welcome back, {session!.user.name}!
+        </h1>
+        <p className="text-gray-600 mt-1">
+          Here's what's happening with your projects
+        </p>
+      </div>
+
+      <StatsOverview stats={stats} />
+
+      <QuickActions />
+
+      <RecentProjects projects={userProjects} />
+    </div>
+  );
+}
+```
+
+**StatsOverview Component** (`components/dashboard/StatsOverview.tsx`):
+
+```typescript
+import { FolderKanban, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+
+export default function StatsOverview({ stats }: any) {
+  const cards = [
+    {
+      title: 'Total Projects',
+      value: stats.total,
+      icon: FolderKanban,
+      color: 'bg-blue-500',
+    },
+    {
+      title: 'Active',
+      value: stats.active,
+      icon: Clock,
+      color: 'bg-yellow-500',
+    },
+    {
+      title: 'Completed',
+      value: stats.completed,
+      icon: CheckCircle,
+      color: 'bg-green-500',
+    },
+    {
+      title: 'Pending Payment',
+      value: stats.pending,
+      icon: AlertCircle,
+      color: 'bg-red-500',
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {cards.map((card, index) => (
+        <div key={index} className="bg-white rounded-lg shadow p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">{card.title}</p>
+              <p className="text-3xl font-bold mt-2">{card.value}</p>
+            </div>
+            <div className={`${card.color} p-3 rounded-lg`}>
+              <card.icon className="w-6 h-6 text-white" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+**Success Criteria**:
+- ✅ Shows project statistics
+- ✅ Displays recent projects
+- ✅ Quick action buttons
+- ✅ Responsive layout
+- ✅ Loading states
+
+---
+
+### TASK-010: Create Projects List Page
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-009  
+**Estimated Time**: 45 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Build projects list with filtering and search.
+
+**File**: `app/(dashboard)/projects/page.tsx`
+
+**Implementation**:
+
+```typescript
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { db } from '@/lib/db';
+import { projects } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
+import ProjectCard from '@/components/projects/ProjectCard';
+import ProjectFilters from '@/components/projects/ProjectFilters';
+
+export default async function ProjectsPage({
+  searchParams,
+}: {
+  searchParams: { status?: string };
+}) {
+  const session = await getServerSession(authOptions);
+  
+  let query = db.query.projects.findMany({
+    where: eq(projects.userId, session!.user.id),
+    orderBy: (projects, { desc }) => [desc(projects.createdAt)],
+  });
+
+  const allProjects = await query;
+
+  // Filter by status if provided
+  const filteredProjects = searchParams.status
+    ? allProjects.filter((p) => p.status === searchParams.status)
+    : allProjects;
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">My Projects</h1>
+      </div>
+
+      <ProjectFilters />
+
+      {filteredProjects.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500">No projects found</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProjects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+**ProjectCard Component** (`components/projects/ProjectCard.tsx`):
+
+```typescript
+import Link from 'next/link';
+import { Project } from '@/lib/db/schema';
+
+export default function ProjectCard({ project }: { project: Project }) {
+  const progress = calculateProgress(project);
+
+  return (
+    <Link href={`/projects/${project.id}`}>
+      <div className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow p-6 cursor-pointer">
+        <div className="flex items-start justify-between mb-4">
+          <div>
+            <h3 className="font-semibold text-lg">{project.name}</h3>
+            <p className="text-sm text-gray-600">{project.service}</p>
+          </div>
+          <StatusBadge status={project.status} />
+        </div>
+
+        <div className="mb-4">
+          <div className="flex items-center justify-between text-sm mb-1">
+            <span className="text-gray-600">Progress</span>
+            <span className="font-medium">{progress}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div
+              className="bg-blue-600 h-2 rounded-full"
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between text-sm">
+          <PaymentBadge status={project.paymentStatus} />
+          <span className="text-gray-500">
+            ₱{project.price.toLocaleString()}
+          </span>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function calculateProgress(project: Project): number {
+  // This would calculate based on completed tasks
+  // For now, return a placeholder
+  return 0;
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const colors = {
+    pending: 'bg-yellow-100 text-yellow-800',
+    'in-progress': 'bg-blue-100 text-blue-800',
+    completed: 'bg-green-100 text-green-800',
+  };
+
+  return (
+    <span className={`px-2 py-1 text-xs rounded-full ${colors[status as keyof typeof colors]}`}>
+      {status}
+    </span>
+  );
+}
+
+function PaymentBadge({ status }: { status: string }) {
+  const colors = {
+    pending: 'bg-red-100 text-red-800',
+    'partially-paid': 'bg-yellow-100 text-yellow-800',
+    paid: 'bg-green-100 text-green-800',
+  };
+
+  return (
+    <span className={`px-2 py-1 text-xs rounded-full ${colors[status as keyof typeof colors]}`}>
+      {status}
+    </span>
+  );
+}
+```
+
+**Success Criteria**:
+- ✅ Lists all user projects
+- ✅ Filter by status
+- ✅ Shows payment status
+- ✅ Progress indicators
+- ✅ Responsive grid
+
+---
+
+### TASK-011: Build Project Detail Page
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-010  
+**Estimated Time**: 60 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Create detailed project view with PRD, tasks, and timeline.
+
+**File**: `app/(dashboard)/projects/[id]/page.tsx`
+
+**Implementation**:
+
+```typescript
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { db } from '@/lib/db';
+import { projects, tasks } from '@/lib/db/schema';
+import { eq, and } from 'drizzle-orm';
+import { notFound, redirect } from 'next/navigation';
+import ProjectHeader from '@/components/projects/ProjectHeader';
+import PRDSection from '@/components/projects/PRDSection';
+import TaskList from '@/components/projects/TaskList';
+import TimelineView from '@/components/projects/TimelineView';
+
+export default async function ProjectDetailPage({ 
+  params 
+}: { 
+  params: { id: string } 
+}) {
+  const session = await getServerSession(authOptions);
+  
+  if (!session) {
+    redirect('/login');
+  }
+
+  // Fetch project with tasks
+  const project = await db.query.projects.findFirst({
+    where: and(
+      eq(projects.id, parseInt(params.id)),
+      eq(projects.userId, session.user.id)
+    ),
+    with: {
+      tasks: {
+        orderBy: (tasks, { asc }) => [asc(tasks.order)],
+      },
+    },
+  });
+
+  if (!project) {
+    notFound();
+  }
+
+  return (
+    <div className="space-y-6">
+      <ProjectHeader project={project} />
+      
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main content - 2 columns */}
+        <div className="lg:col-span-2 space-y-6">
+          <PRDSection prd={project.prd} />
+          <TaskList tasks={project.tasks} projectId={project.id} />
+        </div>
+        
+        {/* Sidebar - 1 column */}
+        <div className="space-y-6">
+          <TimelineView 
+            startDate={project.startDate} 
+            endDate={project.endDate} 
+          />
+          <ProjectStats project={project} />
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+**PRDSection Component** (`components/projects/PRDSection.tsx`):
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+
+export function PRDSection({ prd }: { prd: string }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  return (
+    <div className="bg-white rounded-lg shadow p-6">
+      <h2 className="text-xl font-semibold mb-4">Project Requirements Document</h2>
+      <div className={`prose max-w-none ${!isExpanded ? 'line-clamp-10' : ''}`}>
+        <ReactMarkdown>{prd}</ReactMarkdown>
+      </div>
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="text-blue-600 mt-4 hover:underline"
+      >
+        {isExpanded ? 'Show Less' : 'Read More'}
+      </button>
+    </div>
+  );
+}
+```
+
+**Success Criteria**:
+- ✅ Shows complete project details
+- ✅ Displays PRD in readable format
+- ✅ Shows all tasks organized
+- ✅ Timeline view
+- ✅ Only owner can access
+
+---
+
+### TASK-012: Create Task Management System
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-011  
+**Estimated Time**: 90 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Build interactive task list with status updates.
+
+**File**: `components/projects/TaskList.tsx`
+
+**Implementation**:
+
+```typescript
+'use client';
+
+import { useState } from 'react';
+import { Task } from '@/lib/db/schema';
+import { updateTaskStatus } from '@/app/actions/tasks';
+import { CheckCircle2, Circle, Clock } from 'lucide-react';
+
+export function TaskList({ tasks, projectId }: { tasks: Task[]; projectId: number }) {
+  const [filter, setFilter] = useState<'all' | 'pending' | 'in-progress' | 'completed'>('all');
+  const [updating, setUpdating] = useState<number | null>(null);
+
+  const filteredTasks = tasks.filter(task => 
+    filter === 'all' ? true : task.status === filter
+  );
+
+  const handleStatusChange = async (taskId: number, newStatus: string) => {
+    setUpdating(taskId);
+    try {
+      await updateTaskStatus(taskId, newStatus);
+    } finally {
+      setUpdating(null);
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-lg shadow p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold">Tasks</h2>
+        
+        {/* Filter buttons */}
+        <div className="flex gap-2">
+          {['all', 'pending', 'in-progress', 'completed'].map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f as any)}
+              className={`px-4 py-2 rounded-md text-sm ${
+                filter === f
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1).replace('-', ' ')}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Task sections */}
+      <div className="space-y-8">
+        {Object.entries(groupTasksBySection(filteredTasks)).map(([section, sectionTasks]) => (
+          <div key={section}>
+            <h3 className="text-lg font-medium mb-4 text-gray-700">{section}</h3>
+            <div className="space-y-3">
+              {sectionTasks.map((task) => (
+                <TaskItem
+                  key={task.id}
+                  task={task}
+                  onStatusChange={handleStatusChange}
+                  isUpdating={updating === task.id}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {filteredTasks.length === 0 && (
+        <p className="text-center text-gray-500 py-8">
+          No {filter !== 'all' ? filter : ''} tasks found
+        </p>
+      )}
+    </div>
+  );
+}
+
+function TaskItem({ task, onStatusChange, isUpdating }: any) {
+  const statusIcons = {
+    pending: <Circle className="w-5 h-5 text-gray-400" />,
+    'in-progress': <Clock className="w-5 h-5 text-blue-600" />,
+    completed: <CheckCircle2 className="w-5 h-5 text-green-600" />,
+  };
+
+  return (
+    <div className="flex items-start gap-4 p-4 border rounded-lg hover:bg-gray-50">
+      <div className="mt-0.5">
+        {statusIcons[task.status as keyof typeof statusIcons]}
+      </div>
+
+      <div className="flex-1">
+        <h4 className="font-medium">{task.title}</h4>
+        <p className="text-sm text-gray-600 mt-1">{task.description}</p>
+        
+        <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
+          <span>Priority: {task.priority}</span>
+          <span>Estimated: {task.estimatedHours}h</span>
+        </div>
+      </div>
+
+      <select
+        value={task.status}
+        onChange={(e) => onStatusChange(task.id, e.target.value)}
+        disabled={isUpdating}
+        className="px-3 py-1.5 border rounded-md text-sm"
+      >
+        <option value="pending">Pending</option>
+        <option value="in-progress">In Progress</option>
+        <option value="completed">Completed</option>
+      </select>
+    </div>
+  );
+}
+
+function groupTasksBySection(tasks: Task[]) {
+  return tasks.reduce((acc, task) => {
+    const section = task.section || 'Other';
+    if (!acc[section]) acc[section] = [];
+    acc[section].push(task);
+    return acc;
+  }, {} as Record<string, Task[]>);
+}
+```
+
+**Server Action** (`app/actions/tasks.ts`):
+
+```typescript
+'use server';
+
+import { db } from '@/lib/db';
+import { tasks } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
+import { revalidatePath } from 'next/cache';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+
+export async function updateTaskStatus(taskId: number, status: string) {
+  const session = await getServerSession(authOptions);
+  
+  if (!session) {
+    throw new Error('Unauthorized');
+  }
+
+  await db.update(tasks)
+    .set({ 
+      status,
+      updatedAt: new Date(),
+    })
+    .where(eq(tasks.id, taskId));
+
+  revalidatePath('/projects');
+  
+  return { success: true };
+}
+```
+
+**Success Criteria**:
+- ✅ Tasks grouped by section
+- ✅ Filter by status
+- ✅ Update status
+- ✅ Real-time UI updates
+
+---
+
+### TASK-013: Build File Upload System
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-011  
+**Estimated Time**: 75 minutes  
+**Priority**: MEDIUM
+
+**Task Description**:
+Implement file upload to Cloudflare R2.
+
+**File**: `app/api/upload/route.ts`
+
+**Implementation**:
+
+```typescript
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { getCloudflareContext } from '@opennextjs/cloudflare';
+import { db } from '@/lib/db';
+import { files } from '@/lib/db/schema';
+
+export const runtime = 'edge';
+
+export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+    const projectId = formData.get('projectId') as string;
+
+    if (!file) {
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+    }
+
+    const { env } = await getCloudflareContext();
+    const bucket = env.R2_BUCKET;
+
+    const timestamp = Date.now();
+    const filename = `projects/${projectId}/${timestamp}-${file.name}`;
+
+    await bucket.put(filename, file.stream(), {
+      httpMetadata: {
+        contentType: file.type,
+      },
+    });
+
+    const fileUrl = `https://files.lunaxcode.com/${filename}`;
+    
+    await db.insert(files).values({
+      projectId: parseInt(projectId),
+      filename: file.name,
+      filepath: filename,
+      filesize: file.size,
+      mimetype: file.type,
+      uploadedBy: session.user.id,
+      createdAt: new Date(),
+    });
+
+    return NextResponse.json({ 
+      success: true, 
+      url: fileUrl,
+      filename: file.name,
+    });
+
+  } catch (error) {
+    console.error('Upload error:', error);
+    return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+  }
+}
+```
+
+**Success Criteria**:
+- ✅ Files upload to R2
+- ✅ Progress indication
+- ✅ File deletion
+- ✅ Size validation
+
+---
+
+### TASK-014: Create Communication Center
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-011  
+**Estimated Time**: 60 minutes  
+**Priority**: MEDIUM
+
+**Task Description**:
+Build messaging system for client-agency communication.
+
+**File**: `app/(dashboard)/projects/[id]/messages/page.tsx`
+
+**Implementation**: *(See Part 2 document for full implementation)*
+
+**Success Criteria**:
+- ✅ Send/receive messages
+- ✅ Auto-scroll
+- ✅ Different styling for own messages
+- ✅ Timestamps
+
+---
+
+### TASK-015: Build Payment Reminder System
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-010  
+**Estimated Time**: 45 minutes  
+**Priority**: MEDIUM
+
+**Task Description**:
+Create payment reminder UI for pending payments.
+
+**Success Criteria**:
+- ✅ Shows only when payments pending
+- ✅ Displays total amount
+- ✅ Quick pay button
+- ✅ Clear visual indicator
+
+---
+
+### TASK-016: Create Project Progress Tracker
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-012  
+**Estimated Time**: 45 minutes  
+**Priority**: LOW
+
+**Task Description**:
+Visual progress indicator based on completed tasks.
+
+**Success Criteria**:
+- ✅ Accurate progress percentage
+- ✅ Visual progress bar
+- ✅ Task breakdown by status
+- ✅ Animated
+
+---
+
+## 11. Phase 4: Payment Integration
+
+### TASK-017: Setup PayMongo SDK
+
+**Status**: 🔴 Not Started  
+**Dependencies**: None  
+**Estimated Time**: 30 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Configure PayMongo for payment processing.
+
+**File**: `lib/paymongo.ts`
+
+**Implementation**:
+
+```typescript
+import { PayMongoClient } from '@paymongo/checkout-js';
+
+export const paymongo = new PayMongoClient({
+  publicKey: process.env.PAYMONGO_PUBLIC_KEY!,
+  secretKey: process.env.PAYMONGO_SECRET_KEY!,
+});
+
+export async function createPaymentIntent(data: {
+  amount: number;
+  currency: string;
+  description: string;
+  metadata?: any;
+}) {
+  try {
+    const intent = await paymongo.paymentIntents.create({
+      data: {
+        attributes: {
+          amount: data.amount,
+          currency: data.currency || 'PHP',
+          description: data.description,
+          payment_method_allowed: ['card', 'gcash', 'paymaya'],
+          metadata: data.metadata,
+        },
+      },
+    });
+
+    return intent;
+  } catch (error) {
+    console.error('PayMongo error:', error);
+    throw new Error('Failed to create payment intent');
+  }
+}
+```
+
+**Success Criteria**:
+- ✅ PayMongo SDK installed
+- ✅ API keys configured
+- ✅ Helper functions created
+
+---
+
+### TASK-018: Build Payment Page
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-017  
+**Estimated Time**: 90 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Create payment interface with multiple payment options.
+
+**File**: `app/(dashboard)/projects/[id]/payment/page.tsx`
+
+**Implementation**: *(See Part 2 document for full implementation)*
+
+**Success Criteria**:
+- ✅ Multiple payment methods
+- ✅ Secure card input
+- ✅ Payment summary
+- ✅ Error handling
+
+---
+
+### TASK-019: Create Payment API Route
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-017, TASK-018  
+**Estimated Time**: 60 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Build API endpoint to process payments.
+
+**File**: `app/api/payment/route.ts`
+
+**Implementation**: *(See Part 2 document for full implementation)*
+
+**Success Criteria**:
+- ✅ Processes card payments
+- ✅ Handles e-wallet redirects
+- ✅ Saves payment records
+- ✅ Secure authentication
+
+---
+
+### TASK-020: Setup Payment Webhooks
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-019  
+**Estimated Time**: 45 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Handle PayMongo webhooks to update payment status.
+
+**File**: `app/api/webhooks/paymongo/route.ts`
+
+**Implementation**: *(See Part 2 document for full implementation)*
+
+**Success Criteria**:
+- ✅ Signature verification
+- ✅ Payment status updates
+- ✅ Project status updates
+- ✅ E-wallet support
+
+---
+
+## 12. Phase 5: Admin Dashboard
+
+### TASK-021: Create Admin Layout
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-001  
+**Estimated Time**: 45 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Build admin dashboard layout with navigation.
+
+**File**: `app/(admin)/layout.tsx`
+
+**Implementation**: *(See Part 3 document for full implementation)*
+
+**Success Criteria**:
+- ✅ Admin-only access
+- ✅ Sidebar navigation
+- ✅ Header with user info
+- ✅ Logout functionality
+
+---
+
+### TASK-022: Build Admin Overview Dashboard
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-021  
+**Estimated Time**: 75 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Create overview page with statistics and charts.
+
+**File**: `app/(admin)/page.tsx`
+
+**Implementation**: *(See Part 3 document for full implementation)*
+
+**Success Criteria**:
+- ✅ Key statistics displayed
+- ✅ Revenue charts
+- ✅ Project status distribution
+- ✅ Recent projects list
+
+---
+
+### TASK-023: Build Project Management Page
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-021  
+**Estimated Time**: 60 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Admin view to manage all projects.
+
+**Success Criteria**:
+- ✅ Lists all projects
+- ✅ Filter by status
+- ✅ Search functionality
+- ✅ View and edit actions
+
+---
+
+### TASK-024: Create Client Management
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-021  
+**Estimated Time**: 45 minutes  
+**Priority**: MEDIUM
+
+**Task Description**:
+Admin view to manage clients.
+
+**Success Criteria**:
+- ✅ Lists all clients
+- ✅ Shows project count
+- ✅ View client details
+- ✅ Sortable columns
+
+---
+
+### TASK-025: Build Payment Dashboard
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-021  
+**Estimated Time**: 60 minutes  
+**Priority**: MEDIUM
+
+**Task Description**:
+Admin view for payment tracking.
+
+**Success Criteria**:
+- ✅ Payment statistics
+- ✅ Transaction list
+- ✅ Filter by status
+- ✅ Export to CSV
+
+---
+
+### TASK-026: Create Admin Settings
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-021  
+**Estimated Time**: 30 minutes  
+**Priority**: LOW
+
+**Task Description**:
+Admin configuration page.
+
+**Success Criteria**:
+- ✅ Company info configuration
+- ✅ Payment settings
+- ✅ Save functionality
+
+---
+
+## 13. Phase 6: CMS System
+
+### TASK-027: Create Service Type Management
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-026  
+**Estimated Time**: 45 minutes  
+**Priority**: MEDIUM
+
+**Task Description**:
+Admin interface to manage service types and pricing.
+
+**Success Criteria**:
+- ✅ List service types
+- ✅ Add new service
+- ✅ Edit service
+- ✅ Set pricing
+
+---
+
+### TASK-028: Build FAQ Management
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-027  
+**Estimated Time**: 30 minutes  
+**Priority**: LOW
+
+**Task Description**:
+CMS for managing FAQ content.
+
+**Success Criteria**:
+- ✅ Add/edit FAQs
+- ✅ Organize by category
+- ✅ Reorder questions
+
+---
+
+### TASK-029: Create Terms & Privacy Pages
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-027  
+**Estimated Time**: 30 minutes  
+**Priority**: LOW
+
+**Task Description**:
+Admin interface to edit legal pages.
+
+**Success Criteria**:
+- ✅ Rich text editor
+- ✅ Save content
+- ✅ Preview changes
+
+---
+
+### TASK-030: Build Email Template Editor
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-027  
+**Estimated Time**: 60 minutes  
+**Priority**: MEDIUM
+
+**Task Description**:
+Interface to customize email templates.
+
+**Templates**:
+- Welcome email
+- Project created
+- Payment confirmation
+- Project completed
+- Password reset
+
+**Success Criteria**:
+- ✅ Template list
+- ✅ WYSIWYG editor
+- ✅ Variable placeholders
+- ✅ Preview with test data
+
+---
+
+### TASK-031: Create Public Pages
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-028, TASK-029  
+**Estimated Time**: 45 minutes  
+**Priority**: MEDIUM
+
+**Task Description**:
+Build public-facing pages using CMS content.
+
+**Files**:
+- `app/(public)/faq/page.tsx`
+- `app/(public)/terms/page.tsx`
+- `app/(public)/privacy/page.tsx`
+
+**Success Criteria**:
+- ✅ Fetch content from DB
+- ✅ SEO optimization
+- ✅ Mobile responsive
+
+---
+
+## 14. Phase 7: Testing & Launch
+
+### TASK-032: Comprehensive Testing
+
+**Status**: 🔴 Not Started  
+**Dependencies**: All previous tasks  
+**Estimated Time**: 120 minutes  
+**Priority**: CRITICAL
+
+**Task Description**:
+End-to-end testing of all features.
+
+**Testing Checklist**:
+
+```markdown
+## Authentication Testing
+- [ ] User registration
+- [ ] Login/logout
+- [ ] Password reset
+- [ ] Session management
+- [ ] Role-based access
+
+## Project Flow Testing
+- [ ] Onboarding form submission
+- [ ] AI generation (PRD + tasks)
+- [ ] Project creation
+- [ ] Task status updates
+- [ ] File uploads
+- [ ] Messaging system
+
+## Payment Testing
+- [ ] Card payment flow
+- [ ] GCash payment
+- [ ] PayMaya payment
+- [ ] Webhook processing
+- [ ] Payment status updates
+
+## Admin Testing
+- [ ] Dashboard statistics
+- [ ] Project management
+- [ ] Client management
+- [ ] Payment tracking
+- [ ] CMS functionality
+
+## Edge Cases
+- [ ] Network errors
+- [ ] Invalid inputs
+- [ ] Concurrent operations
+
+## Performance Testing
+- [ ] Page load times < 2s
+- [ ] Image optimization
+- [ ] Database query optimization
+
+## Security Testing
+- [ ] SQL injection prevention
+- [ ] XSS protection
+- [ ] CSRF protection
+- [ ] API authentication
+
+## Browser Testing
+- [ ] Chrome
+- [ ] Firefox
+- [ ] Safari
+- [ ] Edge
+- [ ] Mobile browsers
+
+## Responsiveness
+- [ ] Mobile (320px-768px)
+- [ ] Tablet (768px-1024px)
+- [ ] Desktop (1024px+)
+```
+
+**Success Criteria**:
+- ✅ All checklist items passing
+- ✅ No critical bugs
+- ✅ Performance benchmarks met
+- ✅ Security audit passed
+
+---
+
+### TASK-033: Documentation & Training
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-032  
+**Estimated Time**: 60 minutes  
+**Priority**: HIGH
+
+**Task Description**:
+Create user documentation and training materials.
+
+**Documentation to Create**:
+
+1. **User Guide** (`docs/user-guide.md`)
+2. **Admin Guide** (`docs/admin-guide.md`)
+3. **API Documentation** (`docs/api.md`)
+
+**Success Criteria**:
+- ✅ Complete user guide
+- ✅ Admin documentation
+- ✅ API reference
+- ✅ Troubleshooting guide
+
+---
+
+### TASK-034: Production Deployment
+
+**Status**: 🔴 Not Started  
+**Dependencies**: TASK-032, TASK-033  
+**Estimated Time**: 90 minutes  
+**Priority**: CRITICAL
+
+**Task Description**:
+Deploy to Cloudflare Pages with production configuration.
+
+**Deployment Checklist**:
+
+```bash
+# 1. Create production database
+wrangler d1 create lunaxcode-prod
+
+# 2. Run migrations
+wrangler d1 migrations apply lunaxcode-prod
+
+# 3. Configure Secrets
+wrangler secret put NEXTAUTH_SECRET
+wrangler secret put GOOGLE_CLIENT_ID
+wrangler secret put GOOGLE_CLIENT_SECRET
+wrangler secret put GEMINI_API_KEY
+wrangler secret put PAYMONGO_PUBLIC_KEY
+wrangler secret put PAYMONGO_SECRET_KEY
+wrangler secret put PAYMONGO_WEBHOOK_SECRET
+
+# 4. Build & Deploy
+npm run build
+wrangler pages deploy .vercel/output/static
+```
+
+**Success Criteria**:
+- ✅ Production deployment successful
+- ✅ Custom domain configured
+- ✅ SSL certificate active
+- ✅ Database migrations applied
+- ✅ All secrets configured
+- ✅ Error monitoring setup
+- ✅ Analytics configured
+
+---
+
+## 15. Summary & Timeline
+
+### Total Development Time Estimate
+
+- **Phase 1**: 3 hours (Authentication)
+- **Phase 2**: 2.5 hours (AI Generation)
+- **Phase 3**: 7 hours (Client Dashboard)
+- **Phase 4**: 3.75 hours (Payment Integration)
+- **Phase 5**: 4.5 hours (Admin Dashboard)
+- **Phase 6**: 3.5 hours (CMS System)
+- **Phase 7**: 4.5 hours (Testing & Launch)
+
+**TOTAL: ~28.75 hours for complete MVP**
+
+### Development Workflow
+
+```bash
+# Daily workflow
+1. Pick next task in sequence
+2. Create feature branch: git checkout -b task-XXX
+3. Implement according to specification
+4. Test locally
+5. Commit: git commit -m "TASK-XXX: Description"
+6. Merge to main
+7. Deploy to preview
+8. Move to next task
+
+# Weekly milestones
+Week 1: Complete Phases 1-3
+Week 2: Complete Phases 4-5
+Week 3: Complete Phases 6-7
+Week 4: Polish, bug fixes, launch prep
+```
+
+### Launch Checklist
+
+```markdown
+## Pre-Launch
+- [ ] All tasks completed
+- [ ] Testing checklist complete
+- [ ] Documentation finished
+- [ ] Performance optimized
+- [ ] Security audit passed
+- [ ] Legal pages ready
+- [ ] Email templates configured
+- [ ] Payment gateway tested
+
+## Launch Day
+- [ ] Deploy to production
+- [ ] Configure custom domain
+- [ ] Set up monitoring
+- [ ] Enable analytics
+- [ ] Create backup schedule
+- [ ] Test all critical flows
+- [ ] Announce launch
+
+## Post-Launch
+- [ ] Monitor error rates
+- [ ] Track user feedback
+- [ ] Fix critical bugs within 24h
+- [ ] Plan feature updates
+```
+
+### Maintenance Plan
+
+**Daily**:
+- Monitor error logs
+- Check payment processing
+- Review new signups
+
+**Weekly**:
+- Database backup verification
+- Performance review
+- User feedback review
+
+**Monthly**:
+- Security updates
+- Feature additions
+- Analytics review
+
+---
+
+## Quick Start Command
+
+```bash
+# Clone and setup
+git clone <repo>
+cd lunaxcode
+npm install
+
+# Setup environment
+cp .env.example .env.local
+# Fill in all required variables
+
+# Create D1 database
+wrangler d1 create lunaxcode-dev
+wrangler d1 migrations apply lunaxcode-dev --local
+
+# Create first admin
+npm run create-admin
+
+# Start development
+npm run dev
+
+# Start building from TASK-001!
+```
+
+---
+
+**Document Version**: 1.0 Complete  
+**Last Updated**: October 2025  
+**Status**: Ready for Development 🚀
+
+---
+
+**Total Pages**: Complete development plan with all 34 tasks detailed
+**Total Lines**: ~3000+ lines of comprehensive documentation and code
+**Estimated Build Time**: 28.75 hours
+**Tech Stack**: Next.js 15 + Cloudflare + AI-powered

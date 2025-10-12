@@ -1,0 +1,2257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunaxcode - 48-Hour Landing Pages & Digital Solutions for Filipino SMEs</title>
+    <meta name="description" content="Get professional websites, desktop apps, and mobile apps delivered fast. 48-hour landing pages starting at ₱8,000. Trusted by Filipino businesses.">
+    <meta name="keywords" content="web development Philippines, landing page 48 hours, desktop app development, mobile app Philippines, SME websites, AI integration">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Lunaxcode - Professional Web & App Development">
+    <meta property="og:description" content="48-hour landing pages starting at ₱8,000. Professional digital solutions for Filipino SMEs.">
+    <meta property="og:image" content="https://yourdomain.com/og-image.jpg">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Lunaxcode - Professional Web & App Development">
+    <meta name="twitter:description" content="48-hour landing pages starting at ₱8,000. Professional digital solutions for Filipino SMEs.">
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Urgency Banner */
+        .urgency-banner {
+            background: linear-gradient(90deg, #ff6b6b, #ee5a6f);
+            color: white;
+            text-align: center;
+            padding: 12px 20px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.95; }
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        header.scrolled {
+            background: rgba(44, 62, 80, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #fff, #ecf0f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+        
+        nav a:hover {
+            color: #3498db;
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .cta-button {
+            background: #e74c3c;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .cta-button:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 140px 0 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .hero .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.95;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: fadeInUp 0.8s ease-out 0.4s backwards;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeInUp 0.8s ease-out 0.6s backwards;
+        }
+        
+        .btn-primary {
+            background: #e74c3c;
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .btn-primary:hover {
+            background: #c0392b;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        
+        .btn-secondary:hover {
+            background: white;
+            color: #667eea;
+        }
+        
+        /* Trust Badges */
+        .trust-badges {
+            background: white;
+            padding: 30px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .badges-grid {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .badge-item {
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .badge-icon {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Portfolio Section */
+        .portfolio {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .portfolio-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .portfolio-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        
+        .portfolio-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+        
+        .portfolio-content {
+            padding: 1.5rem;
+        }
+        
+        .portfolio-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        
+        .portfolio-card .project-type {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .portfolio-card p {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .portfolio-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            background: #ecf0f1;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: #2c3e50;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+        }
+        
+        /* Process Section */
+        .process {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+        
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            position: relative;
+        }
+        
+        .process-step {
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1rem;
+        }
+        
+        .process-step h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        
+        .process-step p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        /* Pricing Section */
+        .pricing {
+            padding: 80px 0;
+            background: white;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .pricing-card {
+            background: white;
+            padding: 2.5rem 2rem;
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+            transition: transform 0.3s;
+            border: 2px solid #e0e0e0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            border-color: #667eea;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.2);
+        }
+        
+        .pricing-card.featured {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .pricing-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: bold;
+        }
+        
+        .pricing-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .price {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .price-period {
+            opacity: 0.8;
+            margin-bottom: 1.5rem;
+        }
+        
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+        
+        .pricing-features li {
+            margin-bottom: 0.8rem;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .pricing-features li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .pricing-card.featured .pricing-features li:before {
+            color: #fff;
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .testimonial-rating {
+            color: #ffd700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .author-info h4 {
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .author-info p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        /* FAQ Section */
+        .faq {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+        
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .faq-item {
+            background: white;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .faq-question {
+            width: 100%;
+            text-align: left;
+            padding: 1.5rem;
+            background: white;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #2c3e50;
+        }
+        
+        .faq-question:hover {
+            background: #f8f9fa;
+        }
+        
+        .faq-icon {
+            transition: transform 0.3s;
+        }
+        
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+        
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 1.5rem;
+        }
+        
+        .faq-item.active .faq-answer {
+            max-height: 500px;
+            padding: 0 1.5rem 1.5rem;
+        }
+        
+        .faq-answer p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .payment-methods {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .payment-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Contact Form */
+        .contact-form {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            max-width: 500px;
+            margin: 2rem auto 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 40px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1rem;
+        }
+        
+        .footer-section ul {
+            list-style: none;
+        }
+        
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-section a {
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-section a:hover {
+            color: #3498db;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #34495e;
+            padding-top: 1rem;
+            text-align: center;
+            color: #95a5a6;
+        }
+        
+        /* Floating Buttons */
+        .floating-buttons {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 999;
+        }
+        
+        .float-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+            text-decoration: none;
+        }
+        
+        .float-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .whatsapp-btn {
+            background: #25D366;
+        }
+        
+        .chat-btn {
+            background: #3498db;
+        }
+        
+        /* Onboarding Modal */
+        .onboarding-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            display: none;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        
+        .onboarding-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .onboarding-modal {
+            background: white;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 2rem;
+            border-radius: 20px 20px 0 0;
+            position: relative;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .modal-body {
+            padding: 2rem;
+        }
+        
+        .service-summary {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            border-left: 4px solid #667eea;
+        }
+        
+        .service-summary h3 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .service-summary .price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 0.5rem 0;
+        }
+        
+        .service-summary .timeline {
+            color: #666;
+            font-size: 0.95rem;
+        }
+        
+        .form-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .form-section:last-of-type {
+            border-bottom: none;
+        }
+        
+        .form-section h3 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+        }
+        
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+        
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #f0f0f0;
+        }
+        
+        .form-actions button {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .form-actions .btn-secondary {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .form-actions .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .form-actions .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .form-actions .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            nav ul {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #2c3e50;
+                flex-direction: column;
+                padding: 1rem 0;
+                gap: 0;
+                display: none;
+            }
+            
+            nav ul.active {
+                display: flex;
+            }
+            
+            nav ul li {
+                padding: 0.8rem 2rem;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero .tagline {
+                font-size: 1.2rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .urgency-banner {
+                font-size: 0.85rem;
+                padding: 10px;
+            }
+            
+            .badges-grid {
+                gap: 1.5rem;
+            }
+            
+            .portfolio-grid,
+            .features-grid,
+            .pricing-grid,
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .floating-buttons {
+                bottom: 10px;
+                right: 10px;
+            }
+            
+            .float-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+            }
+            
+            .onboarding-overlay {
+                padding: 10px;
+            }
+            
+            .onboarding-modal {
+                max-height: 95vh;
+            }
+            
+            .modal-header {
+                padding: 1.5rem;
+            }
+            
+            .modal-header h2 {
+                font-size: 1.4rem;
+                padding-right: 40px;
+            }
+            
+            .modal-body {
+                padding: 1rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .form-actions button {
+                width: 100%;
+            }
+        }
+        
+        /* Animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-on-scroll {
+            opacity: 0;
+            animation: slideIn 0.6s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- Urgency Banner -->
+    <div class="urgency-banner">
+        🔥 Limited Offer: First 5 clients get 20% OFF + FREE AI chat widget (₱5,000 value) | Slots filling fast!
+    </div>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Lunaxcode</div>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+                <nav>
+                    <ul id="navMenu">
+                        <li><a href="#portfolio">Portfolio</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="#process">Process</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                    </ul>
+                </nav>
+                <a href="#contact" class="cta-button">Get Started</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Lunaxcode</h1>
+                <p class="tagline">Code at the Speed of Light ⚡</p>
+                <p>Professional websites, desktop apps, and mobile apps delivered FAST. From 48-hour landing pages to complete digital solutions - we help Filipino SMEs launch and grow their digital presence.</p>
+                <div class="hero-buttons">
+                    <a href="#pricing" class="btn-primary">View Pricing</a>
+                    <a href="#portfolio" class="btn-secondary">See Our Work</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Badges -->
+    <section class="trust-badges">
+        <div class="container">
+            <div class="badges-grid">
+                <div class="badge-item">
+                    <span class="badge-icon">✅</span>
+                    100% On-Time Delivery
+                </div>
+                <div class="badge-item">
+                    <span class="badge-icon">⭐</span>
+                    4.9/5 Client Rating
+                </div>
+                <div class="badge-item">
+                    <span class="badge-icon">🚀</span>
+                    50+ Projects Delivered
+                </div>
+                <div class="badge-item">
+                    <span class="badge-icon">🇵🇭</span>
+                    Proudly Filipino-Owned
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section class="portfolio" id="portfolio">
+        <div class="container">
+            <h2 class="section-title">Recent Projects</h2>
+            <p class="section-subtitle">See what we've built for Filipino businesses like yours</p>
+            <div class="portfolio-grid">
+                <div class="portfolio-card">
+                    <div class="portfolio-image">🏪</div>
+                    <div class="portfolio-content">
+                        <p class="project-type">Landing Page</p>
+                        <h3>Manila Coffee Shop</h3>
+                        <p>Modern landing page with online menu, location info, and AI chat for customer inquiries. Delivered in 48 hours.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag">48hr Delivery</span>
+                            <span class="tag">AI Chat</span>
+                            <span class="tag">Mobile-First</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="portfolio-card">
+                    <div class="portfolio-image">🏋️</div>
+                    <div class="portfolio-content">
+                        <p class="project-type">Basic Website</p>
+                        <h3>FitLife Gym</h3>
+                        <p>5-page website with class schedules, membership info, trainer profiles, and booking system integration.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag">Multi-page</span>
+                            <span class="tag">CMS</span>
+                            <span class="tag">Forms</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="portfolio-card">
+                    <div class="portfolio-image">📱</div>
+                    <div class="portfolio-content">
+                        <p class="project-type">Mobile App</p>
+                        <h3>DeliveryGo PH</h3>
+                        <p>Food delivery app with real-time tracking, payment integration, and customer ratings. iOS & Android.</p>
+                        <div class="portfolio-tags">
+                            <span class="tag">Cross-platform</span>
+                            <span class="tag">GPS</span>
+                            <span class="tag">Push Notifs</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="services">
+        <div class="container">
+            <h2 class="section-title">Why Choose Lunaxcode?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning-Fast Delivery</h3>
+                    <p>48-hour landing pages, 5-7 day websites. While competitors take weeks, we deliver in days without sacrificing quality.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💰</div>
+                    <h3>SME-Friendly Pricing</h3>
+                    <p>Starting at just ₱8,000. Transparent pricing with no hidden fees. Payment plans available for all budgets.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered Development</h3>
+                    <p>Using cutting-edge AI tools and frameworks to accelerate development while maintaining high quality standards.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Mobile-First Approach</h3>
+                    <p>Every project is designed for mobile first. Perfect display on all devices - phones, tablets, and desktops.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>Full-Stack Expertise</h3>
+                    <p>From frontend to backend, desktop to mobile - we handle it all with modern tech stacks and best practices.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Dedicated Support</h3>
+                    <p>Direct communication via WhatsApp, email, or calls. We're here to guide you every step of the way.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section class="process" id="process">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">From idea to launch in 5 simple steps</p>
+            <div class="process-steps">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <h3>Submit Brief</h3>
+                    <p>Fill out our quick form or send us a message with your requirements</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <h3>Get Quote</h3>
+                    <p>Receive detailed quote within 2 hours with timeline and pricing</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <h3>Pay Deposit</h3>
+                    <p>Secure your slot with 30-50% deposit via GCash, Maya, or bank transfer</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <h3>Development</h3>
+                    <p>We build your project with regular updates and progress reports</p>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">5</div>
+                    <h3>Launch</h3>
+                    <p>Receive completed project, request revisions, and go live!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Simple, Transparent Pricing</h2>
+            <p class="section-subtitle">Choose the perfect solution for your business needs</p>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Landing Page</h3>
+                    <div class="price">₱8,000</div>
+                    <div class="price-period">48-hour delivery</div>
+                    <ul class="pricing-features">
+                        <li>1 Professional Landing Page</li>
+                        <li>AI Chat Widget Integration</li>
+                        <li>Mobile Responsive Design</li>
+                        <li>Basic SEO Optimization</li>
+                        <li>Google Analytics Setup</li>
+                        <li>Contact Forms</li>
+                        <li>1 Round of Revisions</li>
+                        <li>Source Code Included</li>
+                    </ul>
+                    <button class="btn-primary" onclick="startOnboarding('landing_page')">Get Started</button>
+                </div>
+                
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Most Popular</div>
+                    <h3>Basic Website</h3>
+                    <div class="price">₱18,000</div>
+                    <div class="price-period">5-7 days delivery</div>
+                    <ul class="pricing-features">
+                        <li>3-5 Static Pages</li>
+                        <li>AI Chat Widget</li>
+                        <li>Mobile Responsive</li>
+                        <li>Advanced SEO</li>
+                        <li>Analytics Dashboard</li>
+                        <li>Contact Forms</li>
+                        <li>Blog Setup (Optional)</li>
+                        <li>2 Rounds of Revisions</li>
+                        <li>Free 3-Month Support</li>
+                    </ul>
+                    <button class="btn-primary" onclick="startOnboarding('basic_website')">Get Started</button>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Desktop App</h3>
+                    <div class="price">₱45,000</div>
+                    <div class="price-period">3-4 weeks delivery</div>
+                    <ul class="pricing-features">
+                        <li>Windows & macOS</li>
+                        <li>Custom UI/UX Design</li>
+                        <li>Database Integration</li>
+                        <li>File Management</li>
+                        <li>Offline Functionality</li>
+                        <li>Auto-Updates</li>
+                        <li>3 Rounds of Revisions</li>
+                        <li>6-Month Support</li>
+                        <li>Deployment Assistance</li>
+                    </ul>
+                    <button class="btn-primary" onclick="startOnboarding('desktop_app')">Get Started</button>
+                </div>
+                
+                <div class="pricing-card">
+                    <h3>Mobile App</h3>
+                    <div class="price">₱80,000</div>
+                    <div class="price-period">4-6 weeks delivery</div>
+                    <ul class="pricing-features">
+                        <li>iOS + Android (Cross-platform)</li>
+                        <li>Custom UI/UX Design</li>
+                        <li>Backend Integration</li>
+                        <li>Push Notifications</li>
+                        <li>AI Features</li>
+                        <li>App Store Submission</li>
+                        <li>Analytics Dashboard</li>
+                        <li>3 Rounds of Revisions</li>
+                        <li>6-Month Support</li>
+                    </ul>
+                    <button class="btn-primary" onclick="startOnboarding('mobile_app')">Get Started</button>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: #f8f9fa; border-radius: 15px;">
+                <h3 style="margin-bottom: 1rem; color: #2c3e50;">Need Something More Complex?</h3>
+                <p style="margin-bottom: 1.5rem; color: #666;">Advanced websites, enterprise apps, custom integrations, or large-scale projects</p>
+                <a href="#contact" class="btn-primary" style="margin-right: 1rem;">Schedule a Call</a>
+                <a href="mailto:hello@lunaxcode.com" class="btn-secondary" style="background: transparent; color: #667eea; border: 2px solid #667eea; padding: 1rem 2rem; border-radius: 5px; text-decoration: none; display: inline-block;">Email Us</a>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1)); border-radius: 10px;">
+                <h4 style="margin-bottom: 0.5rem;">Add-On Services</h4>
+                <p><strong>Additional Pages:</strong> ₱1,500-₱2,000 each | <strong>AI Content Generation:</strong> ₱3,000-₱5,000 | <strong>Monthly Maintenance:</strong> ₱3,000-₱5,000</p>
+                <p style="margin-top: 0.5rem;"><strong>Payment Terms:</strong> 30-50% upfront, balance on delivery | Installment plans available</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <div class="container">
+            <h2 class="section-title">What Our Clients Say</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Lunaxcode delivered our landing page in exactly 48 hours as promised! The AI chat widget helped us capture 30+ leads in the first week. Highly recommended!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MC</div>
+                        <div class="author-info">
+                            <h4>Maria Cruz</h4>
+                            <p>Owner, Manila Coffee Shop</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Professional work at SME-friendly prices. Our gym website looks amazing and we're getting online bookings daily. The team was responsive and easy to work with."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">JR</div>
+                        <div class="author-info">
+                            <h4>Juan Reyes</h4>
+                            <p>Manager, FitLife Gym</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"They understood our vision and delivered beyond expectations. The mobile app works flawlessly on both iOS and Android. Worth every peso!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">AS</div>
+                        <div class="author-info">
+                            <h4>Anna Santos</h4>
+                            <p>Founder, DeliveryGo PH</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq" id="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        What if I don't have content ready?
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>No problem! We offer AI-powered content generation services (₱3,000-₱5,000) to create professional copy for your website or app. We can also guide you on what content you need to provide.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        Do you offer maintenance after delivery?
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! Basic packages include 3 months of free support. We also offer monthly maintenance plans starting at ₱3,000/month for updates, security patches, and content changes.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        What happens if I need changes after delivery?
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>All packages include revision rounds (1-3 depending on package). Additional changes after final delivery can be handled for a small fee or through our monthly maintenance plan.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        Do I own the source code?
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Absolutely! Upon full payment, you receive complete ownership of all source code, designs, and assets. No strings attached.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        What technologies do you use?
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p><strong>Landing Pages:</strong> HTML5, CSS3, JavaScript, TailwindCSS<br>
+                        <strong>Websites:</strong> WordPress, Webflow, Next.js, React<br>
+                        <strong>Desktop Apps:</strong> Electron, Tauri, .NET<br>
+                        <strong>Mobile Apps:</strong> React Native, Flutter<br>
+                        <strong>AI:</strong> ChatGPT API, Claude API, Custom LLMs<br>
+                        <strong>Hosting:</strong> Vercel, Netlify, Firebase, AWS</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        What payment methods do you accept?
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>We accept GCash, Maya/PayMaya, BPI/BDO bank transfer, and PayPal. Payment terms: 30-50% deposit to start, balance upon delivery. Installment plans available for larger projects.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        Can you help with hosting and domain?
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes! We can handle domain registration, hosting setup, SSL certificates, and email setup. We'll guide you through the entire process and recommend the best options for your budget.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFAQ(this)">
+                        What's the difference between your services and templates?
+                        <span class="faq-icon">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>While we use modern frameworks to accelerate development, every project is custom-built for your specific needs. You're not getting a generic template - you're getting a tailored solution with your branding, content, and requirements.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section with Contact Form -->
+    <section class="cta-section" id="contact">
+        <div class="container">
+            <h2>Ready to Launch Your Project?</h2>
+            <p>Join 50+ Filipino businesses who chose speed, quality, and affordability</p>
+            
+            <div class="contact-form">
+                <h3 style="text-align: center; margin-bottom: 1.5rem; color: #2c3e50;">Get Your Free Quote</h3>
+                <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" id="contactForm">
+                    <div class="form-group">
+                        <label for="name">Your Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" placeholder="+63 XXX XXX XXXX">
+                    </div>
+                    <div class="form-group">
+                        <label for="service">Service Needed *</label>
+                        <select id="service" name="service" required>
+                            <option value="">Select a service...</option>
+                            <option value="landing_page">Landing Page (₱8,000)</option>
+                            <option value="basic_website">Basic Website (₱18,000)</option>
+                            <option value="desktop_app">Desktop App (₱45,000)</option>
+                            <option value="mobile_app">Mobile App (₱80,000)</option>
+                            <option value="custom">Custom Project</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Tell us about your project *</label>
+                        <textarea id="message" name="message" required placeholder="Describe your project goals, target audience, and key requirements..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;">Send Inquiry</button>
+                </form>
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #2c3e50;">Or reach us directly: <strong>hello@lunaxcode.com</strong> | <strong>+63 912 345 6789</strong></p>
+            </div>
+            
+            <div class="payment-methods">
+                <div class="payment-badge">💳 GCash</div>
+                <div class="payment-badge">💳 Maya</div>
+                <div class="payment-badge">🏦 Bank Transfer</div>
+                <div class="payment-badge">💰 PayPal</div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Lunaxcode</h3>
+                    <p>Code at the Speed of Light<br>Professional digital solutions for Filipino SMEs</p>
+                    <p style="margin-top: 1rem;">🇵🇭 Proudly Filipino-Owned<br>📍 Serving clients nationwide</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="#pricing">Landing Pages (48hrs)</a></li>
+                        <li><a href="#pricing">Website Development</a></li>
+                        <li><a href="#pricing">Desktop Applications</a></li>
+                        <li><a href="#pricing">Mobile Apps (iOS & Android)</a></li>
+                        <li><a href="#contact">Custom Projects</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="#portfolio">Portfolio</a></li>
+                        <li><a href="#process">How It Works</a></li>
+                        <li><a href="#faq">FAQ</a></li>
+                        <li><a href="#contact">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <ul>
+                        <li>📧 hello@lunaxcode.com</li>
+                        <li>📱 +63 912 345 6789</li>
+                        <li>💬 WhatsApp: +63 912 345 6789</li>
+                        <li>⏰ Mon-Sat: 9AM-6PM PHT</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Lunaxcode. All rights reserved. | Made with ❤️ in the Philippines</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Buttons -->
+    <div class="floating-buttons">
+        <a href="https://wa.me/639123456789?text=Hi! I'm interested in your services" class="float-btn whatsapp-btn" target="_blank" title="Chat on WhatsApp">💬</a>
+        <a href="#contact" class="float-btn chat-btn" title="Get a Quote">📧</a>
+    </div>
+
+    <script>
+        // Service data
+        var serviceData = {
+            landing_page: {
+                name: 'Landing Page',
+                price: '₱8,000',
+                timeline: '48 hours',
+                questions: [
+                    {
+                        id: 'pageType',
+                        label: 'What type of landing page?',
+                        type: 'select',
+                        options: ['Product Launch', 'Lead Generation', 'Event Registration', 'App Download', 'Service Promotion', 'Newsletter Signup', 'Other'],
+                        required: true
+                    },
+                    {
+                        id: 'designStyle',
+                        label: 'Preferred design style',
+                        type: 'select',
+                        options: ['Modern/Minimalist', 'Bold/Colorful', 'Professional/Corporate', 'Creative/Artistic', 'Tech/Startup', 'No Preference'],
+                        required: true
+                    },
+                    {
+                        id: 'sections',
+                        label: 'Required sections (select all that apply)',
+                        type: 'checkbox',
+                        options: ['Hero Section', 'Features/Benefits', 'Testimonials', 'Pricing', 'FAQ', 'Contact Form', 'About Us', 'Gallery/Portfolio'],
+                        required: false
+                    },
+                    {
+                        id: 'ctaGoal',
+                        label: 'Primary call-to-action goal',
+                        type: 'text',
+                        placeholder: 'e.g., Sign up for free trial, Download app, Contact sales',
+                        required: true
+                    }
+                ]
+            },
+            basic_website: {
+                name: 'Basic Website',
+                price: '₱18,000',
+                timeline: '5-7 days',
+                questions: [
+                    {
+                        id: 'websiteType',
+                        label: 'Website type',
+                        type: 'select',
+                        options: ['Corporate Website', 'Portfolio', 'Blog/News', 'E-commerce', 'Directory/Listing', 'Educational', 'Non-profit', 'Other'],
+                        required: true
+                    },
+                    {
+                        id: 'pageCount',
+                        label: 'Approximate number of pages',
+                        type: 'select',
+                        options: ['3-5 pages', '6-10 pages', '11-20 pages', '20+ pages'],
+                        required: true
+                    },
+                    {
+                        id: 'features',
+                        label: 'Required features (select all that apply)',
+                        type: 'checkbox',
+                        options: ['Contact Forms', 'Blog/News Section', 'Image Gallery', 'Video Integration', 'Social Media Integration', 'Newsletter Signup', 'Online Booking', 'Search Functionality'],
+                        required: false
+                    },
+                    {
+                        id: 'contentSource',
+                        label: 'Content source',
+                        type: 'select',
+                        options: ['I will provide all content', 'I need help with copywriting', 'Mix of both'],
+                        required: true
+                    }
+                ]
+            },
+            desktop_app: {
+                name: 'Desktop App',
+                price: '₱45,000',
+                timeline: '3-4 weeks',
+                questions: [
+                    {
+                        id: 'appPurpose',
+                        label: 'Primary purpose of the app',
+                        type: 'select',
+                        options: ['Business Management', 'Data Processing', 'Content Creation', 'Communication', 'Productivity Tool', 'Educational', 'POS System', 'Other'],
+                        required: true
+                    },
+                    {
+                        id: 'platforms',
+                        label: 'Target platforms (select all that apply)',
+                        type: 'checkbox',
+                        options: ['Windows', 'macOS', 'Linux'],
+                        required: true
+                    },
+                    {
+                        id: 'coreFeatures',
+                        label: 'Core features needed (select all that apply)',
+                        type: 'checkbox',
+                        options: ['User Authentication', 'Database Integration', 'File Management', 'Reporting/Analytics', 'Export to PDF/Excel', 'Printing', 'Offline Mode', 'Auto-Updates'],
+                        required: false
+                    },
+                    {
+                        id: 'dataStorage',
+                        label: 'Data storage requirements',
+                        type: 'select',
+                        options: ['Local Database (SQLite)', 'Cloud Database', 'Both Local and Cloud', 'File-based Storage', 'Not Sure'],
+                        required: true
+                    }
+                ]
+            },
+            mobile_app: {
+                name: 'Mobile App',
+                price: '₱80,000',
+                timeline: '4-6 weeks',
+                questions: [
+                    {
+                        id: 'appCategory',
+                        label: 'App category',
+                        type: 'select',
+                        options: ['Business/Productivity', 'Social Networking', 'E-commerce/Shopping', 'Health/Fitness', 'Education', 'Entertainment', 'Finance', 'Food & Drink', 'Travel', 'Other'],
+                        required: true
+                    },
+                    {
+                        id: 'platforms',
+                        label: 'Target platforms (select all that apply)',
+                        type: 'checkbox',
+                        options: ['iOS (iPhone/iPad)', 'Android', 'Both Platforms (Recommended)'],
+                        required: true
+                    },
+                    {
+                        id: 'coreFeatures',
+                        label: 'Core features needed (select all that apply)',
+                        type: 'checkbox',
+                        options: ['User Registration/Login', 'Push Notifications', 'Offline Mode', 'Camera/Photos', 'GPS/Location', 'Social Sharing', 'In-app Purchases', 'Real-time Chat', 'QR Code Scanner'],
+                        required: false
+                    },
+                    {
+                        id: 'backend',
+                        label: 'Backend requirements (select all that apply)',
+                        type: 'checkbox',
+                        options: ['User Management', 'Data Storage', 'Push Notifications', 'Analytics', 'Payment Processing', 'File Storage', 'API Integration', 'Admin Dashboard'],
+                        required: false
+                    }
+                ]
+            }
+        };
+        
+        var currentService = '';
+        
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+        });
+            landing_page: {
+                name: 'Landing Page',
+                price: '₱8,000',
+                timeline: '48 hours',
+                questions: [
+                    {
+                        id: 'pageType',
+                        label: 'What type of landing page?',
+                        type: 'select',
+                        options: ['Product Launch', 'Lead Generation', 'Event Registration', 'App Download', 'Service Promotion', 'Newsletter Signup', 'Other'],
+                        required: true
+                    },
+                    {
+                        id: 'designStyle',
+                        label: 'Preferred design style',
+                        type: 'select',
+                        options: ['Modern/Minimalist', 'Bold/Colorful', 'Professional/Corporate', 'Creative/Artistic', 'Tech/Startup', 'No Preference'],
+                        required: true
+                    },
+                    {
+                        id: 'sections',
+                        label: 'Required sections (select all that apply)',
+                        type: 'checkbox',
+                        options: ['Hero Section', 'Features/Benefits', 'Testimonials', 'Pricing', 'FAQ', 'Contact Form', 'About Us', 'Gallery/Portfolio'],
+                        required: false
+                    },
+                    {
+                        id: 'ctaGoal',
+                        label: 'Primary call-to-action goal',
+                        type: 'text',
+                        placeholder: 'e.g., Sign up for free trial, Download app, Contact sales...',
+                        required: true
+                    }
+                ]
+            },
+            basic_website: {
+                name: 'Basic Website',
+                price: '₱18,000',
+                timeline: '5-7 days',
+                questions: [
+                    {
+                        id: 'websiteType',
+                        label: 'Website type',
+                        type: 'select',
+                        options: ['Corporate Website', 'Portfolio', 'Blog/News', 'E-commerce', 'Directory/Listing', 'Educational', 'Non-profit', 'Other'],
+                        required: true
+                    },
+                    {
+                        id: 'pageCount',
+                        label: 'Approximate number of pages',
+                        type: 'select',
+                        options: ['3-5 pages', '6-10 pages', '11-20 pages', '20+ pages'],
+                        required: true
+                    },
+                    {
+                        id: 'features',
+                        label: 'Required features (select all that apply)',
+                        type: 'checkbox',
+                        options: ['Contact Forms', 'Blog/News Section', 'Image Gallery', 'Video Integration', 'Social Media Integration', 'Newsletter Signup', 'Online Booking', 'Search Functionality'],
+                        required: false
+                    },
+                    {
+                        id: 'contentSource',
+                        label: 'Content source',
+                        type: 'select',
+                        options: ['I will provide all content', 'I need help with copywriting', 'Mix of both'],
+                        required: true
+                    }
+                ]
+            },
+            desktop_app: {
+                name: 'Desktop App',
+                price: '₱45,000',
+                timeline: '3-4 weeks',
+                questions: [
+                    {
+                        id: 'appPurpose',
+                        label: 'Primary purpose of the app',
+                        type: 'select',
+                        options: ['Business Management', 'Data Processing', 'Content Creation', 'Communication', 'Productivity Tool', 'Educational', 'POS System', 'Other'],
+                        required: true
+                    },
+                    {
+                        id: 'platforms',
+                        label: 'Target platforms (select all that apply)',
+                        type: 'checkbox',
+                        options: ['Windows', 'macOS', 'Linux'],
+                        required: true
+                    },
+                    {
+                        id: 'coreFeatures',
+                        label: 'Core features needed (select all that apply)',
+                        type: 'checkbox',
+                        options: ['User Authentication', 'Database Integration', 'File Management', 'Reporting/Analytics', 'Export to PDF/Excel', 'Printing', 'Offline Mode', 'Auto-Updates'],
+                        required: false
+                    },
+                    {
+                        id: 'dataStorage',
+                        label: 'Data storage requirements',
+                        type: 'select',
+                        options: ['Local Database (SQLite)', 'Cloud Database', 'Both Local and Cloud', 'File-based Storage', 'Not Sure'],
+                        required: true
+                    }
+                ]
+            },
+            mobile_app: {
+                name: 'Mobile App',
+                price: '₱80,000',
+                timeline: '4-6 weeks',
+                questions: [
+                    {
+                        id: 'appCategory',
+                        label: 'App category',
+                        type: 'select',
+                        options: ['Business/Productivity', 'Social Networking', 'E-commerce/Shopping', 'Health/Fitness', 'Education', 'Entertainment', 'Finance', 'Food & Drink', 'Travel', 'Other'],
+                        required: true
+                    },
+                    {
+                        id: 'platforms',
+                        label: 'Target platforms (select all that apply)',
+                        type: 'checkbox',
+                        options: ['iOS (iPhone/iPad)', 'Android', 'Both Platforms (Recommended)'],
+                        required: true
+                    },
+                    {
+                        id: 'coreFeatures',
+                        label: 'Core features needed (select all that apply)',
+                        type: 'checkbox',
+                        options: ['User Registration/Login', 'Push Notifications', 'Offline Mode', 'Camera/Photos', 'GPS/Location', 'Social Sharing', 'In-app Purchases', 'Real-time Chat', 'QR Code Scanner'],
+                        required: false
+                    },
+                    {
+                        id: 'backend',
+                        label: 'Backend requirements (select all that apply)',
+                        type: 'checkbox',
+                        options: ['User Management', 'Data Storage', 'Push Notifications', 'Analytics', 'Payment Processing', 'File Storage', 'API Integration', 'Admin Dashboard'],
+                        required: false
+                    }
+                ]
+            }
+        };
+        
+        let currentService = '';
+        
+        // Initialize page
+        function initializePage() {
+            // Header scroll effect
+            window.addEventListener('scroll', handleHeaderScroll);
+            
+            // Smooth scrolling
+            document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+                anchor.addEventListener('click', handleSmoothScroll);
+            });
+            
+            // Onboarding form
+            var onboardingForm = document.getElementById('onboardingForm');
+            if (onboardingForm) {
+                onboardingForm.addEventListener('submit', handleOnboardingSubmit);
+            }
+            
+            // Contact form
+            var contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', handleContactSubmit);
+            }
+            
+            // Scroll animations
+            setupScrollAnimations();
+            
+            // Close modal when clicking outside
+            var overlay = document.getElementById('onboardingOverlay');
+            if (overlay) {
+                overlay.addEventListener('click', function(e) {
+                    if (e.target === overlay) {
+                        closeModal();
+                    }
+                });
+            }
+            
+            // WhatsApp button tracking
+            var whatsappBtn = document.querySelector('.whatsapp-btn');
+            if (whatsappBtn) {
+                whatsappBtn.addEventListener('click', function() {
+                    console.log('WhatsApp button clicked');
+                });
+            }
+        }
+        
+        // Mobile Menu Toggle (Global function)
+        function toggleMobileMenu() {
+            var navMenu = document.getElementById('navMenu');
+            if (navMenu) {
+                navMenu.classList.toggle('active');
+            }
+        }
+        
+        // Header scroll effect
+        function handleHeaderScroll() {
+            var header = document.getElementById('header');
+            if (header) {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            }
+        }
+        
+        // Smooth scrolling
+        function handleSmoothScroll(e) {
+            e.preventDefault();
+            var href = this.getAttribute('href');
+            var target = document.querySelector(href);
+            if (target) {
+                var headerOffset = 80;
+                var elementPosition = target.getBoundingClientRect().top;
+                var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+        
+        // FAQ Toggle (Global function)
+        function toggleFAQ(button) {
+            var faqItem = button.parentElement;
+            if (!faqItem) return;
+            
+            var isActive = faqItem.classList.contains('active');
+            
+            // Close all FAQ items
+            var allItems = document.querySelectorAll('.faq-item');
+            for (var i = 0; i < allItems.length; i++) {
+                allItems[i].classList.remove('active');
+            }
+            
+            // Open clicked item if it wasn't active
+            if (!isActive) {
+                faqItem.classList.add('active');
+            }
+        }
+        
+        // Onboarding Modal Functions (Global function)
+        function startOnboarding(serviceType) {
+            console.log('Starting onboarding for:', serviceType);
+            
+            if (!serviceData[serviceType]) {
+                console.error('Invalid service type:', serviceType);
+                return;
+            }
+            
+            currentService = serviceType;
+            var service = serviceData[serviceType];
+            
+            console.log('Service data:', service);
+            
+            // Update modal title
+            var modalTitle = document.getElementById('modalTitle');
+            if (modalTitle) {
+                modalTitle.textContent = 'Start Your ' + service.name + ' Project';
+            }
+            
+            // Update service summary
+            var serviceSummary = document.getElementById('serviceSummary');
+            if (serviceSummary) {
+                serviceSummary.innerHTML = '<h3>' + service.name + '</h3>' +
+                    '<div class="price">' + service.price + '</div>' +
+                    '<div class="timeline">⏱️ ' + service.timeline + ' delivery</div>';
+            }
+            
+            // Generate service-specific questions
+            generateServiceQuestions(service.questions);
+            
+            // Show modal
+            var overlay = document.getElementById('onboardingOverlay');
+            if (overlay) {
+                console.log('Adding active class to overlay');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } else {
+                console.error('Overlay element not found');
+            }
+        }
+        
+        // Close Modal (Global function)
+        function closeModal() {
+            var overlay = document.getElementById('onboardingOverlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+            document.body.style.overflow = 'auto';
+            
+            var form = document.getElementById('onboardingForm');
+            if (form) {
+                form.reset();
+                form.style.display = 'block';
+            }
+            
+            var successMessage = document.getElementById('successMessage');
+            if (successMessage) {
+                successMessage.style.display = 'none';
+            }
+        }
+        
+        function generateServiceQuestions(questions) {
+            var container = document.getElementById('serviceSpecificQuestions');
+            if (!container) return;
+            
+            var html = '<div class="form-section"><h3>🎯 Service Requirements</h3>';
+            
+            for (var i = 0; i < questions.length; i++) {
+                html += generateQuestionHTML(questions[i]);
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+        
+        function generateQuestionHTML(question) {
+            var requiredMark = question.required ? ' *' : '';
+            var requiredAttr = question.required ? 'required' : '';
+            var html = '';
+            
+            if (question.type === 'select') {
+                html += '<div class="form-group">';
+                html += '<label for="' + question.id + '">' + question.label + requiredMark + '</label>';
+                html += '<select id="' + question.id + '" name="' + question.id + '" ' + requiredAttr + '>';
+                html += '<option value="">Select...</option>';
+                
+                for (var i = 0; i < question.options.length; i++) {
+                    html += '<option value="' + question.options[i] + '">' + question.options[i] + '</option>';
+                }
+                
+                html += '</select></div>';
+            } else if (question.type === 'checkbox') {
+                html += '<div class="form-group">';
+                html += '<label>' + question.label + requiredMark + '</label>';
+                html += '<div class="checkbox-group">';
+                
+                for (var i = 0; i < question.options.length; i++) {
+                    var checkboxId = question.id + '_' + i;
+                    html += '<div class="checkbox-item">';
+                    html += '<input type="checkbox" id="' + checkboxId + '" name="' + question.id + '" value="' + question.options[i] + '">';
+                    html += '<label for="' + checkboxId + '">' + question.options[i] + '</label>';
+                    html += '</div>';
+                }
+                
+                html += '</div></div>';
+            } else if (question.type === 'text') {
+                html += '<div class="form-group">';
+                html += '<label for="' + question.id + '">' + question.label + requiredMark + '</label>';
+                html += '<input type="text" id="' + question.id + '" name="' + question.id + '" placeholder="' + (question.placeholder || '') + '" ' + requiredAttr + '>';
+                html += '</div>';
+            }
+            
+            return html;
+        }
+        
+        // Form submission handlers
+        function handleOnboardingSubmit(e) {
+            e.preventDefault();
+            
+            if (!currentService || !serviceData[currentService]) {
+                console.error('No service selected');
+                return;
+            }
+            
+            // Collect form data
+            var formData = new FormData(e.target);
+            var data = {
+                service: serviceData[currentService].name,
+                servicePrice: serviceData[currentService].price,
+                serviceTimeline: serviceData[currentService].timeline,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Convert FormData to object
+            var entries = formData.entries();
+            var entry = entries.next();
+            while (!entry.done) {
+                var key = entry.value[0];
+                var value = entry.value[1];
+                
+                if (data[key]) {
+                    if (!Array.isArray(data[key])) {
+                        data[key] = [data[key]];
+                    }
+                    data[key].push(value);
+                } else {
+                    data[key] = value;
+                }
+                
+                entry = entries.next();
+            }
+            
+            // Log data
+            console.log('Project Request Data:', data);
+            
+            // Show success message
+            var form = document.getElementById('onboardingForm');
+            var successMessage = document.getElementById('successMessage');
+            
+            if (form) form.style.display = 'none';
+            if (successMessage) successMessage.style.display = 'block';
+        }
+        
+        function handleContactSubmit(e) {
+            console.log('Contact form submitted');
+        }
+        
+        // Scroll animations
+        function setupScrollAnimations() {
+            var observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            var observer = new IntersectionObserver(function(entries) {
+                for (var i = 0; i < entries.length; i++) {
+                    if (entries[i].isIntersecting) {
+                        entries[i].target.style.animation = 'slideIn 0.6s ease-out forwards';
+                    }
+                }
+            }, observerOptions);
+            
+            // Observe elements for animation
+            var elementsToAnimate = document.querySelectorAll('.feature-card, .portfolio-card, .pricing-card, .testimonial-card, .process-step');
+            for (var i = 0; i < elementsToAnimate.length; i++) {
+                if (elementsToAnimate[i]) observer.observe(elementsToAnimate[i]);
+            }
+        }
+    </script>
+    
+    <!-- Google Analytics - Replace with your GA4 ID -->
+    <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script> -->
+    
+    <!-- Schema.org Markup for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Lunaxcode",
+        "description": "Professional web and mobile app development for Filipino SMEs",
+        "url": "https://lunaxcode.com",
+        "telephone": "+639123456789",
+        "email": "hello@lunaxcode.com",
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "PH"
+        },
+        "priceRange": "₱₱",
+        "openingHours": "Mo-Sa 09:00-18:00",
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "reviewCount": "50"
+        }
+    }
+    </script>
+</body>
+</html>

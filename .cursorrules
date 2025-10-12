@@ -1,5 +1,103 @@
+You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI, Radix UI, Tailwind CSS and DrizzleORM.
 
-  You are an expert in TypeScript, Node.js, Next.js App Router, React, Shadcn UI, Radix UI, Tailwind CSS and DrizzleORM.
+  ═══════════════════════════════════════════════════════════════════
+  📋 DEVELOPMENT PLAN ADHERENCE PROTOCOL
+  ═══════════════════════════════════════════════════════════════════
+
+  This project follows the sequential 34-task development plan in:
+  📄 docs/lunaxcode_complete_plan.txt
+
+  CORE PRINCIPLES:
+
+  1. SEQUENTIAL IMPLEMENTATION
+     ✅ Implement tasks in numeric sequence (TASK-001 → TASK-034)
+     ✅ Complete current task fully before moving to next
+     ✅ Verify dependencies are satisfied before starting a task
+     ⚠️  Owner may request task reordering or amendments
+
+  2. PRE-IMPLEMENTATION CHECKLIST
+     Before implementing, review:
+     □ Complete task specification from plan document
+     □ All task dependencies are completed
+     □ Exact file paths specified in the task
+     □ Implementation code provided in the plan
+     □ Success criteria for the task
+
+  3. IMPLEMENTATION FIDELITY
+     ✅ Follow code structure provided in the plan
+     ✅ Use specified file paths exactly
+     ✅ Implement complete code, no partial implementations
+     ✅ No TODO comments or placeholder implementations
+     ⚠️  May adapt code for improvements while maintaining functionality
+
+  4. TASK COMPLETION VALIDATION
+     Verify before marking complete:
+     □ All success criteria met
+     □ All specified files created/modified
+     □ No compilation or type errors
+     □ Task-specific tests pass (if applicable)
+
+  5. PROGRESS TRACKING
+     ✅ State current task number when starting work
+     ✅ Update task status: 🔴 Not Started → 🟡 In Progress → 🟢 Complete
+     ✅ Use TodoWrite for multi-step tasks
+     ✅ Document completed tasks
+
+  6. OWNER OVERRIDE AUTHORITY
+     🔑 THE OWNER HAS ABSOLUTE AUTHORITY TO:
+     ✅ Skip tasks or change implementation order
+     ✅ Modify task specifications or requirements
+     ✅ Add new features not in the plan
+     ✅ Remove or combine tasks
+     ✅ Change technical approaches or architecture
+     ✅ Override any rule or suggestion in this document
+
+     When owner requests changes:
+     1. Acknowledge the requested change
+     2. Implement exactly as requested
+     3. Note deviation from original plan (for tracking)
+     4. Update task status accordingly
+     ❌ NEVER refuse owner requests due to plan adherence
+
+  7. PLAN DEVIATION FOR NON-OWNERS
+     If uncertain whether request is from owner or if suggesting deviation:
+     1. State why deviation might be needed
+     2. Explain impact on dependencies
+     3. Propose alternative approach
+     4. Wait for confirmation before deviating
+
+  8. PHASE STRUCTURE
+     - Phase 1: Foundation & Authentication (Tasks 1-5)
+     - Phase 2: AI Generation System (Tasks 6-8)
+     - Phase 3: Client Dashboard (Tasks 9-16)
+     - Phase 4: Payment Integration (Tasks 17-20)
+     - Phase 5: Admin Dashboard (Tasks 21-26)
+     - Phase 6: CMS System (Tasks 27-31)
+     - Phase 7: Testing & Launch (Tasks 32-34)
+
+     ✅ Recommended to complete phases sequentially
+     ⚠️  Owner may request different phase ordering
+
+  9. TASK REFERENCE FORMAT
+     "Implementing TASK-XXX: [Task Title]"
+     "Completed TASK-XXX: [Task Title] ✅"
+     "Owner Amendment: [Description of change]"
+
+  10. CURRENT PROJECT STATUS
+      - Codebase: Fresh start (ready for rebuild)
+      - Starting Point: TASK-001 (Setup NextAuth with Google OAuth)
+      - Total Estimated Time: ~28.75 hours for complete MVP
+
+  PRIORITY HIERARCHY:
+  1. Owner explicit requests (HIGHEST)
+  2. Development plan specifications
+  3. Code style guidelines
+  4. General best practices
+
+  When in doubt about task sequence or requirements, consult the plan document.
+  When owner makes a request, implement it without questioning plan adherence.
+
+  ═══════════════════════════════════════════════════════════════════
 
   You are also excellent at Cloudflare developer tools like D1 serverless database and KV. You can suggest usage of new tools (changes in wrangler.toml file) to add more primitives like:
   - R2: File storage
