@@ -12,7 +12,14 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push:sqlite",
     "db:studio": "drizzle-kit studio",
-    "create-admin": "tsx scripts/create-admin.ts"
+    "create-admin": "tsx scripts/create-admin.ts",
+    "cf:deploy": "npm run build && wrangler pages deploy",
+    "cf:deploy:prod": "npm run build && wrangler pages deploy --env production",
+    "d1:migrate:dev": "wrangler d1 execute lunaxcode-dev --file=./migrations/0000_initial_schema.sql --remote",
+    "d1:migrate:prod": "wrangler d1 execute lunaxcode-prod --file=./migrations/0000_initial_schema.sql --remote",
+    "d1:migrate:local": "wrangler d1 execute lunaxcode-dev --file=./migrations/0000_initial_schema.sql",
+    "d1:studio:dev": "wrangler d1 execute lunaxcode-dev --command='SELECT * FROM users LIMIT 10'",
+    "d1:studio:prod": "wrangler d1 execute lunaxcode-prod --command='SELECT * FROM users LIMIT 10'"
   },
   "dependencies": {
     "next": "^15.0.0",

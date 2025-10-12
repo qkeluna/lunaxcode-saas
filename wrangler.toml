@@ -2,14 +2,31 @@ name = "lunaxcode-saas"
 compatibility_date = "2024-10-11"
 pages_build_output_dir = ".vercel/output/static"
 
+# Development D1 Database
 [[d1_databases]]
 binding = "DB"
 database_name = "lunaxcode-dev"
-database_id = "" # Fill this after running: wrangler d1 create lunaxcode-dev
+database_id = "9ba54a27-7382-4499-a64e-4ed4b810e2b2"
 
+# Development R2 Bucket
 [[r2_buckets]]
 binding = "R2_BUCKET"
-bucket_name = "lunaxcode-files"
+bucket_name = "lunaxcode-files-dev"
 
 [vars]
 ENVIRONMENT = "development"
+
+# Production Environment
+[env.production]
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "lunaxcode-prod"
+database_id = "9b84ba4b-4654-44f9-bbbf-45b8454d321e"
+
+[[env.production.r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "lunaxcode-files-prod"
+
+[env.production.vars]
+ENVIRONMENT = "production"
