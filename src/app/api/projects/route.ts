@@ -217,8 +217,8 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Get project by ID
-export async function getProjectById(projectId: number) {
+// Get project by ID (internal helper for in-memory fallback)
+async function getProjectById(projectId: number) {
   const project = projectsStore.find((p) => p.id === projectId);
   if (!project) return null;
 

@@ -3,8 +3,6 @@ import { getServerSession } from 'next-auth';
 import { getDatabase } from '@/lib/db/client';
 import { files } from '@/lib/db/schema';
 
-export const runtime = 'edge';
-
 // In-memory fallback for when R2 is not available
 let filesStore: any[] = [];
 let fileIdCounter = 1;

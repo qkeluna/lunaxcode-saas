@@ -65,11 +65,11 @@ export default function CreateProjectPage() {
         clearInterval(progressInterval);
 
         if (!response.ok) {
-          const errorData = await response.json();
+          const errorData = await response.json() as { error?: string };
           throw new Error(errorData.error || 'Failed to create project');
         }
 
-        const result = await response.json();
+        const result = await response.json() as { projectId: number };
 
         setProgress(100);
         setProjectId(result.projectId);

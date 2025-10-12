@@ -5,7 +5,7 @@ import { getProjectWithTasks } from '@/lib/db/queries';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession();
 
@@ -18,7 +18,8 @@ export async function GET(
   const userId = session.user.id || session.user.email!;
 
   try {
-    const projectId = parseInt(params.id);
+    const { id } = await params;
+    const projectId = parseInt(id);
 
     if (!db) {
       return NextResponse.json({

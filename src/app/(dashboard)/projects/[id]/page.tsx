@@ -44,7 +44,7 @@ async function getProject(projectId: string) {
 export default async function ProjectDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
   const session = await getServerSession();
 
@@ -52,7 +52,8 @@ export default async function ProjectDetailPage({
     redirect('/login');
   }
 
-  const result = await getProject(params.id);
+  const { id } = await params;
+  const result = await getProject(id);
 
   // Handle different error states
   if (result.notFound) {

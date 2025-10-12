@@ -5,7 +5,7 @@ import { updateTaskStatus } from '@/lib/db/queries';
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession();
 
@@ -29,7 +29,8 @@ export async function PATCH(
   try {
     const body = await request.json();
     const { status } = body;
-    const taskId = parseInt(params.id);
+    const { id } = await params;
+    const taskId = parseInt(id);
 
     if (!status || !['pending', 'in-progress', 'completed'].includes(status)) {
       return NextResponse.json(
