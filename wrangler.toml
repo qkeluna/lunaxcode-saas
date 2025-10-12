@@ -1,5 +1,6 @@
 name = "lunaxcode-saas"
 compatibility_date = "2024-10-11"
+compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = ".vercel/output/static"
 
 # Development D1 Database

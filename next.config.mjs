@@ -28,6 +28,20 @@ const nextConfig = {
       bodySizeLimit: '10mb',
     },
   },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // Mark Node.js built-in modules as external for Cloudflare compatibility
+      config.externals = config.externals || [];
+      config.externals.push({
+        'node:stream': 'commonjs node:stream',
+        'node:crypto': 'commonjs node:crypto',
+        'node:buffer': 'commonjs node:buffer',
+        'node:util': 'commonjs node:util',
+        'node:process': 'commonjs node:process',
+      });
+    }
+    return config;
+  },
 };
 
 export default nextConfig;
