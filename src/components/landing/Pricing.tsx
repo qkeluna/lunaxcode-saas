@@ -1,20 +1,30 @@
 import { Check, Sparkles } from 'lucide-react';
 import Link from 'next/link';
+import { getCloudflareContext } from '@/lib/db/context';
+import { drizzle } from 'drizzle-orm/d1';
+import { serviceTypes } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
+import { fallbackServices } from '@/lib/db/fallback-data';
 
 async function getServices() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/public/services`, {
-      cache: 'no-store'
-    });
+    const context = getCloudflareContext();
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch services');
+    if (!context) {
+      console.log('Using fallback services data for development');
+      return fallbackServices;
     }
 
-    return await res.json();
+    const db = drizzle(context.env.DB);
+    const services = await db
+      .select()
+      .from(serviceTypes)
+      .where(eq(serviceTypes.isActive, true));
+
+    return services;
   } catch (error) {
     console.error('Error fetching services:', error);
-    return [];
+    return fallbackServices;
   }
 }
 

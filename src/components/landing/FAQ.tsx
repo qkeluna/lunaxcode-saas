@@ -1,19 +1,30 @@
 import FAQClient from './FAQClient';
+import { getCloudflareContext } from '@/lib/db/context';
+import { drizzle } from 'drizzle-orm/d1';
+import { faqs } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
+import { fallbackFaqs } from '@/lib/db/fallback-data';
 
 async function getFAQs() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/public/faqs`, {
-      cache: 'no-store'
-    });
+    const context = getCloudflareContext();
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch FAQs');
+    if (!context) {
+      console.log('Using fallback FAQs data for development');
+      return fallbackFaqs;
     }
 
-    return await res.json();
+    const db = drizzle(context.env.DB);
+    const faqItems = await db
+      .select()
+      .from(faqs)
+      .where(eq(faqs.isActive, true))
+      .orderBy(faqs.order);
+
+    return faqItems;
   } catch (error) {
     console.error('Error fetching FAQs:', error);
-    return [];
+    return fallbackFaqs;
   }
 }
 

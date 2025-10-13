@@ -1,20 +1,31 @@
 import Image from 'next/image';
 import { ExternalLink } from 'lucide-react';
+import { getCloudflareContext } from '@/lib/db/context';
+import { drizzle } from 'drizzle-orm/d1';
+import { portfolio } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
+import { fallbackPortfolio } from '@/lib/db/fallback-data';
 
 async function getPortfolio() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/public/portfolio`, {
-      cache: 'no-store' // Always get fresh data
-    });
+    const context = getCloudflareContext();
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch portfolio');
+    if (!context) {
+      console.log('Using fallback portfolio data for development');
+      return fallbackPortfolio;
     }
 
-    return await res.json();
+    const db = drizzle(context.env.DB);
+    const items = await db
+      .select()
+      .from(portfolio)
+      .where(eq(portfolio.isActive, true))
+      .orderBy(portfolio.order);
+
+    return items;
   } catch (error) {
     console.error('Error fetching portfolio:', error);
-    return [];
+    return fallbackPortfolio;
   }
 }
 

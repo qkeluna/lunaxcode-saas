@@ -11,6 +11,11 @@ import {
   Star,
   type LucideIcon,
 } from 'lucide-react';
+import { getCloudflareContext } from '@/lib/db/context';
+import { drizzle } from 'drizzle-orm/d1';
+import { platformFeatures } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
+import { fallbackFeatures } from '@/lib/db/fallback-data';
 
 // Icon mapping for database icon names
 const iconMap: Record<string, LucideIcon> = {
@@ -28,18 +33,24 @@ const iconMap: Record<string, LucideIcon> = {
 
 async function getFeatures() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/public/features`, {
-      cache: 'no-store'
-    });
+    const context = getCloudflareContext();
 
-    if (!res.ok) {
-      throw new Error('Failed to fetch features');
+    if (!context) {
+      console.log('Using fallback features data for development');
+      return fallbackFeatures;
     }
 
-    return await res.json();
+    const db = drizzle(context.env.DB);
+    const features = await db
+      .select()
+      .from(platformFeatures)
+      .where(eq(platformFeatures.isActive, true))
+      .orderBy(platformFeatures.order);
+
+    return features;
   } catch (error) {
     console.error('Error fetching features:', error);
-    return [];
+    return fallbackFeatures;
   }
 }
 
