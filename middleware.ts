@@ -20,6 +20,7 @@ export default withAuth(
       try {
         // Get Cloudflare context
         const context = getRequestContext();
+        console.log('[Middleware] Admin check - context available:', !!context, 'DB binding:', !!context?.env?.DB);
 
         if (context?.env?.DB) {
           // Import drizzle and schema dynamically to avoid edge runtime issues
@@ -36,12 +37,16 @@ export default withAuth(
             .where(eq(users.email, token.email as string))
             .limit(1);
 
+          console.log('[Middleware] User from DB:', user?.role, 'for email:', token.email);
           const isAdmin = user?.role === 'admin';
 
           if (!isAdmin) {
+            console.log('[Middleware] User is not admin, redirecting to /dashboard');
             return NextResponse.redirect(new URL('/dashboard', req.url));
           }
+          console.log('[Middleware] User IS admin, allowing access to /admin');
         } else {
+          console.log('[Middleware] DB not available, falling back to token role:', token?.role);
           // Fallback to token role if DB not available (local dev)
           const isAdmin = token?.role === 'admin';
           if (!isAdmin) {
@@ -49,10 +54,11 @@ export default withAuth(
           }
         }
       } catch (error) {
-        console.error('Error checking admin role:', error);
+        console.error('[Middleware] Error checking admin role:', error);
         // Fallback to token role
         const isAdmin = token?.role === 'admin';
         if (!isAdmin) {
+          console.log('[Middleware] Error occurred, user token role is not admin, redirecting');
           return NextResponse.redirect(new URL('/dashboard', req.url));
         }
       }
