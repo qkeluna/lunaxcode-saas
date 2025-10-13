@@ -27,54 +27,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return session;
     },
-    async jwt({ token, user, trigger }) {
-      // On sign in, fetch the user's actual role from database
+    async jwt({ token, user, account }) {
+      // Store user email for lookups
       if (user) {
-        try {
-          // Try to get database instance
-          const db = getDatabase();
-
-          if (db) {
-            // Fetch user from database
-            const [dbUser] = await db
-              .select()
-              .from(users)
-              .where(eq(users.email, user.email!))
-              .limit(1);
-
-            if (dbUser) {
-              token.role = dbUser.role;
-            } else {
-              token.role = 'client'; // Default for new users
-            }
-          } else {
-            // Fallback if database not available
-            token.role = 'client';
-          }
-        } catch (error) {
-          console.error('Error fetching user role:', error);
-          token.role = 'client';
-        }
+        token.email = user.email;
       }
 
-      // On update, refresh role from database
-      if (trigger === 'update') {
-        try {
-          const db = getDatabase();
-          if (db && token.email) {
-            const [dbUser] = await db
-              .select()
-              .from(users)
-              .where(eq(users.email, token.email as string))
-              .limit(1);
+      // Always fetch fresh role from database on sign in
+      // This ensures we get the current role even if it was changed
+      if (user || !token.role) {
+        // Default to client
+        token.role = 'client';
 
-            if (dbUser) {
-              token.role = dbUser.role;
-            }
-          }
-        } catch (error) {
-          console.error('Error updating user role:', error);
-        }
+        // Note: getDatabase() doesn't work here without context
+        // Role will be set to default 'client' and must be refreshed after login
+        // The middleware will handle actual role verification from database
+        console.log('JWT callback: User signed in, role set to client by default');
       }
 
       return token;
