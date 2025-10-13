@@ -11,6 +11,10 @@ import ContactCTA from '@/components/landing/ContactCTA';
 import Footer from '@/components/landing/Footer';
 import FloatingButtons from '@/components/landing/FloatingButtons';
 
+// Force dynamic rendering for Cloudflare Pages
+export const runtime = 'edge';
+export const dynamic = 'force-dynamic';
+
 export default function LandingPage() {
   return (
     <>
