@@ -1,51 +1,25 @@
 import Image from 'next/image';
 import { ExternalLink } from 'lucide-react';
 
-export default function Portfolio() {
-  const projects = [
-    {
-      title: 'E-Commerce Platform',
-      category: 'Web Application',
-      description: 'Full-featured online store with payment integration',
-      image: '/portfolio/ecommerce.jpg',
-      tags: ['Next.js', 'PayMongo', 'Tailwind'],
-    },
-    {
-      title: 'Restaurant Website',
-      category: 'Landing Page',
-      description: 'Modern responsive website with online ordering',
-      image: '/portfolio/restaurant.jpg',
-      tags: ['React', 'Animation', 'Mobile-First'],
-    },
-    {
-      title: 'Real Estate Portal',
-      category: 'Web Application',
-      description: 'Property listing platform with advanced search',
-      image: '/portfolio/realestate.jpg',
-      tags: ['Next.js', 'Maps API', 'CMS'],
-    },
-    {
-      title: 'Corporate Website',
-      category: 'Business Website',
-      description: 'Professional company website with CMS',
-      image: '/portfolio/corporate.jpg',
-      tags: ['WordPress', 'SEO', 'Analytics'],
-    },
-    {
-      title: 'Booking System',
-      category: 'Web Application',
-      description: 'Appointment scheduling with calendar integration',
-      image: '/portfolio/booking.jpg',
-      tags: ['React', 'Calendar', 'Email'],
-    },
-    {
-      title: 'Portfolio Website',
-      category: 'Landing Page',
-      description: 'Stunning portfolio for creative professional',
-      image: '/portfolio/portfolio.jpg',
-      tags: ['Next.js', 'Animation', 'Gallery'],
-    },
-  ];
+async function getPortfolio() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/public/portfolio`, {
+      cache: 'no-store' // Always get fresh data
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch portfolio');
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching portfolio:', error);
+    return [];
+  }
+}
+
+export default async function Portfolio() {
+  const projects = await getPortfolio();
 
   return (
     <section id="portfolio" className="py-24 bg-white">
@@ -69,19 +43,35 @@ export default function Portfolio() {
             >
               {/* Project Image */}
               <div className="relative h-64 bg-gradient-to-br from-blue-400 to-purple-500 overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-white p-8">
-                    <div className="text-6xl mb-4">🚀</div>
-                    <p className="text-sm opacity-75">Project Screenshot</p>
+                {project.imageUrl ? (
+                  <Image
+                    src={project.imageUrl}
+                    alt={project.name}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center text-white p-8">
+                      <div className="text-6xl mb-4">🚀</div>
+                      <p className="text-sm opacity-75">Project Screenshot</p>
+                    </div>
                   </div>
-                </div>
+                )}
                 {/* Hover overlay */}
-                <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <div className="text-white flex items-center gap-2 text-lg font-semibold">
-                    <ExternalLink className="w-5 h-5" />
-                    View Project
-                  </div>
-                </div>
+                {project.projectUrl && (
+                  <a
+                    href={project.projectUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                  >
+                    <div className="text-white flex items-center gap-2 text-lg font-semibold">
+                      <ExternalLink className="w-5 h-5" />
+                      View Project
+                    </div>
+                  </a>
+                )}
               </div>
 
               {/* Project Info */}
@@ -90,21 +80,23 @@ export default function Portfolio() {
                   {project.category}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {project.title}
+                  {project.name}
                 </h3>
                 <p className="text-gray-600 mb-4">{project.description}</p>
 
                 {/* Tags */}
-                <div className="flex flex-wrap gap-2">
-                  {project.tags.map((tag, tagIndex) => (
-                    <span
-                      key={tagIndex}
-                      className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
+                {project.technologies && (
+                  <div className="flex flex-wrap gap-2">
+                    {JSON.parse(project.technologies).map((tag: string, tagIndex: number) => (
+                      <span
+                        key={tagIndex}
+                        className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           ))}

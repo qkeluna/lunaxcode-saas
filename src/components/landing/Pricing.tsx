@@ -1,73 +1,34 @@
 import { Check, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
-export default function Pricing() {
-  const plans = [
-    {
-      name: 'Landing Page',
-      price: '8,000',
-      description: 'Perfect for small businesses and startups',
-      features: [
-        'Single page responsive design',
-        'Contact form integration',
-        'Mobile optimized',
-        'SEO basics included',
-        'Free hosting for 1 year',
-        '2 rounds of revisions',
-      ],
-      popular: false,
-    },
-    {
-      name: 'Basic Website',
-      price: '18,000',
-      description: 'Ideal for growing businesses',
-      features: [
-        'Up to 5 pages',
-        'CMS integration',
-        'Contact form & social media',
-        'Advanced SEO optimization',
-        'Google Analytics setup',
-        'Free hosting for 1 year',
-        '3 rounds of revisions',
-        'Priority support',
-      ],
-      popular: true,
-    },
-    {
-      name: 'Desktop Application',
-      price: '45,000',
-      description: 'Custom business solutions',
-      features: [
-        'Custom desktop software',
-        'Database integration',
-        'User authentication',
-        'Real-time features',
-        'Admin dashboard',
-        'API development',
-        'Cloud deployment',
-        '6 months support',
-        'Unlimited revisions',
-      ],
-      popular: false,
-    },
-    {
-      name: 'Mobile App',
-      price: '80,000',
-      description: 'Native or cross-platform apps',
-      features: [
-        'iOS & Android apps',
-        'Push notifications',
-        'Offline functionality',
-        'In-app purchases',
-        'Backend API included',
-        'Admin panel',
-        'App store deployment',
-        '1 year support',
-        'Unlimited revisions',
-      ],
-      popular: false,
-    },
-  ];
+async function getServices() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/public/services`, {
+      cache: 'no-store'
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch services');
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching services:', error);
+    return [];
+  }
+}
+
+export default async function Pricing() {
+  const services = await getServices();
+
+  // Map services to plans format, marking the middle one as popular
+  const plans = services.map((service: any, index: number) => ({
+    name: service.name,
+    price: (service.basePrice / 1000).toFixed(0) + ',000', // Convert from centavos and format
+    description: service.description || '',
+    features: service.features ? JSON.parse(service.features) : [],
+    popular: index === 1, // Make the second item popular (typically mid-tier pricing)
+  }));
 
   return (
     <section id="pricing" className="py-24 bg-gradient-to-b from-gray-50 to-white">

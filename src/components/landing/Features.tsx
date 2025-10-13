@@ -8,56 +8,43 @@ import {
   Zap,
   Users,
   Clock,
+  Star,
+  type LucideIcon,
 } from 'lucide-react';
 
-export default function Features() {
-  const features = [
-    {
-      icon: Sparkles,
-      title: 'AI-Powered PRD Generation',
-      description: 'Get a comprehensive Project Requirements Document in under 30 seconds using advanced AI technology.',
-    },
-    {
-      icon: FileText,
-      title: 'Automated Task Breakdown',
-      description: 'Your project is automatically broken down into 15-25 structured tasks with time estimates and priorities.',
-    },
-    {
-      icon: MessageSquare,
-      title: 'Real-Time Communication',
-      description: 'Stay connected with our team through built-in messaging. Get updates and provide feedback instantly.',
-    },
-    {
-      icon: CreditCard,
-      title: 'Flexible Payment Options',
-      description: 'Pay with GCash, PayMaya, or credit card. Secure payment processing through PayMongo.',
-    },
-    {
-      icon: BarChart3,
-      title: 'Progress Tracking',
-      description: 'Monitor your project status in real-time with detailed analytics and completion metrics.',
-    },
-    {
-      icon: Shield,
-      title: 'Secure File Management',
-      description: 'Upload and share project files securely with Cloudflare R2 storage infrastructure.',
-    },
-    {
-      icon: Zap,
-      title: 'Fast Turnaround',
-      description: 'Most projects completed within 2-4 weeks. We prioritize efficiency without sacrificing quality.',
-    },
-    {
-      icon: Users,
-      title: 'Dedicated Team',
-      description: 'Work with experienced Filipino developers who understand local business needs.',
-    },
-    {
-      icon: Clock,
-      title: '24/7 Dashboard Access',
-      description: 'Access your project dashboard anytime, anywhere. Full transparency throughout the development process.',
-    },
-  ];
+// Icon mapping for database icon names
+const iconMap: Record<string, LucideIcon> = {
+  Sparkles,
+  FileText,
+  MessageSquare,
+  CreditCard,
+  BarChart3,
+  Shield,
+  Zap,
+  Users,
+  Clock,
+  Star,
+};
+
+async function getFeatures() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/public/features`, {
+      cache: 'no-store'
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch features');
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching features:', error);
+    return [];
+  }
+}
+
+export default async function Features() {
+  const features = await getFeatures();
 
   return (
     <section id="features" className="py-24 bg-gradient-to-b from-gray-50 to-white">
@@ -74,22 +61,25 @@ export default function Features() {
 
         {/* Features Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-100"
-            >
-              <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mb-6">
-                <feature.icon className="w-7 h-7 text-white" />
+          {features.map((feature: any, index: number) => {
+            const IconComponent = iconMap[feature.icon] || Star;
+            return (
+              <div
+                key={feature.id || index}
+                className="bg-white p-8 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-100"
+              >
+                <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mb-6">
+                  <IconComponent className="w-7 h-7 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                  {feature.name}
+                </h3>
+                <p className="text-gray-600 leading-relaxed">
+                  {feature.description}
+                </p>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-gray-600 leading-relaxed">
-                {feature.description}
-              </p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

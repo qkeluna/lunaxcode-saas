@@ -1,38 +1,31 @@
 import { CheckCircle2 } from 'lucide-react';
 
-export default function Process() {
-  const steps = [
-    {
-      number: '01',
-      title: 'Tell Us Your Vision',
-      description: 'Fill out our simple onboarding form with your project details. Takes only 5 minutes.',
-      duration: '5 minutes',
-    },
-    {
-      number: '02',
-      title: 'Get Instant PRD & Quote',
-      description: 'Our AI generates a comprehensive Project Requirements Document and accurate pricing in under 30 seconds.',
-      duration: '30 seconds',
-    },
-    {
-      number: '03',
-      title: 'Review & Confirm',
-      description: 'Review the automated task breakdown, timeline, and pricing. Request any adjustments needed.',
-      duration: '1 day',
-    },
-    {
-      number: '04',
-      title: 'Development Begins',
-      description: 'Make your deposit and we start building immediately. Track progress in your dashboard 24/7.',
-      duration: '2-4 weeks',
-    },
-    {
-      number: '05',
-      title: 'Launch & Support',
-      description: 'After final review and full payment, we deploy your project and provide ongoing support.',
-      duration: 'Ongoing',
-    },
-  ];
+async function getProcessSteps() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/public/process`, {
+      cache: 'no-store'
+    });
+
+    if (!res.ok) {
+      throw new Error('Failed to fetch process steps');
+    }
+
+    return await res.json();
+  } catch (error) {
+    console.error('Error fetching process steps:', error);
+    return [];
+  }
+}
+
+export default async function Process() {
+  const processSteps = await getProcessSteps();
+
+  // Map database fields to component format
+  const steps = processSteps.map((step: any, index: number) => ({
+    number: String(index + 1).padStart(2, '0'),
+    title: step.name,
+    description: step.description,
+  }));
 
   return (
     <section id="process" className="py-24 bg-white">
@@ -68,13 +61,9 @@ export default function Process() {
                   <h3 className="text-xl font-bold text-gray-900 mb-3">
                     {step.title}
                   </h3>
-                  <p className="text-gray-600 mb-4 leading-relaxed">
+                  <p className="text-gray-600 leading-relaxed">
                     {step.description}
                   </p>
-                  <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-sm font-medium text-gray-700">
-                    <CheckCircle2 className="w-4 h-4 text-green-600" />
-                    {step.duration}
-                  </div>
                 </div>
               </div>
             ))}
