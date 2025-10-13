@@ -1,5 +1,8 @@
 import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
+import { getDatabase } from '@/lib/db/client';
+import { users } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -24,10 +27,56 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return session;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
+      // On sign in, fetch the user's actual role from database
       if (user) {
-        token.role = 'client'; // Default role for new users
+        try {
+          // Try to get database instance
+          const db = getDatabase();
+
+          if (db) {
+            // Fetch user from database
+            const [dbUser] = await db
+              .select()
+              .from(users)
+              .where(eq(users.email, user.email!))
+              .limit(1);
+
+            if (dbUser) {
+              token.role = dbUser.role;
+            } else {
+              token.role = 'client'; // Default for new users
+            }
+          } else {
+            // Fallback if database not available
+            token.role = 'client';
+          }
+        } catch (error) {
+          console.error('Error fetching user role:', error);
+          token.role = 'client';
+        }
       }
+
+      // On update, refresh role from database
+      if (trigger === 'update') {
+        try {
+          const db = getDatabase();
+          if (db && token.email) {
+            const [dbUser] = await db
+              .select()
+              .from(users)
+              .where(eq(users.email, token.email as string))
+              .limit(1);
+
+            if (dbUser) {
+              token.role = dbUser.role;
+            }
+          }
+        } catch (error) {
+          console.error('Error updating user role:', error);
+        }
+      }
+
       return token;
     },
   },
