@@ -13,12 +13,14 @@ import {
   ListChecks,
   Briefcase,
   HelpCircle,
+  UserCog,
 } from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { name: 'Projects', href: '/admin/projects', icon: FolderKanban },
   { name: 'Clients', href: '/admin/clients', icon: Users },
+  { name: 'Users', href: '/admin/users', icon: UserCog },
   { name: 'Payments', href: '/admin/payments', icon: CreditCard },
   {
     name: 'CMS',
