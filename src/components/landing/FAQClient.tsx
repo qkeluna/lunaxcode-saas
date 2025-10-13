@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, HelpCircle } from 'lucide-react';
 
 interface FAQ {
   id: string;
@@ -17,62 +17,131 @@ export default function FAQClient({ faqs }: FAQClientProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-24 bg-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="faq" className="relative py-24 bg-gradient-to-b from-gray-50 to-white overflow-hidden" aria-labelledby="faq-heading">
+      {/* Background decoration */}
+      <div className="absolute inset-0 opacity-5" aria-hidden="true">
+        <div
+          className="absolute bottom-0 left-1/4 w-96 h-96 rounded-full blur-3xl"
+          style={{ backgroundColor: 'var(--sp-colors-accent)' }}
+        ></div>
+      </div>
+
+      <div className="relative max-w-4xl mx-auto" style={{ padding: '0 var(--sp-space-6)' }}>
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        <div className="text-center" style={{ marginBottom: 'var(--sp-space-8)' }}>
+          <div
+            className="inline-flex items-center backdrop-blur-sm bg-purple-100 text-purple-700 rounded-full font-medium mb-4"
+            style={{ padding: 'var(--sp-space-2) var(--sp-space-4)', gap: 'var(--sp-space-2)' }}
+          >
+            <HelpCircle className="w-4 h-4" aria-hidden="true" />
+            <span className="text-sm">Got Questions?</span>
+          </div>
+
+          <h2
+            id="faq-heading"
+            className="text-4xl md:text-5xl font-bold text-gray-900"
+            style={{ marginBottom: 'var(--sp-space-4)' }}
+          >
             Frequently Asked Questions
           </h2>
-          <p className="text-xl text-gray-600">
-            Everything you need to know before starting your project
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Everything you need to know before starting your project with us
           </p>
         </div>
 
         {/* FAQ Accordion */}
         <div className="space-y-4">
-          {faqs.map((faq, index) => (
-            <div
-              key={faq.id || index}
-              className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:border-purple-300 transition-colors"
-            >
-              <button
-                onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-              >
-                <span className="font-semibold text-gray-900 pr-8">
-                  {faq.question}
-                </span>
-                <ChevronDown
-                  className={`w-5 h-5 text-purple-600 flex-shrink-0 transition-transform duration-200 ${
-                    openIndex === index ? 'transform rotate-180' : ''
-                  }`}
-                />
-              </button>
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
+            return (
               <div
-                className={`overflow-hidden transition-all duration-200 ${
-                  openIndex === index ? 'max-h-96' : 'max-h-0'
+                key={faq.id || index}
+                className={`backdrop-blur-sm bg-white/80 border rounded-2xl overflow-hidden transition-all duration-300 ${
+                  isOpen
+                    ? 'border-purple-300 shadow-lg shadow-purple-100'
+                    : 'border-gray-200 hover:border-purple-200 shadow-sm hover:shadow-md'
                 }`}
               >
-                <div className="px-6 pb-5 text-gray-600 leading-relaxed">
-                  {faq.answer}
+                <button
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                  className="w-full flex items-center justify-between text-left hover:bg-gray-50/50 transition-colors"
+                  style={{ padding: 'var(--sp-space-5) var(--sp-space-6)' }}
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${index}`}
+                >
+                  <span
+                    className={`font-semibold pr-8 transition-colors ${
+                      isOpen ? 'text-purple-700' : 'text-gray-900'
+                    }`}
+                  >
+                    {faq.question}
+                  </span>
+                  <div
+                    className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                      isOpen
+                        ? 'bg-gradient-to-br shadow-sm'
+                        : 'bg-gray-100'
+                    }`}
+                    style={
+                      isOpen
+                        ? { backgroundImage: `linear-gradient(to bottom right, var(--sp-colors-accent), #a78bfa)` }
+                        : {}
+                    }
+                  >
+                    <ChevronDown
+                      className={`w-5 h-5 transition-all duration-300 ${
+                        isOpen ? 'transform rotate-180 text-white' : 'text-gray-600'
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </div>
+                </button>
+                <div
+                  id={`faq-answer-${index}`}
+                  className={`overflow-hidden transition-all duration-300 ${
+                    isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                  role="region"
+                  aria-labelledby={`faq-question-${index}`}
+                >
+                  <div
+                    className="text-gray-600 leading-relaxed border-t border-gray-100"
+                    style={{ padding: 'var(--sp-space-5) var(--sp-space-6)' }}
+                  >
+                    {faq.answer}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Contact CTA */}
-        <div className="mt-12 text-center">
-          <p className="text-gray-600 mb-4">
-            Still have questions? We're here to help!
+        <div
+          className="text-center backdrop-blur-sm bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-100 rounded-2xl shadow-sm"
+          style={{ marginTop: 'var(--sp-space-8)', padding: 'var(--sp-space-6)' }}
+        >
+          <h3
+            className="text-xl font-bold text-gray-900"
+            style={{ marginBottom: 'var(--sp-space-2)' }}
+          >
+            Still Have Questions?
+          </h3>
+          <p className="text-gray-600" style={{ marginBottom: 'var(--sp-space-4)' }}>
+            Our team is ready to help you with anything you need
           </p>
           <a
             href="mailto:hello@lunaxcode.com"
-            className="inline-flex items-center gap-2 text-purple-600 font-semibold hover:text-purple-700"
+            className="inline-flex items-center font-semibold text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-gradient-to-r"
+            style={{
+              padding: 'var(--sp-space-3) var(--sp-space-5)',
+              gap: 'var(--sp-space-2)',
+              backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)`
+            }}
+            aria-label="Contact us via email"
           >
-            Contact us directly
-            <span>→</span>
+            Contact Us Directly
+            <span aria-hidden="true">→</span>
           </a>
         </div>
       </div>

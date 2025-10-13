@@ -1,0 +1,36 @@
+:root {
+
+  /* Colors */
+  color-7828c8: #7828c8;
+  --sp-colors-fg-active: #F4F4F4;
+  --sp-colors-fg-default: #757678;
+  --sp-colors-bg-active: #A258DF2b;
+  --sp-colors-accent: #7828c8;
+  color-F4F4F4: #F4F4F4;
+  color-757678: #757678;
+  color-A258DF2b: #A258DF2b;
+  color-999: #999;
+  color-000000: #000000;
+  color-fff: #fff;
+  color-292929: #292929;
+  color-d4d4d4: #d4d4d4;
+  color-161616: #161616;
+  color-bcbcbc: #bcbcbc;
+  color-646cffaa: #646cffaa;
+  color-61dafbaa: #61dafbaa;
+  color-888: #888;
+
+  /* Typography */
+  --sp-font-size: 14px;
+
+  /* Spacing */
+  --sp-space-1: 4px;
+  --sp-space-2: 8px;
+  --sp-space-3: 12px;
+  --sp-space-4: 16px;
+  --sp-space-5: 20px;
+  --sp-space-6: 24px;
+  --sp-space-7: 28px;
+  --sp-space-8: 32px;
+  --spacing: 0.222222rem;
+}

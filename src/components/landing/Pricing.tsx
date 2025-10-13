@@ -102,7 +102,7 @@ export default async function Pricing() {
           {plans.map((plan, index) => (
             <div
               key={index}
-              className={`relative rounded-2xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
+              className={`relative rounded-2xl transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 flex flex-col ${
                 plan.popular
                   ? 'bg-gradient-to-br from-gray-900 to-gray-800 shadow-xl shadow-purple-500/20 scale-105 lg:scale-110'
                   : 'bg-white shadow-lg border border-gray-200'
@@ -150,7 +150,7 @@ export default async function Pricing() {
               </div>
 
               {/* Features */}
-              <ul className="space-y-3" style={{ marginBottom: 'var(--sp-space-8)' }}>
+              <ul className="space-y-3 flex-1" style={{ marginBottom: 'var(--sp-space-8)' }}>
                 {plan.features.map((feature, featureIndex) => (
                   <li key={featureIndex} className="flex items-start" style={{ gap: 'var(--sp-space-3)' }}>
                     <Check
@@ -169,7 +169,7 @@ export default async function Pricing() {
               {/* CTA Button */}
               <Link
                 href="/onboarding"
-                className={`block w-full py-3.5 rounded-xl font-semibold text-center transition-all duration-300 ${
+                className={`block w-full py-3.5 rounded-xl font-semibold text-center transition-all duration-300 mt-auto ${
                   plan.popular
                     ? 'bg-white text-gray-900 hover:bg-gray-100 shadow-lg hover:shadow-xl'
                     : 'bg-gradient-to-r from-[var(--sp-colors-accent)] to-purple-600 text-white hover:shadow-lg hover:shadow-purple-500/50 hover:scale-105'
