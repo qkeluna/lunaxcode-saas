@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { checkIsAdmin } from '@/lib/auth/check-admin';
 import { getDatabase } from '@/lib/db/client';
 import { payments, projects } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
@@ -8,15 +8,13 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth();
+  const { isAdmin, error } = await checkIsAdmin(request);
 
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  // @ts-ignore
-  if (session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!isAdmin) {
+    return NextResponse.json(
+      { error: error || 'Forbidden' },
+      { status: error === 'Unauthorized' ? 401 : 403 }
+    );
   }
 
   try {

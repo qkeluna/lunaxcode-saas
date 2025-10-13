@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { checkIsAdmin } from '@/lib/auth/check-admin';
 import { getDatabase } from '@/lib/db/client';
 import { serviceTypes } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
-  const session = await auth();
+  const { isAdmin, error } = await checkIsAdmin(request);
 
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  // @ts-ignore
-  if (session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!isAdmin) {
+    return NextResponse.json(
+      { error: error || 'Forbidden' },
+      { status: error === 'Unauthorized' ? 401 : 403 }
+    );
   }
 
   try {
@@ -42,15 +40,13 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const session = await auth();
+  const { isAdmin, error } = await checkIsAdmin(request);
 
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  // @ts-ignore
-  if (session.user.role !== 'admin') {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  if (!isAdmin) {
+    return NextResponse.json(
+      { error: error || 'Forbidden' },
+      { status: error === 'Unauthorized' ? 401 : 403 }
+    );
   }
 
   try {
