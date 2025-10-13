@@ -1,22 +1,26 @@
-import { NextResponse } from 'next/server';
-import { getRequestContext } from '@cloudflare/next-on-pages';
-import { drizzle } from 'drizzle-orm/d1';
+import { NextRequest, NextResponse } from 'next/server';
+import { getDatabase } from '@/lib/db/client';
 import { processSteps } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
 export const runtime = 'edge';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const { env } = getRequestContext();
-    const db = drizzle(env.DB);
+    const db = getDatabase((request as any).env);
+
+    if (!db) {
+      return NextResponse.json(
+        { error: 'Database not connected' },
+        { status: 503 }
+      );
+    }
 
     const steps = await db
       .select()
       .from(processSteps)
       .where(eq(processSteps.isActive, true))
-      .orderBy(processSteps.order)
-      .all();
+      .orderBy(processSteps.order);
 
     return NextResponse.json(steps);
   } catch (error) {
