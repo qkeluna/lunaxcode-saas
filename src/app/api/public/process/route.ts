@@ -1,20 +1,22 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/db/client';
+import { NextResponse } from 'next/server';
+import { getCloudflareContext } from '@/lib/db/context';
+import { drizzle } from 'drizzle-orm/d1';
 import { processSteps } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { fallbackProcess } from '@/lib/db/fallback-data';
 
 export const runtime = 'edge';
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const db = getDatabase((request as any).env);
+    const context = getCloudflareContext();
 
-    if (!db) {
+    if (!context) {
       console.log('Using fallback process data for development');
       return NextResponse.json(fallbackProcess);
     }
 
+    const db = drizzle(context.env.DB);
     const steps = await db
       .select()
       .from(processSteps)
