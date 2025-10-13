@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/db/client';
 import { portfolio } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { fallbackPortfolio } from '@/lib/db/fallback-data';
 
 export const runtime = 'edge';
 
@@ -10,10 +11,8 @@ export async function GET(request: NextRequest) {
     const db = getDatabase((request as any).env);
 
     if (!db) {
-      return NextResponse.json(
-        { error: 'Database not connected' },
-        { status: 503 }
-      );
+      console.log('Using fallback portfolio data for development');
+      return NextResponse.json(fallbackPortfolio);
     }
 
     const items = await db
