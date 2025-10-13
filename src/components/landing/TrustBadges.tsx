@@ -25,21 +25,33 @@ export default function TrustBadges() {
   ];
 
   return (
-    <section className="py-16 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <section className="py-16 bg-gradient-to-b from-white to-gray-50">
+      <div className="max-w-7xl mx-auto" style={{ padding: '0 var(--sp-space-6)' }}>
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
+          style={{ gap: 'var(--sp-space-6)' }}
+        >
           {badges.map((badge, index) => (
             <div
               key={index}
-              className="flex flex-col items-center text-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+              className="group flex flex-col items-center text-center backdrop-blur-sm bg-white/80 border border-gray-100 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+              style={{ padding: 'var(--sp-space-6)' }}
             >
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
-                <badge.icon className="w-8 h-8 text-white" />
+              <div
+                className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 shadow-md group-hover:shadow-xl group-hover:scale-110 transition-all duration-300 bg-gradient-to-br"
+                style={{
+                  backgroundImage: `linear-gradient(to bottom right, var(--sp-colors-accent), #a78bfa)`
+                }}
+              >
+                <badge.icon className="w-8 h-8 text-white" aria-hidden="true" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3
+                className="text-lg font-semibold text-gray-900"
+                style={{ marginBottom: 'var(--sp-space-2)' }}
+              >
                 {badge.title}
               </h3>
-              <p className="text-sm text-gray-600">{badge.description}</p>
+              <p className="text-sm text-gray-600 leading-relaxed">{badge.description}</p>
             </div>
           ))}
         </div>
