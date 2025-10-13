@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { getDatabase } from '@/lib/db/client';
+import { getRequestContext } from '@cloudflare/next-on-pages';
+import { drizzle } from 'drizzle-orm/d1';
 import { users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
@@ -12,16 +13,21 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const db = getDatabase((request as any).env);
+    // Get Cloudflare context
+    const context = getRequestContext();
 
-    if (!db) {
+    if (!context?.env?.DB) {
       return NextResponse.json({
         sessionEmail: session.user.email,
         sessionRole: (session.user as any).role,
         dbRole: null,
-        error: 'Database not connected',
+        error: 'Database not connected - Cloudflare context not available',
+        contextAvailable: !!context,
+        dbBinding: !!context?.env?.DB,
       });
     }
+
+    const db = drizzle(context.env.DB);
 
     // Fetch user from database
     const [user] = await db
@@ -37,8 +43,8 @@ export async function GET(request: NextRequest) {
       dbRole: user?.role || null,
       isAdmin: user?.role === 'admin',
       message: user
-        ? 'User found in database'
-        : 'User NOT found in database - this is the problem!',
+        ? `✅ User found in database with role: ${user.role}`
+        : '❌ User NOT found in database - this is the problem!',
     });
   } catch (error: any) {
     return NextResponse.json({

@@ -1,6 +1,5 @@
 import { NextRequest } from 'next/server';
 import { auth } from '@/auth';
-import { getDatabase } from '@/lib/db/client';
 import { users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
@@ -20,11 +19,19 @@ export async function checkIsAdmin(request: NextRequest): Promise<{
   }
 
   try {
-    const db = getDatabase((request as any).env);
+    // Import dynamically to avoid edge runtime issues
+    const { getRequestContext } = await import('@cloudflare/next-on-pages');
+    const { drizzle } = await import('drizzle-orm/d1');
 
-    if (!db) {
+    // Get Cloudflare context
+    const context = getRequestContext();
+
+    if (!context?.env?.DB) {
+      console.error('Cloudflare context or DB binding not available');
       return { isAdmin: false, session, error: 'Database not connected' };
     }
+
+    const db = drizzle(context.env.DB);
 
     // Fetch user role from database
     const [user] = await db
@@ -34,9 +41,11 @@ export async function checkIsAdmin(request: NextRequest): Promise<{
       .limit(1);
 
     if (!user) {
+      console.error('User not found in database:', session.user.email);
       return { isAdmin: false, session, error: 'User not found' };
     }
 
+    console.log('User role check:', { email: session.user.email, role: user.role });
     return { isAdmin: user.role === 'admin', session };
   } catch (error: any) {
     console.error('Error checking admin role:', error);
