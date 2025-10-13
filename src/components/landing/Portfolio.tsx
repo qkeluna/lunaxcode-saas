@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Briefcase } from 'lucide-react';
 import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
 import { portfolio } from '@/lib/db/schema';
@@ -33,12 +33,36 @@ export default async function Portfolio() {
   const projects = await getPortfolio();
 
   return (
-    <section id="portfolio" className="py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section
+      id="portfolio"
+      className="relative py-24 bg-gradient-to-b from-white to-gray-50 overflow-hidden"
+      aria-labelledby="portfolio-heading"
+    >
+      {/* Background decoration */}
+      <div className="absolute inset-0 opacity-5" aria-hidden="true">
+        <div
+          className="absolute bottom-1/4 left-0 w-96 h-96 rounded-full blur-3xl"
+          style={{ backgroundColor: 'var(--sp-colors-accent)' }}
+        ></div>
+      </div>
+
+      <div className="relative max-w-7xl mx-auto" style={{ padding: '0 var(--sp-space-6)' }}>
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Our Recent Work
+        <div className="text-center" style={{ marginBottom: 'var(--sp-space-8)' }}>
+          <div
+            className="inline-flex items-center backdrop-blur-sm bg-purple-100 text-purple-700 rounded-full font-medium mb-4"
+            style={{ padding: 'var(--sp-space-2) var(--sp-space-4)', gap: 'var(--sp-space-2)' }}
+          >
+            <Briefcase className="w-4 h-4" aria-hidden="true" />
+            <span className="text-sm">Our Work</span>
+          </div>
+
+          <h2
+            id="portfolio-heading"
+            className="text-4xl md:text-5xl font-bold text-gray-900"
+            style={{ marginBottom: 'var(--sp-space-4)' }}
+          >
+            Recent Projects & Success Stories
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             See how we've helped Filipino businesses achieve their digital goals
@@ -46,62 +70,78 @@ export default async function Portfolio() {
         </div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+          style={{ gap: 'var(--sp-space-6)' }}
+        >
           {projects.map((project, index) => (
             <div
-              key={index}
-              className="group bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+              key={project.id || index}
+              className="group relative backdrop-blur-sm bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
             >
               {/* Project Image */}
-              <div className="relative h-64 bg-gradient-to-br from-blue-400 to-purple-500 overflow-hidden">
+              <div className="relative h-64 overflow-hidden bg-gradient-to-br" style={{ backgroundImage: `linear-gradient(to bottom right, var(--sp-colors-accent), #a78bfa)` }}>
                 {project.imageUrl ? (
                   <Image
                     src={project.imageUrl}
-                    alt={project.name}
+                    alt={project.title}
                     fill
-                    className="object-cover"
+                    className="object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center text-white p-8">
+                    <div className="text-center text-white" style={{ padding: 'var(--sp-space-8)' }}>
                       <div className="text-6xl mb-4">🚀</div>
                       <p className="text-sm opacity-75">Project Screenshot</p>
                     </div>
                   </div>
                 )}
+
                 {/* Hover overlay */}
-                {project.projectUrl && (
+                {project.liveUrl && (
                   <a
-                    href={project.projectUrl}
+                    href={project.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                    className="absolute inset-0 bg-gradient-to-br from-black/70 to-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm"
+                    aria-label={`View ${project.title} project`}
                   >
-                    <div className="text-white flex items-center gap-2 text-lg font-semibold">
-                      <ExternalLink className="w-5 h-5" />
+                    <div className="text-white flex items-center font-semibold text-lg" style={{ gap: 'var(--sp-space-2)' }}>
+                      <ExternalLink className="w-5 h-5" aria-hidden="true" />
                       View Project
                     </div>
                   </a>
                 )}
+
+                {/* Category badge */}
+                <div
+                  className="absolute top-4 left-4 backdrop-blur-md bg-white/90 rounded-full font-semibold text-xs shadow-md"
+                  style={{ padding: 'var(--sp-space-2) var(--sp-space-3)', color: 'var(--sp-colors-accent)' }}
+                >
+                  {project.category}
+                </div>
               </div>
 
               {/* Project Info */}
-              <div className="p-6">
-                <div className="text-sm text-purple-600 font-semibold mb-2">
-                  {project.category}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {project.name}
+              <div style={{ padding: 'var(--sp-space-6)' }}>
+                <h3
+                  className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors"
+                  style={{ marginBottom: 'var(--sp-space-2)' }}
+                >
+                  {project.title}
                 </h3>
-                <p className="text-gray-600 mb-4">{project.description}</p>
+                <p className="text-gray-600 leading-relaxed" style={{ marginBottom: 'var(--sp-space-4)' }}>
+                  {project.description}
+                </p>
 
                 {/* Tags */}
                 {project.technologies && (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap" style={{ gap: 'var(--sp-space-2)' }}>
                     {JSON.parse(project.technologies).map((tag: string, tagIndex: number) => (
                       <span
                         key={tagIndex}
-                        className="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
+                        className="backdrop-blur-sm bg-purple-50 text-purple-700 text-xs font-medium rounded-lg"
+                        style={{ padding: 'var(--sp-space-1) var(--sp-space-3)' }}
                       >
                         {tag}
                       </span>
@@ -111,6 +151,38 @@ export default async function Portfolio() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* CTA */}
+        <div
+          className="text-center backdrop-blur-sm bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-100 rounded-2xl shadow-sm"
+          style={{ marginTop: 'var(--sp-space-8)', padding: 'var(--sp-space-8)' }}
+        >
+          <h3
+            className="text-2xl font-bold text-gray-900"
+            style={{ marginBottom: 'var(--sp-space-3)' }}
+          >
+            Ready to See Your Project Here?
+          </h3>
+          <p
+            className="text-gray-600 max-w-xl mx-auto"
+            style={{ marginBottom: 'var(--sp-space-4)' }}
+          >
+            Join our growing portfolio of successful projects
+          </p>
+          <a
+            href="/onboarding"
+            className="inline-flex items-center font-semibold text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-gradient-to-r"
+            style={{
+              padding: 'var(--sp-space-4) var(--sp-space-6)',
+              gap: 'var(--sp-space-2)',
+              backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)`
+            }}
+            aria-label="Start your project"
+          >
+            Start Your Project
+            <ExternalLink className="w-5 h-5" aria-hidden="true" />
+          </a>
         </div>
       </div>
     </section>

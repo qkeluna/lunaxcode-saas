@@ -4,12 +4,12 @@
 export const fallbackPortfolio = [
   {
     id: 'port-001',
-    name: 'E-Commerce Fashion Store',
+    title: 'E-Commerce Fashion Store',
     category: 'E-Commerce',
     description: 'Modern online store for Filipino fashion brand with inventory management',
     client: 'StyleHub Manila',
     imageUrl: null,
-    projectUrl: null,
+    liveUrl: null,
     technologies: '["Next.js","Shopify","Tailwind CSS"]',
     results: null,
     testimonial: null,
@@ -19,12 +19,12 @@ export const fallbackPortfolio = [
   },
   {
     id: 'port-002',
-    name: 'Restaurant Booking System',
+    title: 'Restaurant Booking System',
     category: 'Web Application',
     description: 'Online reservation system with real-time table availability',
     client: 'Sarap Dine',
     imageUrl: null,
-    projectUrl: null,
+    liveUrl: null,
     technologies: '["React","Node.js","PostgreSQL"]',
     results: null,
     testimonial: null,
@@ -34,12 +34,12 @@ export const fallbackPortfolio = [
   },
   {
     id: 'port-003',
-    name: 'Healthcare Portal',
+    title: 'Healthcare Portal',
     category: 'SaaS Platform',
     description: 'Patient management system for medical clinics',
     client: 'MedCare Philippines',
     imageUrl: null,
-    projectUrl: null,
+    liveUrl: null,
     technologies: '["Vue.js","Laravel","MySQL"]',
     results: null,
     testimonial: null,
@@ -52,7 +52,7 @@ export const fallbackPortfolio = [
 export const fallbackFeatures = [
   {
     id: 'feat-001',
-    name: 'AI-Powered PRD Generation',
+    title: 'AI-Powered PRD Generation',
     description: 'Get comprehensive project requirements in under 30 seconds using advanced AI',
     icon: 'Sparkles',
     order: 1,
@@ -61,7 +61,7 @@ export const fallbackFeatures = [
   },
   {
     id: 'feat-002',
-    name: 'Real-Time Project Tracking',
+    title: 'Real-Time Project Tracking',
     description: 'Monitor your project progress 24/7 through our intuitive dashboard',
     icon: 'BarChart3',
     order: 2,
@@ -70,7 +70,7 @@ export const fallbackFeatures = [
   },
   {
     id: 'feat-003',
-    name: 'Flexible Payment Options',
+    title: 'Flexible Payment Options',
     description: 'Pay with GCash, PayMaya, or cards - split into two convenient payments',
     icon: 'CreditCard',
     order: 3,
@@ -79,7 +79,7 @@ export const fallbackFeatures = [
   },
   {
     id: 'feat-004',
-    name: 'Direct Client Communication',
+    title: 'Direct Client Communication',
     description: 'Message your team directly through the platform - no email chains',
     icon: 'MessageSquare',
     order: 4,
@@ -88,7 +88,7 @@ export const fallbackFeatures = [
   },
   {
     id: 'feat-005',
-    name: 'Automated Documentation',
+    title: 'Automated Documentation',
     description: 'All project requirements, tasks, and timeline generated automatically',
     icon: 'FileText',
     order: 5,
@@ -97,7 +97,7 @@ export const fallbackFeatures = [
   },
   {
     id: 'feat-006',
-    name: 'Fast Turnaround Time',
+    title: 'Fast Turnaround Time',
     description: 'Most projects completed in 2-4 weeks, not months',
     icon: 'Zap',
     order: 6,
@@ -148,7 +148,7 @@ export const fallbackServices = [
 export const fallbackProcess = [
   {
     id: 'proc-001',
-    name: 'Tell Us Your Vision',
+    title: 'Tell Us Your Vision',
     description: 'Fill out our simple onboarding form with your project details. Takes only 5 minutes.',
     order: 1,
     isActive: true,
@@ -156,7 +156,7 @@ export const fallbackProcess = [
   },
   {
     id: 'proc-002',
-    name: 'Get Instant PRD & Quote',
+    title: 'Get Instant PRD & Quote',
     description: 'Our AI generates a comprehensive Project Requirements Document and accurate pricing in under 30 seconds.',
     order: 2,
     isActive: true,
@@ -164,7 +164,7 @@ export const fallbackProcess = [
   },
   {
     id: 'proc-003',
-    name: 'Review & Confirm',
+    title: 'Review & Confirm',
     description: 'Review the automated task breakdown, timeline, and pricing. Request any adjustments needed.',
     order: 3,
     isActive: true,
@@ -172,7 +172,7 @@ export const fallbackProcess = [
   },
   {
     id: 'proc-004',
-    name: 'Development Begins',
+    title: 'Development Begins',
     description: 'Make your deposit and we start building immediately. Track progress in your dashboard 24/7.',
     order: 4,
     isActive: true,
@@ -180,7 +180,7 @@ export const fallbackProcess = [
   },
   {
     id: 'proc-005',
-    name: 'Launch & Support',
+    title: 'Launch & Support',
     description: 'After final review and full payment, we deploy your project and provide ongoing support.',
     order: 5,
     isActive: true,

@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
-import { platformFeatures } from '@/lib/db/schema';
+import { features as featuresTable } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { fallbackFeatures } from '@/lib/db/fallback-data';
 
@@ -43,9 +43,9 @@ async function getFeatures() {
     const db = drizzle(context.env.DB);
     const features = await db
       .select()
-      .from(platformFeatures)
-      .where(eq(platformFeatures.isActive, true))
-      .orderBy(platformFeatures.order);
+      .from(featuresTable)
+      .where(eq(featuresTable.isActive, true))
+      .orderBy(featuresTable.order);
 
     return features;
   } catch (error) {
@@ -131,7 +131,7 @@ export default async function Features() {
                   className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors"
                   style={{ marginBottom: 'var(--sp-space-3)' }}
                 >
-                  {feature.name}
+                  {feature.title}
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
                   {feature.description}
