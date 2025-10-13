@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Lunaxcode is an AI-powered project management SaaS platform for Filipino web development agencies. The system automatically generates Project Requirements Documents (PRDs) and task breakdowns using Google Gemini AI, integrates PayMongo for Philippine payment methods, and provides client/admin dashboards.
 
-**Current Status**: Codebase reset - ready for fresh implementation following the complete development plan in `docs/lunaxcode_complete_plan.txt`
+**Current Status**: Core features implemented and deployed. Admin dashboard, CMS system, authentication, and database seeding complete. Production deployment: https://lunaxcode-saas.pages.dev
 
 ## Tech Stack
 
@@ -37,14 +37,22 @@ npm run db:generate           # Generate migrations from schema
 npm run db:migrate            # Run migrations against D1
 npm run db:push               # Push schema changes directly
 npm run db:studio             # Open Drizzle Studio (visual DB editor)
+npm run db:seed               # Seed local database with sample data
+npm run db:seed:dev           # Seed remote dev database
+npm run db:seed:prod          # Seed remote production database
 
-# Wrangler (Cloudflare CLI)
+# Cloudflare (Wrangler CLI)
+npm run pages:build               # Build for Cloudflare Pages (USE THIS, not npm run build)
+npm run preview                   # Preview Cloudflare Pages build locally
+npm run deploy                    # Build and deploy to Cloudflare Pages
 wrangler d1 create <db-name>              # Create D1 database
 wrangler d1 migrations apply <db-name>    # Apply migrations
 wrangler d1 migrations apply <db-name> --local  # Apply to local DB
+wrangler d1 execute <db-name> --command="SQL"   # Execute SQL command
 wrangler r2 bucket create <bucket-name>   # Create R2 bucket
 wrangler secret put <SECRET_NAME>         # Set production secret
 wrangler pages deploy                     # Deploy to Cloudflare Pages
+wrangler pages deployment list            # List recent deployments
 wrangler login                            # Login to Cloudflare
 
 # Linting & Formatting
@@ -66,69 +74,134 @@ Client Browser → Cloudflare Edge (Next.js) → D1 Database
                   R2 Storage (Files)
 ```
 
-### Directory Structure (To Be Built)
+### Directory Structure (Current Implementation)
 ```
 lunaxcode/
-├── app/
-│   ├── (auth)/           # Login/signup pages
-│   ├── (dashboard)/      # Client dashboard (protected)
-│   ├── (admin)/          # Admin dashboard (admin only)
-│   ├── (public)/         # Public pages (FAQ, terms, privacy)
-│   ├── api/              # API routes
-│   └── actions/          # Server actions
-├── components/
-│   ├── ui/               # shadcn/ui components
-│   ├── dashboard/        # Dashboard-specific components
-│   ├── projects/         # Project management components
-│   └── admin/            # Admin-specific components
-├── lib/
-│   ├── db/
-│   │   ├── schema.ts     # Drizzle schema definitions
-│   │   ├── relations.ts  # Table relations
-│   │   └── index.ts      # DB client
-│   ├── gemini.ts         # Google Gemini AI integration
-│   ├── paymongo.ts       # PayMongo SDK wrapper
-│   └── utils.ts          # Utility functions
-├── migrations/           # Database migrations (SQL)
-├── public/               # Static assets
-├── .env.local            # Local environment variables
-├── .env.example          # Environment template
-├── wrangler.toml         # Cloudflare configuration
-└── docs/                 # Project documentation
+├── src/
+│   ├── app/
+│   │   ├── (marketing)/      # Public landing page
+│   │   ├── (admin)/          # ✅ Admin dashboard (implemented)
+│   │   │   ├── admin/
+│   │   │   │   ├── page.tsx          # Dashboard overview with stats
+│   │   │   │   ├── clients/page.tsx  # Client management
+│   │   │   │   ├── projects/page.tsx # Project management
+│   │   │   │   ├── payments/page.tsx # Payment tracking
+│   │   │   │   ├── settings/page.tsx # System settings
+│   │   │   │   └── cms/              # CMS system
+│   │   │   │       ├── faqs/page.tsx      # FAQ management
+│   │   │   │       ├── portfolio/page.tsx # Portfolio management
+│   │   │   │       ├── services/page.tsx  # Services management
+│   │   │   │       ├── process/page.tsx   # Process steps
+│   │   │   │       └── features/page.tsx  # Platform features
+│   │   ├── api/              # ✅ API routes (implemented)
+│   │   │   ├── auth/         # NextAuth handlers
+│   │   │   ├── projects/     # Project CRUD
+│   │   │   ├── tasks/        # Task management
+│   │   │   ├── messages/     # Project messaging
+│   │   │   └── admin/        # Admin API endpoints
+│   │   │       ├── clients/  # Client management API
+│   │   │       ├── projects/ # Admin project management
+│   │   │       ├── payments/ # Payment tracking API
+│   │   │       ├── cms/      # CMS API (faqs, portfolio, services, process)
+│   │   │       ├── stats/    # Dashboard statistics
+│   │   │       └── make-admin/ # User to admin promotion endpoint
+│   │   ├── dashboard/        # Client dashboard
+│   │   ├── projects/         # Project pages
+│   │   ├── login/            # Login page
+│   │   ├── onboarding/       # Project creation wizard
+│   │   ├── error.tsx         # ✅ Global error handler
+│   │   ├── not-found.tsx     # ✅ 404 page
+│   │   ├── global-error.tsx  # ✅ Root error handler
+│   │   └── layout.tsx        # Root layout
+│   ├── components/
+│   │   └── ui/               # ✅ shadcn/ui components (installed)
+│   │       ├── button.tsx
+│   │       ├── input.tsx
+│   │       ├── textarea.tsx
+│   │       ├── label.tsx
+│   │       ├── switch.tsx
+│   │       ├── select.tsx
+│   │       ├── table.tsx
+│   │       ├── badge.tsx
+│   │       ├── dialog.tsx
+│   │       ├── card.tsx
+│   │       └── tabs.tsx
+│   ├── lib/
+│   │   ├── db/
+│   │   │   ├── schema.ts     # ✅ Drizzle schema (complete)
+│   │   │   └── index.ts      # DB client
+│   │   ├── auth.ts           # NextAuth configuration
+│   │   └── utils.ts          # Utility functions
+│   └── auth.ts               # NextAuth handlers
+├── scripts/
+│   ├── seed.ts               # ✅ TypeScript seed script
+│   └── seed.sql              # ✅ SQL seed script
+├── docs/
+│   ├── lunaxcode_complete_plan.txt  # Original development plan
+│   └── SEEDING_SUMMARY.md           # ✅ Database seeding documentation
+├── migrations/               # Database migrations (SQL)
+├── public/                   # Static assets
+├── .env.local                # Local environment variables
+├── components.json           # ✅ shadcn/ui configuration
+├── wrangler.toml             # Cloudflare configuration
+└── CLAUDE.md                 # This file
 ```
 
 ### Key Pages & Routes
 
 **Authentication:**
-- `/login` - Google OAuth login
-- `/signup` - User registration
+- ✅ `/login` - Google OAuth login
+- `/signup` - User registration (to be implemented)
 
 **Client Dashboard:**
-- `/dashboard` - Overview with stats
-- `/projects` - All projects list
-- `/projects/[id]` - Project detail (PRD, tasks, timeline)
-- `/projects/[id]/messages` - Project messaging
-- `/projects/[id]/payment` - Payment interface
-- `/onboarding` - New project creation (3-step form)
+- ✅ `/dashboard` - Overview with stats
+- ✅ `/projects` - All projects list
+- ✅ `/projects/[id]` - Project detail (PRD, tasks, timeline)
+- `/projects/[id]/messages` - Project messaging (to be implemented)
+- `/projects/[id]/payment` - Payment interface (to be implemented)
+- ✅ `/onboarding` - New project creation (3-step form)
 
-**Admin Dashboard:**
-- `/admin` - Overview & analytics
-- `/admin/projects` - All projects management
-- `/admin/clients` - Client management
-- `/admin/payments` - Payment tracking
-- `/admin/content` - CMS (services, FAQ, emails)
-- `/admin/settings` - System configuration
+**Admin Dashboard (✅ Fully Implemented):**
+- ✅ `/admin` - Overview & analytics with stats cards
+- ✅ `/admin/projects` - All projects management
+- ✅ `/admin/clients` - Client management with user table
+- ✅ `/admin/payments` - Payment tracking with status filters
+- ✅ `/admin/cms/faqs` - FAQ content management
+- ✅ `/admin/cms/portfolio` - Portfolio items management
+- ✅ `/admin/cms/services` - Service offerings and pricing
+- ✅ `/admin/cms/process` - Process steps management
+- ✅ `/admin/cms/features` - Platform features management
+- ✅ `/admin/settings` - System configuration (profile, system, notifications, security)
 
 **API Routes:**
-- `/api/auth/[...nextauth]` - NextAuth handlers
-- `/api/projects` - Project CRUD
-- `/api/payment` - Payment processing
-- `/api/upload` - File upload to R2
-- `/api/webhooks/paymongo` - Payment webhooks
+- ✅ `/api/auth/[...nextauth]` - NextAuth handlers
+- ✅ `/api/projects` - Project CRUD
+- ✅ `/api/projects/[id]` - Individual project operations
+- ✅ `/api/tasks/[id]` - Task status updates
+- ✅ `/api/messages` - Project messaging
+- ✅ `/api/admin/clients` - Client management API
+- ✅ `/api/admin/clients/[id]` - Individual client operations
+- ✅ `/api/admin/projects` - Admin project management
+- ✅ `/api/admin/projects/[id]` - Admin project operations
+- ✅ `/api/admin/payments` - Payment tracking API
+- ✅ `/api/admin/payments/[id]` - Individual payment operations
+- ✅ `/api/admin/stats` - Dashboard statistics
+- ✅ `/api/admin/cms/faqs` - FAQ CRUD operations
+- ✅ `/api/admin/cms/faqs/[id]` - Individual FAQ operations
+- ✅ `/api/admin/cms/portfolio` - Portfolio CRUD
+- ✅ `/api/admin/cms/portfolio/[id]` - Individual portfolio operations
+- ✅ `/api/admin/cms/services` - Services CRUD
+- ✅ `/api/admin/cms/services/[id]` - Individual service operations
+- ✅ `/api/admin/cms/process` - Process steps CRUD
+- ✅ `/api/admin/cms/process/[id]` - Individual process operations
+- ✅ `/api/admin/make-admin` - Promote authenticated user to admin (GET to check, POST to promote)
+- `/api/payment` - Payment processing (to be implemented)
+- `/api/upload` - File upload to R2 (to be implemented)
+- `/api/webhooks/paymongo` - Payment webhooks (to be implemented)
 
 ## Database Schema
 
-### Core Tables
+### Core Tables (✅ All Implemented)
 - **users** - Authentication and user profiles (role: 'admin' | 'client')
 - **projects** - Main project records with PRD, status, payment info
 - **tasks** - AI-generated task breakdown for each project
@@ -137,6 +210,9 @@ lunaxcode/
 - **messages** - Client-agency communication per project
 - **service_types** - CMS for service offerings and pricing
 - **faqs** - CMS for FAQ content
+- **portfolio** - CMS for portfolio showcase items
+- **process_steps** - CMS for process/workflow steps
+- **platform_features** - CMS for platform feature highlights
 
 ### Key Relationships
 - User → Projects (one-to-many)
@@ -144,6 +220,20 @@ lunaxcode/
 - Project → Payments (one-to-many)
 - Project → Files (one-to-many)
 - Project → Messages (one-to-many)
+- ServiceType → Projects (one-to-many)
+
+### Seeded Data (✅ Production Database)
+The production database has been seeded with:
+- **1 admin user**: admin@lunaxcode.com (from seed script)
+- **2 sample clients**: Juan dela Cruz, Maria Santos
+- **5 service types**: Landing Page (₱15k), Business Website (₱35k), E-Commerce (₱75k), Web App (₱150k), Mobile App (₱200k)
+- **8 FAQs**: Common questions about services, timeline, payments
+- **3 portfolio items**: FoodHub, SchoolConnect, StyleShop
+- **5 process steps**: Discovery → Planning → Development → Testing → Launch
+- **6 platform features**: AI-powered PRD, Task breakdown, Real-time updates, etc.
+- **2 sample projects**: With complete task breakdowns
+
+See `docs/SEEDING_SUMMARY.md` for detailed seed data documentation.
 
 ## Code Style & Patterns
 
@@ -271,16 +361,42 @@ The `wrangler.toml` file should include:
 - **client** - Default role for new users, access to own projects only
 - **admin** - Full system access, can view/edit all projects
 
+### Authentication Strategy
+- **NextAuth.js with JWT-only strategy** (no database session storage)
+- **Google OAuth** as primary provider
+- **JWT tokens** store user ID and role
+- **Important**: Users authenticated via OAuth are NOT automatically added to the database
+- **User records** must be created separately for database operations (projects, payments, etc.)
+
+### Becoming an Admin
+Since authentication uses JWT-only (no database persistence), users need to be added to the database manually:
+
+1. **Login with Google OAuth** - Creates JWT session but no database record
+2. **Call `/api/admin/make-admin` endpoint**:
+   - `GET` - Check if your user exists in database
+   - `POST` - Create/update your user record with admin role
+3. **Browser console command**:
+   ```javascript
+   fetch('/api/admin/make-admin', {
+     method: 'POST',
+     credentials: 'include'
+   }).then(r => r.json()).then(console.log);
+   ```
+4. **Refresh page** - Admin dashboard will now be accessible
+
+**Note**: The make-admin endpoint uses the authenticated session email, so you must be logged in first.
+
 ### Middleware Protection
 - `/dashboard/*` - Requires authentication
 - `/admin/*` - Requires authentication + admin role
 - `/projects/*` - Requires authentication + ownership check
 
 ### Session Management
-- NextAuth.js with JWT strategy
+- NextAuth.js with JWT strategy (no database sessions)
 - Google OAuth as primary provider
 - Session includes user ID and role
 - Session checks on both client and server side
+- **JWT role is set to 'client' by default** - admin access requires database record
 
 ## Development Workflow
 
@@ -364,13 +480,33 @@ git merge task-XXX-description
 
 ## Common Pitfalls
 
-1. **Edge Runtime Errors**: Remember to add `export const runtime = 'edge'` for routes using R2/D1
-2. **Database Schema Changes**: Always generate migrations, don't push directly in production
-3. **Payment Webhooks**: Must verify signature before processing to prevent fraud
-4. **Role Checks**: Always verify user role on server side, never trust client
-5. **AI Generation Timeouts**: Implement proper loading states, AI calls can take 20-30 seconds
-6. **File Upload Limits**: R2 has no size limits, but implement client-side validation
-7. **Session Expiry**: Handle session expiry gracefully, redirect to login
+1. **Build Process**: MUST use `npm run pages:build` for Cloudflare deployments, NOT `npm run build`. The standard Next.js build fails with edge runtime errors.
+
+2. **Missing shadcn/ui Components**: If you add new shadcn/ui components to pages, install them first:
+   ```bash
+   npx shadcn@latest add button input textarea
+   ```
+   Missing components will cause production build failures.
+
+3. **Edge Runtime Errors**: Remember to add `export const runtime = 'edge'` for routes using R2/D1. Without this, API routes won't work on Cloudflare Pages.
+
+4. **User Database Records**: Users authenticated via Google OAuth are NOT automatically in the database. They need to:
+   - Create projects (which creates their user record), OR
+   - Use `/api/admin/make-admin` endpoint to manually create their record
+
+5. **Database Schema Changes**: Always generate migrations with `npm run db:generate`, don't push directly in production. Run `wrangler d1 migrations apply` to apply.
+
+6. **Payment Webhooks**: Must verify PayMongo signature before processing to prevent fraud.
+
+7. **Role Checks**: Always verify user role on server side, never trust client. Check database role, not just JWT token.
+
+8. **AI Generation Timeouts**: Implement proper loading states, AI calls can take 20-30 seconds.
+
+9. **File Upload Limits**: R2 has no size limits, but implement client-side validation for UX.
+
+10. **Session Expiry**: Handle session expiry gracefully, redirect to login.
+
+11. **Error Pages**: Next.js App Router requires `error.tsx`, `not-found.tsx`, and `global-error.tsx` for proper error handling in production builds.
 
 ## Deployment
 
@@ -380,9 +516,12 @@ git merge task-XXX-description
 wrangler d1 create lunaxcode-prod
 
 # 2. Run migrations
-wrangler d1 migrations apply lunaxcode-prod
+wrangler d1 migrations apply lunaxcode-prod --remote
 
-# 3. Set production secrets
+# 3. Seed production database
+npm run db:seed:prod
+
+# 4. Set production secrets (if not already set)
 wrangler secret put NEXTAUTH_SECRET
 wrangler secret put GOOGLE_CLIENT_ID
 wrangler secret put GOOGLE_CLIENT_SECRET
@@ -391,9 +530,21 @@ wrangler secret put PAYMONGO_PUBLIC_KEY
 wrangler secret put PAYMONGO_SECRET_KEY
 wrangler secret put PAYMONGO_WEBHOOK_SECRET
 
-# 4. Build and deploy
-npm run build
-wrangler pages deploy
+# 5. Build and deploy (IMPORTANT: Use pages:build, not build!)
+npm run pages:build    # Builds specifically for Cloudflare Pages
+npm run deploy         # Or: npm run pages:build && wrangler pages deploy
+```
+
+### Cloudflare Pages Automatic Deployment
+When you push to GitHub, Cloudflare Pages automatically:
+1. Detects the push
+2. Runs `npm run pages:build`
+3. Deploys to production if on main branch
+4. Provides deployment URL
+
+Check deployment status:
+```bash
+npx wrangler pages deployment list --project-name=lunaxcode-saas
 ```
 
 ### Post-Deployment
@@ -416,11 +567,40 @@ wrangler pages deploy
 
 ## Project Context
 
-This is a complete rebuild following a comprehensive 34-task development plan. The plan document (`docs/lunaxcode_complete_plan.txt`) contains:
-- Detailed architecture specifications
-- Complete database schema with migrations
-- Full implementation code for all 34 tasks
-- Testing checklist
-- Deployment procedures
+### Implementation Status
 
-Estimated total development time: ~29 hours for complete MVP.
+**✅ Completed Features:**
+- Authentication system with Google OAuth (NextAuth.js)
+- Complete admin dashboard with 10+ pages
+- CMS system (FAQs, Portfolio, Services, Process Steps, Features)
+- Database schema with 11 tables
+- Database seeding scripts (TypeScript + SQL)
+- All admin API endpoints (20+ routes)
+- shadcn/ui component library installed
+- Error pages for App Router
+- Production deployment on Cloudflare Pages
+
+**🚧 In Progress / To Be Implemented:**
+- AI-powered PRD generation (Google Gemini integration)
+- PayMongo payment integration
+- Client project messaging system
+- File upload to R2 storage
+- Payment webhooks
+- Advanced client dashboard features
+
+**📖 Development Plan:**
+The original development plan (`docs/lunaxcode_complete_plan.txt`) contains the 34-task roadmap. Current progress: ~40% complete (focusing on admin features first).
+
+**🔗 Production URL:** https://lunaxcode-saas.pages.dev
+
+**📝 Key Documentation:**
+- `CLAUDE.md` - This file (project overview and development guide)
+- `docs/SEEDING_SUMMARY.md` - Database seeding documentation
+- `docs/lunaxcode_complete_plan.txt` - Original 34-task implementation plan
+
+**⚙️ Current Tech Choices:**
+- JWT-only authentication (no database sessions)
+- Edge runtime for all API routes
+- Cloudflare D1 for database (SQLite)
+- Cloudflare Pages for hosting
+- Automatic deployments on git push
