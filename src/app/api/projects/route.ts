@@ -3,6 +3,8 @@ import { auth } from '@/auth';
 import { generatePRD, generateTasks, estimatePrice } from '@/lib/gemini';
 import { getDatabase } from '@/lib/db/client';
 import { createProject, createTasks, getProjectsByUserId } from '@/lib/db/queries';
+import { users } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 
 // Fallback in-memory store for when D1 is not available
 let projectsStore: any[] = [];
@@ -13,7 +15,7 @@ let taskIdCounter = 1;
 export async function POST(request: NextRequest) {
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -78,7 +80,25 @@ export async function POST(request: NextRequest) {
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + timeline);
 
-    const userId = session.user.id || session.user.email!;
+    // Get user ID from database using email (session.user.id is OAuth provider ID, not DB ID)
+    let userId: string;
+    if (useDatabase) {
+      const [user] = await db!
+        .select()
+        .from(users)
+        .where(eq(users.email, session.user.email))
+        .limit(1);
+
+      if (!user) {
+        return NextResponse.json({
+          error: 'User not found. Please try logging in again.'
+        }, { status: 404 });
+      }
+      userId = user.id;
+    } else {
+      // For in-memory storage, use email as userId
+      userId = session.user.email;
+    }
 
     // Create project data
     const projectData = {
@@ -183,24 +203,34 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   // Try to get D1 database
   const db = getDatabase((request as any).env);
-  const userId = session.user.id || session.user.email!;
 
   try {
     let userProjects;
 
     if (db) {
+      // Get user ID from database using email (session.user.id is OAuth provider ID, not DB ID)
+      const [user] = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, session.user.email))
+        .limit(1);
+
+      if (!user) {
+        return NextResponse.json({ error: 'User not found' }, { status: 404 });
+      }
+
       // Use D1 database
-      userProjects = await getProjectsByUserId(db, userId);
+      userProjects = await getProjectsByUserId(db, user.id);
     } else {
-      // Use in-memory store
+      // Use in-memory store (fallback for local dev without D1)
       userProjects = projectsStore
-        .filter((p) => p.userId === userId)
+        .filter((p) => p.userId === session.user.email)
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
 

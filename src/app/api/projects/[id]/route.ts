@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { getDatabase } from '@/lib/db/client';
 import { getProjectWithTasks } from '@/lib/db/queries';
+import { users } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
@@ -9,13 +11,12 @@ export async function GET(
 ) {
   const session = await auth();
 
-  if (!session?.user) {
+  if (!session?.user?.email) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   // Try to get D1 database
   const db = getDatabase((request as any).env);
-  const userId = session.user.id || session.user.email!;
 
   try {
     const { id } = await params;
@@ -29,7 +30,21 @@ export async function GET(
       }, { status: 503 });
     }
 
-    const project = await getProjectWithTasks(db, projectId, userId);
+    // Get user ID from database using email (session.user.id is OAuth provider ID, not DB ID)
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, session.user.email))
+      .limit(1);
+
+    if (!user) {
+      return NextResponse.json({
+        error: 'User not found',
+        message: 'Please try logging in again',
+      }, { status: 404 });
+    }
+
+    const project = await getProjectWithTasks(db, projectId, user.id);
 
     if (!project) {
       return NextResponse.json({
