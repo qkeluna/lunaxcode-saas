@@ -58,11 +58,11 @@ export default function OnboardingPage() {
           return;
         }
 
-        // Fetch the specific service details
-        const response = await fetch('/api/admin/cms/services');
+        // Fetch the specific service details from public API
+        const response = await fetch('/api/public/services');
         if (response.ok) {
-          const data = await response.json();
-          const service = data.services.find((s: any) => s.id === parseInt(serviceId));
+          const services = await response.json();
+          const service = services.find((s: any) => s.id === parseInt(serviceId));
 
           if (service) {
             setSelectedService(service);
