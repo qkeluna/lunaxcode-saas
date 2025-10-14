@@ -47,7 +47,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             console.log('[Auth] Creating new user:', user.email);
             await db.insert(users).values({
               id: user.id || `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-              name: user.name,
+              name: user.name || 'User', // Default to 'User' if name not provided
               email: user.email,
               image: user.image,
               role: 'client', // Default role for new users
@@ -61,7 +61,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             await db
               .update(users)
               .set({
-                name: user.name,
+                name: user.name || 'User', // Default to 'User' if name not provided
                 image: user.image,
                 updatedAt: new Date(),
               })
