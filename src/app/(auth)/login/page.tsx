@@ -13,8 +13,12 @@ function LoginContent() {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     try {
-      // If coming from onboarding, redirect to project creation page
-      const callbackUrl = fromOnboarding ? '/dashboard/create-project' : '/dashboard';
+      // Check for explicit callbackUrl parameter first
+      const callbackUrlParam = searchParams.get('callbackUrl');
+
+      // If coming from onboarding, use callbackUrl or default to dashboard
+      const callbackUrl = callbackUrlParam || (fromOnboarding ? '/dashboard/create-project' : '/dashboard');
+
       await signIn('google', { callbackUrl });
     } catch (error) {
       console.error('Sign in error:', error);

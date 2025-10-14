@@ -33,6 +33,7 @@ export default async function Pricing() {
 
   // Map services to plans format with timeline and popular from database
   const plans = services.map((service: any) => ({
+    id: service.id,
     name: service.name,
     price: (service.basePrice / 1000).toFixed(0) + ',000', // Convert from centavos and format
     description: service.description || '',
@@ -180,7 +181,7 @@ export default async function Pricing() {
 
               {/* CTA Button */}
               <Link
-                href="/onboarding"
+                href={`/onboarding?serviceId=${plan.id}`}
                 className={`block w-full py-3.5 rounded-xl font-semibold text-center transition-all duration-300 mt-auto ${
                   plan.popular
                     ? 'bg-white text-gray-900 hover:bg-gray-100 shadow-lg hover:shadow-xl'

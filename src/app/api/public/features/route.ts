@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
-import { platformFeatures } from '@/lib/db/schema';
+import { features } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { fallbackFeatures } from '@/lib/db/fallback-data';
 
@@ -17,13 +17,13 @@ export async function GET() {
     }
 
     const db = drizzle(context.env.DB);
-    const features = await db
+    const featuresList = await db
       .select()
-      .from(platformFeatures)
-      .where(eq(platformFeatures.isActive, true))
-      .orderBy(platformFeatures.order);
+      .from(features)
+      .where(eq(features.isActive, true))
+      .orderBy(features.order);
 
-    return NextResponse.json(features);
+    return NextResponse.json(featuresList);
   } catch (error) {
     console.error('Error fetching features:', error);
     return NextResponse.json(

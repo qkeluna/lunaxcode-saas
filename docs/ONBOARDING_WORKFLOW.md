@@ -1,0 +1,853 @@
+# Onboarding Workflow & Database Schema
+
+## Overview
+
+This document explains the complete onboarding workflow and database relationships for the Lunaxcode SaaS platform.
+
+## Database Schema & Relationships
+
+### Entity Relationship Diagram
+
+```
+users (1)
+   ↓ (owns)
+   ↓
+projects (M) ←──────────────┐
+   ↓                        │
+   ├──→ project_answers (M) │ (stores question answers)
+   ├──→ tasks (M)           │
+   ├──→ payments (M)        │
+   ├──→ files (M)           │
+   └──→ messages (M)        │
+   ↑                        │
+   │                        │
+   └─ references ───────────┘
+                service_types (1)
+                    ↓
+                    ├──→ questions (M)
+                         ↓
+                         └──→ question_options (M)
+```
+
+### Core Tables
+
+#### 1. **service_types** (CMS-managed)
+Services offered on the platform (Landing Page, Business Website, etc.)
+
+```sql
+CREATE TABLE service_types (
+  id INTEGER PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT,
+  base_price INTEGER NOT NULL,
+  features TEXT, -- JSON array
+  timeline TEXT, -- e.g., "1-2 weeks"
+  popular BOOLEAN DEFAULT FALSE,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP
+);
+```
+
+#### 2. **questions** (Dynamic onboarding questions per service)
+Each service type has specific questions to gather requirements.
+
+```sql
+CREATE TABLE questions (
+  id INTEGER PRIMARY KEY,
+  service_id INTEGER NOT NULL REFERENCES service_types(id) ON DELETE CASCADE,
+  question_key TEXT NOT NULL UNIQUE, -- e.g., 'target_audience', 'design_preferences'
+  question_text TEXT NOT NULL, -- "Who is your target audience?"
+  question_type TEXT NOT NULL, -- 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'number'
+  required BOOLEAN DEFAULT FALSE,
+  placeholder TEXT,
+  sort_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP
+);
+```
+
+**Note:** Current production database has `label`, `type`, `is_required` columns which need to be renamed to `question_text`, `question_type`, `required`.
+
+#### 3. **question_options** (Options for select/radio/checkbox questions)
+Predefined options for dropdown, radio, and checkbox questions.
+
+```sql
+CREATE TABLE question_options (
+  id INTEGER PRIMARY KEY,
+  question_id INTEGER NOT NULL REFERENCES questions(id) ON DELETE CASCADE,
+  option_value TEXT NOT NULL,
+  sort_order INTEGER DEFAULT 0,
+  created_at TIMESTAMP
+);
+```
+
+#### 4. **users** (Client accounts)
+User accounts created after onboarding.
+
+```sql
+CREATE TABLE users (
+  id TEXT PRIMARY KEY, -- UUID
+  name TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
+  password TEXT,
+  role TEXT DEFAULT 'client', -- 'admin' | 'client'
+  email_verified TIMESTAMP,
+  image TEXT,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+```
+
+#### 5. **projects** (Main project records)
+Created when user completes onboarding and account creation.
+
+```sql
+CREATE TABLE projects (
+  id INTEGER PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id),
+  service_type_id INTEGER NOT NULL REFERENCES service_types(id), -- ⚠️ Changed to NOT NULL
+  name TEXT NOT NULL,
+  service TEXT NOT NULL, -- Denormalized service name
+  description TEXT NOT NULL,
+  prd TEXT, -- AI-generated PRD (nullable until generated)
+  client_name TEXT NOT NULL,
+  client_email TEXT NOT NULL,
+  client_phone TEXT,
+  timeline INTEGER, -- Can be derived from service_types
+  budget INTEGER, -- Can be derived from service_types.base_price
+  price INTEGER NOT NULL, -- Final calculated price
+  payment_status TEXT DEFAULT 'pending', -- 'pending' | 'partially-paid' | 'paid'
+  deposit_amount INTEGER DEFAULT 0,
+  status TEXT DEFAULT 'pending', -- 'pending' | 'in-progress' | 'completed' | 'on-hold'
+  start_date TIMESTAMP,
+  end_date TIMESTAMP,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+```
+
+#### 6. **project_answers** (⭐ NEW TABLE - Stores question answers)
+Stores the user's answers to service-specific questions during onboarding.
+
+```sql
+CREATE TABLE project_answers (
+  id INTEGER PRIMARY KEY,
+  project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  question_id INTEGER NOT NULL REFERENCES questions(id),
+  question_key TEXT NOT NULL, -- Denormalized for quick access
+  answer_value TEXT NOT NULL, -- Store as JSON string for arrays/objects
+  created_at TIMESTAMP
+);
+```
+
+**Example data:**
+```json
+[
+  {
+    "project_id": 1,
+    "question_id": 3,
+    "question_key": "design_preferences",
+    "answer_value": "Modern, minimalist with dark mode"
+  },
+  {
+    "project_id": 1,
+    "question_id": 5,
+    "question_key": "required_features",
+    "answer_value": "[\"User Authentication\",\"Payment Integration\",\"Admin Dashboard\"]"
+  }
+]
+```
+
+#### 7. **tasks** (AI-generated task breakdown)
+Tasks generated by AI based on the PRD.
+
+```sql
+CREATE TABLE tasks (
+  id INTEGER PRIMARY KEY,
+  project_id INTEGER NOT NULL REFERENCES projects(id),
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  section TEXT NOT NULL,
+  priority TEXT NOT NULL, -- 'low' | 'medium' | 'high'
+  status TEXT DEFAULT 'pending', -- 'pending' | 'in-progress' | 'completed'
+  estimated_hours INTEGER NOT NULL,
+  dependencies TEXT, -- JSON array of task IDs
+  order INTEGER NOT NULL,
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+```
+
+#### 8. **payments** (Payment records)
+Tracks payments for projects (50% deposit, 50% on completion).
+
+```sql
+CREATE TABLE payments (
+  id INTEGER PRIMARY KEY,
+  project_id INTEGER NOT NULL REFERENCES projects(id),
+  user_id TEXT NOT NULL,
+  amount INTEGER NOT NULL,
+  payment_method TEXT NOT NULL, -- 'card' | 'gcash' | 'paymaya'
+  payment_intent_id TEXT NOT NULL,
+  status TEXT NOT NULL, -- 'processing' | 'succeeded' | 'failed'
+  metadata TEXT, -- JSON
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
+);
+```
+
+---
+
+## Complete Onboarding Workflow
+
+### ⚠️ IMPORTANT: User Flow Sequence
+
+**The user does NOT have an account yet during onboarding!**
+
+```
+Step 1: Anonymous User Onboarding (No Account)
+        ↓
+Step 2: Account Creation (Signup/Login)
+        ↓
+Step 3: Project Creation from Onboarding Data
+        ↓
+Step 4: AI Generates PRD & Tasks
+        ↓
+Step 5: User Sees Project Dashboard
+```
+
+---
+
+### 1. **Landing Page - Service Selection** (Anonymous User)
+```
+User → Pricing Section → Clicks "Get Started" on a service
+      → Redirects to: /onboarding?serviceId=1
+
+⚠️ User is NOT logged in at this point
+```
+
+### 2. **Onboarding Page - Step 1: Project Details**
+```javascript
+// Page loads with pre-selected service from URL parameter
+const serviceId = searchParams.get('serviceId');
+
+// Fetch service details from database
+const service = await fetch(`/api/admin/cms/services/${serviceId}`);
+
+// Display service details (read-only):
+- Service name: "Landing Page"
+- Base price: "₱15,000"
+- Timeline: "1-2 weeks"
+
+// User fills:
+- Project description (textarea, min 20 chars)
+```
+
+### 3. **Onboarding Page - Step 2: Dynamic Questions**
+```javascript
+// Fetch questions for this service type
+const questions = await fetch(`/api/questions/${serviceId}`);
+
+// Example questions for Landing Page service:
+[
+  {
+    questionKey: 'page_type',
+    questionText: 'What type of landing page?',
+    questionType: 'select',
+    options: ['Product Launch', 'Lead Generation', 'Event Registration']
+  },
+  {
+    questionKey: 'design_style',
+    questionText: 'Preferred design style',
+    questionType: 'select',
+    options: ['Modern', 'Minimal', 'Bold & Colorful']
+  },
+  {
+    questionKey: 'required_sections',
+    questionText: 'Required sections',
+    questionType: 'checkbox',
+    options: ['Hero Section', 'Features', 'Pricing', 'FAQ', 'Contact Form']
+  }
+]
+
+// User answers all required questions
+// Answers stored in: formData.questionAnswers
+{
+  'page_type': 'Product Launch',
+  'design_style': 'Modern',
+  'required_sections': ['Hero Section', 'Features', 'Pricing']
+}
+```
+
+### 4. **Onboarding Page - Step 3: Contact Info & Summary**
+```javascript
+// User provides:
+- Full name
+- Email address
+- Phone number (optional)
+
+// Summary displays:
+- Service: Landing Page
+- Base Price: ₱15k
+- Timeline: 1-2 weeks
+- Requirements: 5 questions answered
+- Contact: John Doe • john@example.com
+```
+
+### 5. **Submit & Store in SessionStorage** (Still Anonymous)
+```javascript
+// ⚠️ User is STILL NOT logged in at this point
+// We store the onboarding data temporarily in browser sessionStorage
+
+const onboardingData = {
+  serviceId: '1',
+  serviceName: 'Landing Page',
+  description: 'A modern landing page for our SaaS product...',
+  questionAnswers: {
+    'page_type': 'Product Launch',
+    'design_style': 'Modern',
+    'required_sections': ['Hero Section', 'Features', 'Pricing']
+  },
+  clientName: 'John Doe',
+  clientEmail: 'john@example.com',
+  clientPhone: '+639123456789'
+};
+
+// Store in browser
+sessionStorage.setItem('onboardingData', JSON.stringify(onboardingData));
+
+// NOW redirect to account creation
+router.push('/login?from=onboarding');
+```
+
+### 6. **User Creates Account** (Signup/Login)
+```javascript
+// ✅ User creates account via Google OAuth or email/password
+// This creates a record in the 'users' table
+
+// After successful authentication:
+const session = await getServerSession();
+console.log('User created:', session.user.id);
+
+// Check for pending onboarding data
+const onboardingData = sessionStorage.getItem('onboardingData');
+
+if (onboardingData) {
+  // User came from onboarding flow
+  // Redirect to project creation API
+  router.push('/api/projects/create-from-onboarding');
+} else {
+  // Regular login, go to dashboard
+  router.push('/dashboard');
+}
+```
+
+### 7. **Project Creation API** (`/api/projects/create-from-onboarding`)
+```javascript
+POST /api/projects/create-from-onboarding
+
+// Request body (from sessionStorage):
+{
+  serviceId: 1,
+  serviceName: 'Landing Page',
+  description: 'A modern landing page...',
+  questionAnswers: {
+    'page_type': 'Product Launch',
+    'design_style': 'Modern',
+    'required_sections': ['Hero Section', 'Features', 'Pricing']
+  },
+  clientName: 'John Doe',
+  clientEmail: 'john@example.com',
+  clientPhone: '+639123456789'
+}
+
+// ✅ Backend process (User is NOW authenticated):
+
+// 1. Get authenticated user (MUST be logged in)
+const session = await getServerSession();
+if (!session) {
+  return { error: 'Unauthorized' };
+}
+const userId = session.user.id; // From users table
+
+// 2. Get service details from database
+const [service] = await db
+  .select()
+  .from(serviceTypes)
+  .where(eq(serviceTypes.id, serviceId))
+  .limit(1);
+
+// 3. Create project record in 'projects' table
+const [project] = await db
+  .insert(projects)
+  .values({
+    userId: userId, // ← Link to authenticated user
+    serviceTypeId: serviceId, // ← Link to service_types
+    name: `${serviceName} for ${clientName}`,
+    service: serviceName,
+    description: description,
+    clientName: clientName,
+    clientEmail: clientEmail,
+    clientPhone: clientPhone,
+    price: service.basePrice, // Starting price from service
+    timeline: null, // Will be estimated by AI
+    budget: service.basePrice,
+    prd: null, // ← Will be generated by AI (see step 5)
+    status: 'pending',
+    paymentStatus: 'pending'
+  })
+  .returning();
+
+console.log('✅ Project created:', project.id);
+
+// 4. Store question answers in 'project_answers' table
+for (const [questionKey, answerValue] of Object.entries(questionAnswers)) {
+  // Get question ID from questions table
+  const [question] = await db
+    .select()
+    .from(questions)
+    .where(eq(questions.questionKey, questionKey))
+    .limit(1);
+
+  if (question) {
+    // Store answer
+    await db.insert(projectAnswers).values({
+      projectId: project.id,
+      questionId: question.id,
+      questionKey: questionKey,
+      answerValue: typeof answerValue === 'object'
+        ? JSON.stringify(answerValue) // Store arrays/objects as JSON
+        : String(answerValue)
+    });
+  }
+}
+
+console.log('✅ Question answers stored');
+
+// 5. 🤖 Generate PRD using Google Gemini AI
+// This uses the onboarding data + question answers
+const prdPrompt = `
+Create a comprehensive Project Requirements Document for:
+
+Service Type: ${serviceName}
+Client: ${clientName}
+Project Description: ${description}
+
+Client Requirements (from onboarding questions):
+${Object.entries(questionAnswers)
+  .map(([key, value]) => `- ${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
+  .join('\n')}
+
+Generate a detailed PRD including:
+1. Project Overview
+2. Target Audience
+3. Core Features
+4. Technical Requirements
+5. Design Specifications
+6. Success Metrics
+`;
+
+const prd = await generatePRD(prdPrompt); // Call Google Gemini API
+
+// 6. Update project with generated PRD
+await db
+  .update(projects)
+  .set({ prd: prd })
+  .where(eq(projects.id, project.id));
+
+console.log('✅ PRD generated and saved');
+
+// 7. 🤖 Generate tasks breakdown using AI (15-25 tasks)
+// This analyzes the PRD and creates actionable tasks
+const tasksPrompt = `
+Based on this PRD:
+${prd}
+
+Generate 15-25 specific, actionable development tasks with:
+- Task title
+- Detailed description
+- Section (Frontend, Backend, Database, Design, Testing, Deployment)
+- Priority (high, medium, low)
+- Estimated hours
+- Dependencies (array of task IDs)
+- Order
+`;
+
+const generatedTasks = await generateTasks(tasksPrompt); // Call Google Gemini API
+
+// 8. Insert tasks into 'tasks' table
+for (const task of generatedTasks) {
+  await db.insert(tasks).values({
+    projectId: project.id,
+    title: task.title,
+    description: task.description,
+    section: task.section,
+    priority: task.priority,
+    status: 'pending',
+    estimatedHours: task.estimatedHours,
+    dependencies: JSON.stringify(task.dependencies),
+    order: task.order
+  });
+}
+
+console.log('✅ Tasks generated and saved');
+
+// 9. Clear sessionStorage (onboarding complete)
+// This would be done on the frontend after redirect
+// sessionStorage.removeItem('onboardingData');
+
+// 10. Redirect to project dashboard
+return {
+  success: true,
+  projectId: project.id,
+  redirectUrl: `/projects/${project.id}`
+};
+```
+
+### 8. **User Views Project Dashboard** 🎉
+```
+GET /projects/[id]
+
+User is NOW logged in and sees their project:
+
+┌─────────────────────────────────────────┐
+│ 🚀 Landing Page Project                 │
+│                                         │
+│ Status: Pending Payment                 │
+│ Service: Landing Page (₱15,000)         │
+│ Timeline: 1-2 weeks                     │
+│                                         │
+│ 📄 PRD (AI-Generated)                   │
+│ - Project Overview                      │
+│ - Target Audience: Tech Startups        │
+│ - Core Features: Hero, Pricing, CTA     │
+│ - Design: Modern, Minimalist            │
+│ - Tech Stack: Next.js, Tailwind         │
+│                                         │
+│ ✅ Tasks (18 total)                     │
+│ [━━━━━░░░░░░░░░░] 20% Complete          │
+│                                         │
+│ Frontend (6 tasks)                      │
+│  □ Create hero section                  │
+│  □ Build pricing cards                  │
+│  □ Implement contact form               │
+│                                         │
+│ Backend (4 tasks)                       │
+│  □ Setup API endpoints                  │
+│  □ Configure database                   │
+│                                         │
+│ Design (3 tasks)                        │
+│  □ Create color palette                 │
+│  □ Design component library             │
+│                                         │
+│ 💰 Payment                              │
+│ 50% Deposit: ₱7,500 (Pending)           │
+│ [Pay Now Button]                        │
+└─────────────────────────────────────────┘
+```
+
+**What the client can now do:**
+- ✅ View generated PRD (AI-created from their onboarding answers)
+- ✅ See task breakdown (15-25 tasks organized by section)
+- ✅ Track project progress (task status updates)
+- ✅ Make payment (50% deposit to start)
+- ✅ Communicate with agency (messages)
+- ✅ Upload files
+- ✅ View timeline and milestones
+```
+
+---
+
+## Migration Plan
+
+### Required Schema Changes
+
+#### Phase 1: Rename Questions Table Columns (BREAKING CHANGE)
+```sql
+-- Rename columns in questions table
+ALTER TABLE questions RENAME COLUMN label TO question_text;
+ALTER TABLE questions RENAME COLUMN type TO question_type;
+ALTER TABLE questions RENAME COLUMN is_required TO required;
+
+-- Add new columns
+ALTER TABLE questions ADD COLUMN sort_order INTEGER DEFAULT 0;
+ALTER TABLE questions ADD COLUMN created_at INTEGER;
+```
+
+#### Phase 2: Update Projects Table
+```sql
+-- Make service_type_id NOT NULL (after ensuring all existing records have it)
+UPDATE projects SET service_type_id = 1 WHERE service_type_id IS NULL; -- Set default
+ALTER TABLE projects ALTER COLUMN service_type_id SET NOT NULL;
+
+-- Make description NOT NULL
+ALTER TABLE projects ALTER COLUMN description SET NOT NULL;
+
+-- Make prd NULLABLE (it's generated after project creation)
+-- (Already nullable in new schema)
+```
+
+#### Phase 3: Create project_answers Table (NEW)
+```sql
+CREATE TABLE project_answers (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  question_id INTEGER NOT NULL REFERENCES questions(id),
+  question_key TEXT NOT NULL,
+  answer_value TEXT NOT NULL,
+  created_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
+
+CREATE INDEX idx_project_answers_project_id ON project_answers(project_id);
+CREATE INDEX idx_project_answers_question_id ON project_answers(question_id);
+```
+
+#### Phase 4: Update question_options Table
+```sql
+-- Add created_at column
+ALTER TABLE question_options ADD COLUMN created_at INTEGER DEFAULT (strftime('%s', 'now'));
+```
+
+### Migration Execution Order
+
+1. ✅ Generate migration with `npx drizzle-kit generate`
+2. ⚠️ Review generated SQL carefully
+3. ⚠️ Backup production database: `wrangler d1 backup create lunaxcode-prod`
+4. ✅ Test migration on local database first
+5. ✅ Apply to production: `wrangler d1 migrations apply lunaxcode-prod --remote`
+6. ✅ Verify data integrity after migration
+
+---
+
+## API Endpoints
+
+### Service Questions
+```
+GET /api/questions/[serviceId]
+Returns: { questions: [...with options] }
+```
+
+### Project Creation
+```
+POST /api/projects/create-from-onboarding
+Body: { serviceId, serviceName, description, questionAnswers, clientName, clientEmail, clientPhone }
+Returns: { projectId }
+```
+
+### Retrieve Project with Answers
+```
+GET /api/projects/[id]/details
+Returns: {
+  project: {...},
+  service: {...},
+  answers: [
+    { questionKey, questionText, answerValue }
+  ],
+  tasks: [...]
+}
+```
+
+---
+
+## Data Flow Summary
+
+### Visual Flow Diagram
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    PHASE 1: ANONYMOUS ONBOARDING                    │
+│                      (No User Account Yet)                          │
+└─────────────────────────────────────────────────────────────────────┘
+
+1. Landing Page
+   User clicks "Get Started" on Landing Page service
+   ↓
+2. /onboarding?serviceId=1
+   - Load service details from service_types table
+   - Fetch questions from questions table WHERE service_id = 1
+   ↓
+3. User fills onboarding form (Step 1-3)
+   - Project description
+   - Answers to service-specific questions
+   - Contact information
+   ↓
+4. Submit button clicked
+   - Store ALL data in browser sessionStorage
+   - Redirect to /login?from=onboarding
+
+   sessionStorage = {
+     serviceId: 1,
+     serviceName: "Landing Page",
+     description: "...",
+     questionAnswers: {...},
+     clientName: "...",
+     clientEmail: "..."
+   }
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                    PHASE 2: ACCOUNT CREATION                        │
+│                   (User Gets Authenticated)                         │
+└─────────────────────────────────────────────────────────────────────┘
+
+5. /login page
+   User signs up/logs in via Google OAuth
+   ↓
+6. Authentication successful
+   - User record created/retrieved in users table
+   - Session established
+   ↓
+7. Check for onboarding data
+   if (sessionStorage.onboardingData exists) {
+     → redirect to /api/projects/create-from-onboarding
+   } else {
+     → redirect to /dashboard
+   }
+
+┌─────────────────────────────────────────────────────────────────────┐
+│              PHASE 3: PROJECT & AI GENERATION                       │
+│               (User is Now Authenticated)                           │
+└─────────────────────────────────────────────────────────────────────┘
+
+8. POST /api/projects/create-from-onboarding
+
+   Step 8.1: Create Project Record
+   ────────────────────────────────
+   INSERT INTO projects (
+     user_id,              ← From authenticated session
+     service_type_id,      ← From onboarding data
+     description,          ← From onboarding data
+     client_name,          ← From onboarding data
+     price,                ← From service_types.base_price
+     status: 'pending',
+     prd: NULL             ← Will be generated by AI
+   )
+
+   Step 8.2: Store Question Answers
+   ────────────────────────────────
+   For each question answer:
+     INSERT INTO project_answers (
+       project_id,         ← From step 8.1
+       question_id,        ← From questions table
+       question_key,       ← e.g., 'design_preferences'
+       answer_value        ← User's answer
+     )
+
+   Step 8.3: 🤖 Generate PRD with AI
+   ────────────────────────────────
+   Call Google Gemini API with:
+   - Service type
+   - Project description
+   - All question answers
+
+   Response: Comprehensive PRD document
+
+   UPDATE projects
+   SET prd = '<AI-generated PRD>'
+   WHERE id = project.id
+
+   Step 8.4: 🤖 Generate Tasks with AI
+   ────────────────────────────────
+   Call Google Gemini API with:
+   - Generated PRD
+
+   Response: 15-25 actionable tasks
+
+   For each task:
+     INSERT INTO tasks (
+       project_id,
+       title,
+       description,
+       section,          ← Frontend, Backend, Design, etc.
+       priority,         ← high, medium, low
+       status: 'pending',
+       estimated_hours,
+       dependencies,     ← JSON array
+       order
+     )
+
+   Step 8.5: Clear SessionStorage & Redirect
+   ────────────────────────────────
+   sessionStorage.removeItem('onboardingData')
+   redirect to /projects/{project.id}
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                 PHASE 4: CLIENT DASHBOARD                           │
+│                  (Project Monitoring)                               │
+└─────────────────────────────────────────────────────────────────────┘
+
+9. GET /projects/[id]
+
+   Client sees:
+   ✅ Project overview (from projects table)
+   ✅ Service details (from service_types table)
+   ✅ Their answers (from project_answers table)
+   ✅ AI-generated PRD (from projects.prd)
+   ✅ Task breakdown (from tasks table)
+      - Grouped by section (Frontend, Backend, Design)
+      - Progress tracking (pending → in-progress → completed)
+      - Time estimates per task
+   ✅ Payment status (from payments table)
+   ✅ Timeline & milestones
+
+   Client can:
+   - Monitor project progress
+   - View/update task statuses (admin updates)
+   - Make payments (50% deposit, 50% completion)
+   - Send messages to agency
+   - Upload files
+```
+
+### Database Operations by Phase
+
+**Phase 1 (Anonymous):**
+- ✅ READ: service_types (get service details)
+- ✅ READ: questions (get questions for service)
+- ✅ READ: question_options (get answer options)
+
+**Phase 2 (Authentication):**
+- ✅ INSERT/SELECT: users (create or get user)
+
+**Phase 3 (Project Creation):**
+- ✅ INSERT: projects (create project record)
+- ✅ INSERT: project_answers (store question answers)
+- ✅ UPDATE: projects (add AI-generated PRD)
+- ✅ INSERT: tasks (bulk insert 15-25 tasks)
+
+**Phase 4 (Dashboard):**
+- ✅ SELECT: projects (get project details)
+- ✅ SELECT: project_answers (get user's answers)
+- ✅ SELECT: tasks (get task breakdown)
+- ✅ SELECT: payments (get payment history)
+- ✅ UPDATE: tasks (update task status - admin only)
+```
+
+---
+
+## Important Notes
+
+⚠️ **Breaking Changes:**
+- Questions table columns are being renamed
+- Existing API endpoints reading `label`, `type`, `is_required` need to be updated to use new names
+- Service type ID is now required for projects
+
+✅ **Benefits:**
+- Clean separation of concerns (questions vs answers)
+- Flexible question system (add/remove questions without schema changes)
+- Full audit trail of user responses
+- Easy to generate custom PRDs based on answers
+- Scalable for future service types
+
+🔄 **Backwards Compatibility:**
+- Keep `service` column in projects table for legacy support
+- Migration path for existing projects without question answers
+
+---
+
+## Next Steps
+
+1. [ ] Review and approve schema changes
+2. [ ] Test migration on local database
+3. [ ] Update API endpoints to use new column names
+4. [ ] Update seed scripts for questions table
+5. [ ] Implement `/api/projects/create-from-onboarding` endpoint
+6. [ ] Update project detail pages to display question answers
+7. [ ] Run migration on production database

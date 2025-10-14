@@ -29,37 +29,40 @@ export const serviceTypes = sqliteTable('service_types', {
 // Questions table (dynamic onboarding questions per service type)
 export const questions = sqliteTable('questions', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  serviceId: integer('service_id').notNull().references(() => serviceTypes.id),
-  questionKey: text('question_key').notNull(), // Unique identifier for the question
-  label: text('label').notNull(), // Display label
-  type: text('type').notNull(), // 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'number'
-  isRequired: integer('is_required', { mode: 'boolean' }).notNull().default(false),
+  serviceId: integer('service_id').notNull().references(() => serviceTypes.id, { onDelete: 'cascade' }),
+  questionKey: text('question_key').notNull().unique(), // Unique identifier for the question (e.g., 'target_audience', 'design_preferences')
+  questionText: text('question_text').notNull(), // The actual question to display
+  questionType: text('question_type').notNull(), // 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'number'
+  required: integer('required', { mode: 'boolean' }).notNull().default(false),
   placeholder: text('placeholder'),
+  sortOrder: integer('sort_order').default(0), // For ordering questions in the form
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
 // Question Options table (for select, radio, checkbox question types)
 export const questionOptions = sqliteTable('question_options', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  questionId: integer('question_id').notNull().references(() => questions.id),
+  questionId: integer('question_id').notNull().references(() => questions.id, { onDelete: 'cascade' }),
   optionValue: text('option_value').notNull(),
   sortOrder: integer('sort_order').default(0),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
 // Projects table
 export const projects = sqliteTable('projects', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   userId: text('user_id').notNull().references(() => users.id),
-  serviceTypeId: integer('service_type_id').references(() => serviceTypes.id),
+  serviceTypeId: integer('service_type_id').notNull().references(() => serviceTypes.id), // Made NOT NULL
   name: text('name').notNull(),
   service: text('service').notNull(), // Keep for backward compatibility, but use serviceTypeId
-  description: text('description'),
-  prd: text('prd').notNull(), // Generated PRD
+  description: text('description').notNull(),
+  prd: text('prd'), // Generated PRD (nullable until AI generates it)
   clientName: text('client_name').notNull(),
   clientEmail: text('client_email').notNull(),
   clientPhone: text('client_phone'),
-  timeline: integer('timeline').notNull(), // days
-  budget: integer('budget').notNull(),
-  price: integer('price').notNull(),
+  timeline: integer('timeline'), // days (can be derived from service_types)
+  budget: integer('budget'), // Can be derived from service_types basePrice
+  price: integer('price').notNull(), // Final calculated price
   paymentStatus: text('payment_status').default('pending'), // 'pending' | 'partially-paid' | 'paid'
   depositAmount: integer('deposit_amount').default(0),
   status: text('status').default('pending'), // 'pending' | 'in-progress' | 'completed' | 'on-hold'
@@ -67,6 +70,16 @@ export const projects = sqliteTable('projects', {
   endDate: integer('end_date', { mode: 'timestamp' }),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+// Project Answers table (stores onboarding question answers for each project)
+export const projectAnswers = sqliteTable('project_answers', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  projectId: integer('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+  questionId: integer('question_id').notNull().references(() => questions.id),
+  questionKey: text('question_key').notNull(), // Denormalized for quick access
+  answerValue: text('answer_value').notNull(), // Store as JSON string for arrays/objects
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
 // Tasks table
