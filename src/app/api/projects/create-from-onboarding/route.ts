@@ -129,7 +129,15 @@ export async function POST(request: NextRequest) {
 
     // 8. Generate PRD and tasks asynchronously (don't wait)
     // This runs in the background and updates the project when complete
-    generatePRDAndTasks(project.id, service, serviceName, description, questionAnswers, context.env.DB)
+    generatePRDAndTasks(
+      project.id,
+      service,
+      serviceName,
+      description,
+      questionAnswers,
+      context.env.DB,
+      context.env.GEMINI_API_KEY // Pass API key from Cloudflare context
+    )
       .catch(error => {
         console.error(`❌ Failed to generate PRD/tasks for project ${project.id}:`, error);
       });
@@ -163,18 +171,21 @@ async function generatePRDAndTasks(
   serviceName: string,
   description: string,
   questionAnswers: any,
-  dbBinding: any
+  dbBinding: any,
+  geminiApiKey: string
 ) {
   try {
     const db = drizzle(dbBinding);
 
     console.log(`🤖 Generating PRD for project ${projectId}...`);
+    console.log(`🔑 API Key available: ${!!geminiApiKey}`);
 
     // Generate PRD
     const prd = await generatePRD({
       serviceName: serviceName,
       description,
-      questionAnswers: questionAnswers || {}
+      questionAnswers: questionAnswers || {},
+      apiKey: geminiApiKey
     });
 
     console.log(`✅ PRD generated (${prd.length} characters)`);
@@ -190,7 +201,10 @@ async function generatePRDAndTasks(
     console.log(`🤖 Generating tasks for project ${projectId}...`);
 
     // Generate tasks
-    const generatedTasks = await generateTasks({ prd });
+    const generatedTasks = await generateTasks({
+      prd,
+      apiKey: geminiApiKey
+    });
 
     console.log(`✅ ${generatedTasks.length} tasks generated`);
 

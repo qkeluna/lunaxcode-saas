@@ -1,17 +1,19 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
-
 export async function generatePRD({
   serviceName,
   description,
-  questionAnswers
+  questionAnswers,
+  apiKey
 }: {
   serviceName: string;
   description: string;
   questionAnswers: Record<string, any>;
+  apiKey: string;
 }): Promise<string> {
   try {
+    // Initialize Gemini with API key passed from Edge runtime context
+    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
     const prompt = `
@@ -86,9 +88,11 @@ Format the PRD in clean Markdown with clear headings, bullet points, and organiz
 }
 
 export async function generateTasks({
-  prd
+  prd,
+  apiKey
 }: {
   prd: string;
+  apiKey: string;
 }): Promise<Array<{
   title: string;
   description: string;
@@ -99,6 +103,8 @@ export async function generateTasks({
   order: number;
 }>> {
   try {
+    // Initialize Gemini with API key passed from Edge runtime context
+    const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
 
     const prompt = `
