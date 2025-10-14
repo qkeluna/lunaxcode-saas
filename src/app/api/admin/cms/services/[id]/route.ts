@@ -30,7 +30,7 @@ export async function PATCH(
     const serviceId = parseInt(params.id);
     const body = await request.json();
 
-    const { name, description, basePrice, features, isActive } = body;
+    const { name, description, basePrice, features, timeline, popular, isActive } = body;
 
     const updateData: any = {};
 
@@ -38,6 +38,8 @@ export async function PATCH(
     if (description !== undefined) updateData.description = description;
     if (basePrice !== undefined) updateData.basePrice = basePrice;
     if (features !== undefined) updateData.features = JSON.stringify(features);
+    if (timeline !== undefined) updateData.timeline = timeline;
+    if (popular !== undefined) updateData.popular = popular;
     if (isActive !== undefined) updateData.isActive = isActive;
 
     const [updatedService] = await db

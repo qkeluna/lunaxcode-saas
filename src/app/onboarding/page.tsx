@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, ArrowLeft, Loader2, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Loader2, Sparkles, Check, Rocket, Target, Users } from 'lucide-react';
 import Link from 'next/link';
 
 const SERVICES = [
@@ -70,67 +70,143 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
-      {/* Simple Header */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 relative overflow-hidden">
+      {/* Background Decoration */}
+      <div className="absolute inset-0 opacity-5" aria-hidden="true">
+        <div
+          className="absolute top-20 left-1/4 w-96 h-96 rounded-full blur-3xl"
+          style={{ backgroundColor: 'var(--sp-colors-accent)' }}
+        />
+        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-blue-500 rounded-full blur-3xl" />
+      </div>
+
+      {/* Header */}
+      <header className="relative bg-white/80 backdrop-blur-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto" style={{ padding: 'var(--sp-space-4) var(--sp-space-6)' }}>
+          <Link href="/" className="flex items-center" style={{ gap: 'var(--sp-space-2)' }}>
+            <span
+              className="text-2xl font-bold"
+              style={{
+                background: `linear-gradient(to right, var(--sp-colors-accent), #6366f1)`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
               Lunaxcode
             </span>
           </Link>
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+      <div className="relative max-w-5xl mx-auto" style={{ padding: 'var(--sp-space-6)' }}>
+        <div
+          className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl"
+          style={{ padding: 'var(--sp-space-8)' }}
+        >
           {/* Header */}
-          <div className="mb-8 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-4">
-              <Sparkles className="w-4 h-4" />
-              AI-Powered Project Planning
+          <div className="text-center" style={{ marginBottom: 'var(--sp-space-8)' }}>
+            <div
+              className="inline-flex items-center backdrop-blur-sm rounded-full text-sm font-medium"
+              style={{
+                gap: 'var(--sp-space-2)',
+                padding: 'var(--sp-space-2) var(--sp-space-5)',
+                backgroundColor: 'var(--sp-colors-bg-active)',
+                color: 'var(--sp-colors-accent)',
+                marginBottom: 'var(--sp-space-4)',
+              }}
+            >
+              <Sparkles className="w-4 h-4" fill="currentColor" />
+              <span>AI-Powered Project Planning</span>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+            <h1 className="text-3xl md:text-5xl font-bold text-gray-900" style={{ marginBottom: 'var(--sp-space-4)' }}>
               Start Your Project
             </h1>
-            <p className="text-gray-600 text-lg">
+            <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto">
               Tell us about your vision and we'll generate a comprehensive plan in seconds
             </p>
           </div>
 
-          {/* Progress bar */}
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">
-                Step {step} of 3
-              </span>
-              <span className="text-sm text-gray-500">
-                {step === 1 && 'Project Details'}
-                {step === 2 && 'Requirements'}
-                {step === 3 && 'Contact Information'}
-              </span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-gradient-to-r from-purple-600 to-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${(step / 3) * 100}%` }}
-              />
+          {/* Visual Step Indicator */}
+          <div style={{ marginBottom: 'var(--sp-space-8)' }}>
+            <div className="flex items-center justify-between max-w-2xl mx-auto">
+              {[1, 2, 3].map((stepNum) => (
+                <div key={stepNum} className="flex flex-col items-center flex-1">
+                  <div className="flex items-center w-full">
+                    {stepNum > 1 && (
+                      <div
+                        className="flex-1 h-1 rounded-full transition-all duration-500"
+                        style={{
+                          backgroundColor: step >= stepNum ? 'var(--sp-colors-accent)' : '#e5e7eb',
+                        }}
+                      />
+                    )}
+                    <div
+                      className="relative flex items-center justify-center rounded-full font-semibold transition-all duration-500"
+                      style={{
+                        width: 'var(--sp-space-8)',
+                        height: 'var(--sp-space-8)',
+                        backgroundColor: step >= stepNum ? 'var(--sp-colors-accent)' : '#e5e7eb',
+                        color: step >= stepNum ? 'white' : '#9ca3af',
+                        transform: step === stepNum ? 'scale(1.15)' : 'scale(1)',
+                      }}
+                    >
+                      {step > stepNum ? (
+                        <Check className="w-5 h-5" />
+                      ) : stepNum === 1 ? (
+                        <Target className="w-4 h-4" />
+                      ) : stepNum === 2 ? (
+                        <Rocket className="w-4 h-4" />
+                      ) : (
+                        <Users className="w-4 h-4" />
+                      )}
+                    </div>
+                    {stepNum < 3 && (
+                      <div
+                        className="flex-1 h-1 rounded-full transition-all duration-500"
+                        style={{
+                          backgroundColor: step > stepNum ? 'var(--sp-colors-accent)' : '#e5e7eb',
+                        }}
+                      />
+                    )}
+                  </div>
+                  <span
+                    className="text-xs font-medium mt-2 text-center"
+                    style={{
+                      color: step >= stepNum ? 'var(--sp-colors-accent)' : '#9ca3af',
+                    }}
+                  >
+                    {stepNum === 1 && 'Details'}
+                    {stepNum === 2 && 'Features'}
+                    {stepNum === 3 && 'Contact'}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
           {/* Step 1: Project Details */}
           {step === 1 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">Tell us about your project</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-6)' }}>
+              <div>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900" style={{ marginBottom: 'var(--sp-space-2)' }}>
+                  Tell us about your project
+                </h2>
+                <p className="text-gray-600">Share your vision and we'll bring it to life</p>
+              </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700">
-                  Service Type *
+                <label className="block text-sm font-semibold text-gray-700" style={{ marginBottom: 'var(--sp-space-2)' }}>
+                  Service Type <span style={{ color: 'var(--sp-colors-accent)' }}>*</span>
                 </label>
                 <select
                   value={formData.service}
                   onChange={(e) => setFormData({ ...formData, service: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-xl transition-all duration-200 hover:border-gray-400"
+                  style={{
+                    padding: 'var(--sp-space-3) var(--sp-space-4)',
+                    fontSize: 'var(--sp-font-size)',
+                  }}
                   required
                 >
                   <option value="">Select a service</option>
@@ -143,25 +219,35 @@ export default function OnboardingPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700">
-                  Project Description *
+                <label className="block text-sm font-semibold text-gray-700" style={{ marginBottom: 'var(--sp-space-2)' }}>
+                  Project Description <span style={{ color: 'var(--sp-colors-accent)' }}>*</span>
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  rows={5}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  rows={6}
+                  className="w-full border border-gray-300 rounded-xl transition-all duration-200 hover:border-gray-400 resize-none"
+                  style={{
+                    padding: 'var(--sp-space-4)',
+                    fontSize: 'var(--sp-font-size)',
+                  }}
                   placeholder="Describe your project in detail... What problem does it solve? Who are your target users?"
                   required
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  {formData.description.length} / 500 characters (minimum 20)
+                <p
+                  className="text-xs mt-1"
+                  style={{
+                    color: formData.description.length >= 20 ? '#10b981' : '#9ca3af',
+                    marginTop: 'var(--sp-space-2)',
+                  }}
+                >
+                  {formData.description.length} / 500 characters {formData.description.length >= 20 && '✓'}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--sp-space-5)' }}>
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-700">
+                  <label className="block text-sm font-semibold text-gray-700" style={{ marginBottom: 'var(--sp-space-2)' }}>
                     Timeline (days)
                   </label>
                   <input
@@ -170,15 +256,19 @@ export default function OnboardingPage() {
                     onChange={(e) => setFormData({ ...formData, timeline: parseInt(e.target.value) })}
                     min="7"
                     max="365"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-xl transition-all duration-200 hover:border-gray-400"
+                    style={{
+                      padding: 'var(--sp-space-3) var(--sp-space-4)',
+                      fontSize: 'var(--sp-font-size)',
+                    }}
                   />
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500" style={{ marginTop: 'var(--sp-space-2)' }}>
                     Estimated: {Math.ceil(formData.timeline / 7)} weeks
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2 text-gray-700">
+                  <label className="block text-sm font-semibold text-gray-700" style={{ marginBottom: 'var(--sp-space-2)' }}>
                     Budget (₱)
                   </label>
                   <input
@@ -187,9 +277,13 @@ export default function OnboardingPage() {
                     onChange={(e) => setFormData({ ...formData, budget: parseInt(e.target.value) })}
                     min="10000"
                     step="5000"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full border border-gray-300 rounded-xl transition-all duration-200 hover:border-gray-400"
+                    style={{
+                      padding: 'var(--sp-space-3) var(--sp-space-4)',
+                      fontSize: 'var(--sp-font-size)',
+                    }}
                   />
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-xs text-gray-500" style={{ marginTop: 'var(--sp-space-2)' }}>
                     ₱{formData.budget.toLocaleString()}
                   </p>
                 </div>
@@ -199,19 +293,24 @@ export default function OnboardingPage() {
 
           {/* Step 2: Features */}
           {step === 2 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">Select required features</h2>
-              <p className="text-gray-600">Choose all the features you need for your project</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-6)' }}>
+              <div>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900" style={{ marginBottom: 'var(--sp-space-2)' }}>
+                  Select required features
+                </h2>
+                <p className="text-gray-600">Choose all the features you need for your project</p>
+              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--sp-space-3)' }}>
                 {FEATURES.map((feature) => (
                   <label
                     key={feature}
-                    className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                      formData.features.includes(feature)
-                        ? 'border-purple-500 bg-purple-50'
-                        : 'border-gray-200 hover:bg-gray-50'
-                    }`}
+                    className="flex items-center border-2 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md"
+                    style={{
+                      padding: 'var(--sp-space-4)',
+                      borderColor: formData.features.includes(feature) ? 'var(--sp-colors-accent)' : '#e5e7eb',
+                      backgroundColor: formData.features.includes(feature) ? 'var(--sp-colors-bg-active)' : 'transparent',
+                    }}
                   >
                     <input
                       type="checkbox"
@@ -229,85 +328,147 @@ export default function OnboardingPage() {
                           });
                         }
                       }}
-                      className="mr-3 w-4 h-4 text-purple-600 focus:ring-2 focus:ring-purple-500"
+                      className="w-5 h-5 rounded"
+                      style={{
+                        accentColor: 'var(--sp-colors-accent)',
+                        marginRight: 'var(--sp-space-3)',
+                      }}
                     />
                     <span className="text-sm font-medium text-gray-900">{feature}</span>
                   </label>
                 ))}
               </div>
 
-              <div className="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-lg">
-                <p className="text-sm text-purple-800">
-                  <strong>{formData.features.length}</strong> features selected
-                </p>
+              <div
+                className="p-5 rounded-xl border"
+                style={{
+                  backgroundColor: 'var(--sp-colors-bg-active)',
+                  borderColor: 'var(--sp-colors-accent)',
+                  gap: 'var(--sp-space-2)',
+                }}
+              >
+                <div className="flex items-center" style={{ gap: 'var(--sp-space-2)' }}>
+                  <Check className="w-5 h-5" style={{ color: 'var(--sp-colors-accent)' }} />
+                  <p className="text-sm font-semibold" style={{ color: 'var(--sp-colors-accent)' }}>
+                    {formData.features.length} feature{formData.features.length !== 1 && 's'} selected
+                  </p>
+                </div>
               </div>
             </div>
           )}
 
           {/* Step 3: Client Info */}
           {step === 3 && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">Your Information</h2>
-              <p className="text-gray-600">How should we contact you about this project?</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-6)' }}>
+              <div>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900" style={{ marginBottom: 'var(--sp-space-2)' }}>
+                  Your Information
+                </h2>
+                <p className="text-gray-600">How should we contact you about this project?</p>
+              </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700">
-                  Your Name *
+                <label className="block text-sm font-semibold text-gray-700" style={{ marginBottom: 'var(--sp-space-2)' }}>
+                  Your Name <span style={{ color: 'var(--sp-colors-accent)' }}>*</span>
                 </label>
                 <input
                   type="text"
                   value={formData.clientName}
                   onChange={(e) => setFormData({ ...formData, clientName: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-xl transition-all duration-200 hover:border-gray-400"
+                  style={{
+                    padding: 'var(--sp-space-3) var(--sp-space-4)',
+                    fontSize: 'var(--sp-font-size)',
+                  }}
                   placeholder="John Doe"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700">
-                  Your Email *
+                <label className="block text-sm font-semibold text-gray-700" style={{ marginBottom: 'var(--sp-space-2)' }}>
+                  Your Email <span style={{ color: 'var(--sp-colors-accent)' }}>*</span>
                 </label>
                 <input
                   type="email"
                   value={formData.clientEmail}
                   onChange={(e) => setFormData({ ...formData, clientEmail: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-xl transition-all duration-200 hover:border-gray-400"
+                  style={{
+                    padding: 'var(--sp-space-3) var(--sp-space-4)',
+                    fontSize: 'var(--sp-font-size)',
+                  }}
                   placeholder="john@example.com"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2 text-gray-700">
-                  Phone Number (Optional)
+                <label className="block text-sm font-semibold text-gray-700" style={{ marginBottom: 'var(--sp-space-2)' }}>
+                  Phone Number <span className="text-gray-400 font-normal">(Optional)</span>
                 </label>
                 <input
                   type="tel"
                   value={formData.clientPhone}
                   onChange={(e) => setFormData({ ...formData, clientPhone: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  className="w-full border border-gray-300 rounded-xl transition-all duration-200 hover:border-gray-400"
+                  style={{
+                    padding: 'var(--sp-space-3) var(--sp-space-4)',
+                    fontSize: 'var(--sp-font-size)',
+                  }}
                   placeholder="+63 912 345 6789"
                 />
               </div>
 
               {/* Summary */}
-              <div className="mt-6 p-6 bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-xl">
-                <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-purple-600" />
-                  Project Summary
-                </h3>
-                <div className="space-y-2 text-sm">
-                  <p><strong>Service:</strong> {formData.service}</p>
-                  <p><strong>Timeline:</strong> {formData.timeline} days ({Math.ceil(formData.timeline / 7)} weeks)</p>
-                  <p><strong>Budget:</strong> ₱{formData.budget.toLocaleString()}</p>
-                  <p><strong>Features:</strong> {formData.features.length} selected</p>
-                  <p><strong>Contact:</strong> {formData.clientName} ({formData.clientEmail})</p>
+              <div
+                className="border-2 rounded-2xl overflow-hidden"
+                style={{
+                  marginTop: 'var(--sp-space-4)',
+                  borderColor: 'var(--sp-colors-accent)',
+                }}
+              >
+                <div
+                  className="p-5"
+                  style={{
+                    background: `linear-gradient(135deg, var(--sp-colors-bg-active) 0%, rgba(120, 40, 200, 0.05) 100%)`,
+                  }}
+                >
+                  <h3 className="font-bold text-gray-900 flex items-center" style={{ gap: 'var(--sp-space-2)', marginBottom: 'var(--sp-space-4)' }}>
+                    <Sparkles className="w-5 h-5" style={{ color: 'var(--sp-colors-accent)' }} fill="currentColor" />
+                    Project Summary
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--sp-space-4)' }}>
+                    <div>
+                      <p className="text-xs text-gray-600 font-medium mb-1">Service</p>
+                      <p className="text-sm font-semibold text-gray-900">{formData.service}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 font-medium mb-1">Timeline</p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {formData.timeline} days ({Math.ceil(formData.timeline / 7)} weeks)
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 font-medium mb-1">Budget</p>
+                      <p className="text-sm font-semibold text-gray-900">₱{formData.budget.toLocaleString()}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-600 font-medium mb-1">Features</p>
+                      <p className="text-sm font-semibold text-gray-900">{formData.features.length} selected</p>
+                    </div>
+                    <div className="md:col-span-2">
+                      <p className="text-xs text-gray-600 font-medium mb-1">Contact</p>
+                      <p className="text-sm font-semibold text-gray-900">
+                        {formData.clientName} • {formData.clientEmail}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-800">
+              <div className="p-5 bg-blue-50 border border-blue-200 rounded-xl">
+                <p className="text-sm text-blue-900">
                   <strong>Next Step:</strong> After submitting, you'll create an account to access your personalized project plan and dashboard.
                 </p>
               </div>
@@ -315,11 +476,18 @@ export default function OnboardingPage() {
           )}
 
           {/* Navigation buttons */}
-          <div className="flex items-center justify-between mt-8 pt-6 border-t">
+          <div
+            className="flex items-center justify-between border-t border-gray-200"
+            style={{ marginTop: 'var(--sp-space-8)', paddingTop: 'var(--sp-space-6)' }}
+          >
             {step > 1 ? (
               <button
                 onClick={handleBack}
-                className="flex items-center gap-2 px-6 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                className="flex items-center border-2 border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200 font-semibold hover:shadow-md"
+                style={{
+                  gap: 'var(--sp-space-2)',
+                  padding: 'var(--sp-space-3) var(--sp-space-6)',
+                }}
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back
@@ -327,9 +495,11 @@ export default function OnboardingPage() {
             ) : (
               <Link
                 href="/"
-                className="flex items-center gap-2 px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors"
+                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors font-medium"
+                style={{ gap: 'var(--sp-space-2)', padding: 'var(--sp-space-3)' }}
               >
-                ← Back to Home
+                <ArrowLeft className="w-4 h-4" />
+                Back to Home
               </Link>
             )}
 
@@ -337,7 +507,12 @@ export default function OnboardingPage() {
               <button
                 onClick={handleNext}
                 disabled={step === 1 ? !canProceedStep1 : !canProceedStep2}
-                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold shadow-lg hover:shadow-xl"
+                className="flex items-center text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg hover:shadow-xl hover:scale-105"
+                style={{
+                  gap: 'var(--sp-space-2)',
+                  padding: 'var(--sp-space-4) var(--sp-space-8)',
+                  background: `linear-gradient(to right, var(--sp-colors-accent), #6366f1)`,
+                }}
               >
                 Next Step
                 <ArrowRight className="w-5 h-5" />
@@ -346,7 +521,14 @@ export default function OnboardingPage() {
               <button
                 onClick={handleSubmit}
                 disabled={loading || !canProceedStep3}
-                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold shadow-lg hover:shadow-xl"
+                className="flex items-center text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-semibold shadow-lg hover:shadow-xl hover:scale-105"
+                style={{
+                  gap: 'var(--sp-space-2)',
+                  padding: 'var(--sp-space-4) var(--sp-space-8)',
+                  background: loading
+                    ? '#9ca3af'
+                    : 'linear-gradient(to right, #10b981, #059669)',
+                }}
               >
                 {loading ? (
                   <>
@@ -355,7 +537,7 @@ export default function OnboardingPage() {
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-5 h-5" />
+                    <Sparkles className="w-5 h-5" fill="currentColor" />
                     Continue to Account Creation
                   </>
                 )}

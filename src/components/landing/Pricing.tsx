@@ -31,13 +31,14 @@ async function getServices() {
 export default async function Pricing() {
   const services = await getServices();
 
-  // Map services to plans format, marking the middle one as popular
-  const plans = services.map((service: any, index: number) => ({
+  // Map services to plans format with timeline and popular from database
+  const plans = services.map((service: any) => ({
     name: service.name,
     price: (service.basePrice / 1000).toFixed(0) + ',000', // Convert from centavos and format
     description: service.description || '',
     features: service.features ? JSON.parse(service.features) : [],
-    popular: index === 1, // Make the second item popular (typically mid-tier pricing)
+    timeline: service.timeline || 'Contact for estimate',
+    popular: service.popular === true || service.popular === 1, // Handle both boolean and SQLite integer
   }));
 
   return (
@@ -147,6 +148,17 @@ export default async function Pricing() {
                 <p className={`text-sm mt-1 ${plan.popular ? 'text-gray-400' : 'text-gray-500'}`}>
                   One-time payment
                 </p>
+                <div
+                  className={`inline-flex items-center rounded-full text-xs font-semibold mt-3 ${
+                    plan.popular
+                      ? 'bg-purple-500/20 text-purple-300'
+                      : 'bg-purple-100 text-purple-700'
+                  }`}
+                  style={{ padding: 'var(--sp-space-2) var(--sp-space-3)', gap: 'var(--sp-space-1)' }}
+                >
+                  <Zap className="w-3 h-3" aria-hidden="true" />
+                  {plan.timeline}
+                </div>
               </div>
 
               {/* Features */}

@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, description, basePrice, features, isActive } = body;
+    const { name, description, basePrice, features, timeline, popular, isActive } = body;
 
     if (!name || basePrice === undefined) {
       return NextResponse.json(
@@ -76,6 +76,8 @@ export async function POST(request: NextRequest) {
         description: description || null,
         basePrice,
         features: features ? JSON.stringify(features) : null,
+        timeline: timeline || null,
+        popular: popular !== undefined ? popular : false,
         isActive: isActive !== undefined ? isActive : true,
         createdAt: new Date(),
       })

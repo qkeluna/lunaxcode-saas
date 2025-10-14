@@ -15,6 +15,20 @@
       "when": 1760276555291,
       "tag": "0001_workable_spyke",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1760409138684,
+      "tag": "0002_youthful_professor_monster",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1760411002951,
+      "tag": "0003_uneven_scorpion",
+      "breakpoints": true
     }
   ]
 }

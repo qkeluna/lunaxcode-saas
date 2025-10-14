@@ -20,8 +20,29 @@ export const serviceTypes = sqliteTable('service_types', {
   description: text('description'),
   basePrice: integer('base_price').notNull(),
   features: text('features'), // JSON string
+  timeline: text('timeline'), // e.g., "2-3 weeks", "1-2 months"
+  popular: integer('popular', { mode: 'boolean' }).default(false),
   isActive: integer('is_active', { mode: 'boolean' }).default(true),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+// Questions table (dynamic onboarding questions per service type)
+export const questions = sqliteTable('questions', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  serviceId: integer('service_id').notNull().references(() => serviceTypes.id),
+  questionKey: text('question_key').notNull(), // Unique identifier for the question
+  label: text('label').notNull(), // Display label
+  type: text('type').notNull(), // 'text' | 'textarea' | 'select' | 'radio' | 'checkbox' | 'number'
+  isRequired: integer('is_required', { mode: 'boolean' }).notNull().default(false),
+  placeholder: text('placeholder'),
+});
+
+// Question Options table (for select, radio, checkbox question types)
+export const questionOptions = sqliteTable('question_options', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  questionId: integer('question_id').notNull().references(() => questions.id),
+  optionValue: text('option_value').notNull(),
+  sortOrder: integer('sort_order').default(0),
 });
 
 // Projects table
@@ -213,3 +234,9 @@ export type NewProcessStep = typeof processSteps.$inferInsert;
 
 export type Feature = typeof features.$inferSelect;
 export type NewFeature = typeof features.$inferInsert;
+
+export type Question = typeof questions.$inferSelect;
+export type NewQuestion = typeof questions.$inferInsert;
+
+export type QuestionOption = typeof questionOptions.$inferSelect;
+export type NewQuestionOption = typeof questionOptions.$inferInsert;
