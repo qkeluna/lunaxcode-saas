@@ -258,9 +258,19 @@ export default async function ProjectDetailPage({
           Project Requirements Document
         </h2>
         <div className="prose prose-slate max-w-none">
-          <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
-            {project.prd}
-          </div>
+          {project.prd ? (
+            <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
+              {project.prd}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center py-12 text-gray-500">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                <p className="text-lg font-medium">Generating PRD with AI...</p>
+                <p className="text-sm mt-2">This may take 30-60 seconds</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
