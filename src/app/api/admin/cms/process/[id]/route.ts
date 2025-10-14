@@ -18,7 +18,7 @@ export async function PATCH(
   }
 
   try {
-    const db = getDatabase((request as any).env);
+    const db = getDatabase();
 
     if (!db) {
       return NextResponse.json(
@@ -77,7 +77,7 @@ export async function DELETE(
   }
 
   try {
-    const db = getDatabase((request as any).env);
+    const db = getDatabase();
 
     if (!db) {
       return NextResponse.json(

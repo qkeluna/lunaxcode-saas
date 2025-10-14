@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const db = getDatabase((request as any).env);
+    const db = getDatabase();
 
     if (!db) {
       return NextResponse.json(
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const db = getDatabase((request as any).env);
+    const db = getDatabase();
 
     if (!db) {
       return NextResponse.json(

@@ -19,8 +19,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Try to get D1 database
-  const db = getDatabase((request as any).env);
+  // Get D1 database using getRequestContext() internally
+  const db = getDatabase();
   const useDatabase = db !== null;
 
   if (useDatabase) {
@@ -207,10 +207,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Try to get D1 database
-  const db = getDatabase((request as any).env);
-
   try {
+    // Get D1 database using getRequestContext() internally
+    const db = getDatabase();
     let userProjects;
 
     if (db) {

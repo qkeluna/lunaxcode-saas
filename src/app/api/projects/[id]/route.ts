@@ -15,12 +15,12 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Try to get D1 database
-  const db = getDatabase((request as any).env);
-
   try {
     const { id } = await params;
     const projectId = parseInt(id);
+
+    // Get D1 database using getRequestContext() internally
+    const db = getDatabase();
 
     if (!db) {
       return NextResponse.json({

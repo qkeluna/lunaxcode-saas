@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = getDatabase((request as any).env);
+    const db = getDatabase();
     const userId = session.user.id || session.user.email!;
 
     const messageData = {
@@ -93,7 +93,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const db = getDatabase((request as any).env);
+    const db = getDatabase();
     let projectMessages: any[];
 
     if (db) {
