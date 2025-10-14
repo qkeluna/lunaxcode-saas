@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
-import { projects, projectAnswers, questions, serviceTypes, tasks } from '@/lib/db/schema';
+import { projects, projectAnswers, questions, serviceTypes, tasks, users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { generatePRD, generateTasks } from '@/lib/ai/gemini';
 
@@ -44,7 +44,20 @@ export async function POST(request: NextRequest) {
 
     const db = drizzle(context.env.DB);
 
-    // 4. Get service details
+    // 4. Get user ID from email (users table has id as primary key, not email)
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, session.user.email))
+      .limit(1);
+
+    if (!user) {
+      return NextResponse.json({
+        error: 'User not found. Please try logging in again.'
+      }, { status: 404 });
+    }
+
+    // 5. Get service details
     const [service] = await db
       .select()
       .from(serviceTypes)
@@ -55,11 +68,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Service not found' }, { status: 404 });
     }
 
-    // 5. Create project record
+    // 6. Create project record
     const [project] = await db
       .insert(projects)
       .values({
-        userId: session.user.email, // Using email as userId since that's what NextAuth provides
+        userId: user.id, // Use actual user ID from database
         serviceTypeId: service.id,
         name: `${serviceName} for ${clientName}`,
         service: serviceName,
@@ -81,7 +94,7 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ Project created:', project.id);
 
-    // 6. Store question answers
+    // 7. Store question answers
     if (questionAnswers && typeof questionAnswers === 'object') {
       const answers = Object.entries(questionAnswers);
 
@@ -114,7 +127,7 @@ export async function POST(request: NextRequest) {
       console.log(`✅ ${answers.length} question answers stored`);
     }
 
-    // 7. Generate PRD and tasks asynchronously (don't wait)
+    // 8. Generate PRD and tasks asynchronously (don't wait)
     // This runs in the background and updates the project when complete
     generatePRDAndTasks(project.id, service, serviceName, description, questionAnswers, context.env.DB)
       .catch(error => {
@@ -123,7 +136,7 @@ export async function POST(request: NextRequest) {
 
     console.log('🤖 AI generation started in background');
 
-    // 8. Return success immediately (PRD generation happens in background)
+    // 9. Return success immediately (PRD generation happens in background)
     return NextResponse.json({
       success: true,
       projectId: project.id,
