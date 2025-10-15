@@ -140,17 +140,11 @@ export async function POST(request: NextRequest) {
       console.log(`✅ ${answers.length} question answers stored`);
     }
 
-    // 8. Check if Gemini API key is available
-    const geminiApiKey = context.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
-    
-    if (!geminiApiKey) {
-      console.error('⚠️ GEMINI_API_KEY not found. PRD will not be generated.');
-      console.error('Please set GEMINI_API_KEY in Cloudflare secrets for AI generation.');
-      // Update project with a professional client-facing PRD
-      await db
-        .update(projects)
-        .set({
-          prd: `# Project Requirements Document
+    // 8. Set initial PRD message (Admin will generate it later)
+    await db
+      .update(projects)
+      .set({
+        prd: `# Project Requirements Document
 
 ## Project Overview
 
@@ -162,59 +156,43 @@ export async function POST(request: NextRequest) {
 
 ---
 
-## Project Details
+## Status Update
 
-Your project has been successfully created and our team will review it shortly. We'll be creating a comprehensive Project Requirements Document (PRD) that includes:
+Your project has been successfully submitted! Our team is currently reviewing your requirements.
 
-- **Executive Summary** - Overview of project goals and objectives
-- **Technical Specifications** - Detailed technical requirements and architecture
-- **Feature Breakdown** - Complete list of features and functionality
-- **Design Guidelines** - UI/UX specifications and branding
-- **Timeline & Milestones** - Project phases and delivery schedule
-- **Success Metrics** - How we'll measure project success
+## What Happens Next?
 
-## Next Steps
+1. **Team Review** - Our experts will analyze your project requirements (24-48 hours)
+2. **PRD Creation** - We'll create a comprehensive requirements document
+3. **Task Planning** - We'll break down the project into detailed tasks
+4. **Your Review** - You'll review and approve the project plan
+5. **Payment** - 50% deposit to begin development
+6. **Project Kickoff** - Development begins once deposit is verified
 
-1. **Initial Review** - Our team will review your requirements (24-48 hours)
-2. **PRD Creation** - We'll create a detailed requirements document
-3. **Client Approval** - You'll review and approve the PRD
-4. **Payment** - 50% deposit to begin development
-5. **Project Kickoff** - Development begins once deposit is verified
+## Expected Timeline
 
-## Questions?
+- **PRD Completion**: 24-48 hours
+- **Your Review**: 2-3 business days  
+- **Project Start**: After 50% deposit payment is verified
 
-If you have any questions or need to update your requirements, please contact our team.
+## Need Changes?
+
+If you need to update your project requirements or have questions, please contact our team anytime.
 
 ---
 
-*This document will be updated with detailed specifications by our team.*`,
-          updatedAt: new Date()
-        })
-        .where(eq(projects.id, project.id));
-    } else {
-      // Generate PRD and tasks asynchronously (don't wait)
-      // This runs in the background and updates the project when complete
-      generatePRDAndTasks(
-        project.id,
-        service,
-        serviceName,
-        description,
-        questionAnswers,
-        context.env.DB,
-        geminiApiKey
-      )
-        .catch(error => {
-          console.error(`❌ Failed to generate PRD/tasks for project ${project.id}:`, error);
-        });
+*Our team will reach out to you shortly with the complete Project Requirements Document and task breakdown.*`,
+        updatedAt: new Date()
+      })
+      .where(eq(projects.id, project.id));
 
-      console.log('🤖 AI generation started in background');
-    }
+    console.log('✅ Project created with pending PRD (Admin will generate)');
 
-    // 9. Return success immediately (PRD generation happens in background)
+    // 9. Return success immediately
     return NextResponse.json({
       success: true,
       projectId: project.id,
-      message: 'Project created successfully. PRD and tasks are being generated...',
+      message: 'Project created successfully. Our team will review and generate the PRD shortly.',
       redirectUrl: `/projects/${project.id}`
     });
 
@@ -227,121 +205,5 @@ If you have any questions or need to update your requirements, please contact ou
       },
       { status: 500 }
     );
-  }
-}
-
-// Async function to generate PRD and tasks (runs in background)
-async function generatePRDAndTasks(
-  projectId: number,
-  service: any,
-  serviceName: string,
-  description: string,
-  questionAnswers: any,
-  dbBinding: any,
-  geminiApiKey: string
-) {
-  try {
-    const db = drizzle(dbBinding);
-
-    console.log(`🤖 Generating PRD for project ${projectId}...`);
-    console.log(`🔑 API Key available: ${!!geminiApiKey}`);
-
-    // Generate PRD
-    const prd = await generatePRD({
-      serviceName: serviceName,
-      description,
-      questionAnswers: questionAnswers || {},
-      apiKey: geminiApiKey
-    });
-
-    console.log(`✅ PRD generated (${prd.length} characters)`);
-
-    // Update project with PRD
-    await db
-      .update(projects)
-      .set({ prd, updatedAt: new Date() })
-      .where(eq(projects.id, projectId));
-
-    console.log('✅ PRD saved to database');
-
-    console.log(`🤖 Generating tasks for project ${projectId}...`);
-
-    // Generate tasks
-    const generatedTasks = await generateTasks({
-      prd,
-      apiKey: geminiApiKey
-    });
-
-    console.log(`✅ ${generatedTasks.length} tasks generated`);
-
-    // Insert tasks
-    for (const task of generatedTasks) {
-      await db.insert(tasks).values({
-        projectId: projectId,
-        title: task.title,
-        description: task.description,
-        section: task.section,
-        priority: task.priority,
-        status: 'pending',
-        estimatedHours: task.estimatedHours,
-        dependencies: task.dependencies,
-        order: task.order,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-    }
-
-    console.log(`✅ All tasks saved to database for project ${projectId}`);
-
-  } catch (error: any) {
-    console.error(`❌ Failed to generate PRD/tasks for project ${projectId}:`, error);
-    console.error('Error details:', error.message);
-    
-    // Save professional client-facing message (hide technical errors)
-    try {
-      await db
-        .update(projects)
-        .set({
-          prd: `# Project Requirements Document
-
-## Project Overview
-
-**Project Name**: ${serviceName}
-
-**Description**: ${description}
-
----
-
-## Status Update
-
-Your project has been successfully created! Our team will be reviewing your requirements and creating a detailed Project Requirements Document.
-
-## What Happens Next?
-
-1. **Team Review** - Our experts will analyze your project requirements
-2. **PRD Creation** - We'll create a comprehensive requirements document manually
-3. **Timeline Planning** - We'll establish milestones and deliverables
-4. **Your Review** - You'll have a chance to review and provide feedback
-5. **Project Kickoff** - Once approved, we'll begin development
-
-## Expected Timeline
-
-- **PRD Completion**: 24-48 hours
-- **Your Review**: 2-3 business days
-- **Project Start**: After 50% deposit payment is verified
-
-## Need Changes?
-
-If you need to update your project requirements or have questions, please contact our team anytime.
-
----
-
-*Our team will reach out to you shortly with the complete Project Requirements Document.*`,
-          updatedAt: new Date()
-        })
-        .where(eq(projects.id, projectId));
-    } catch (updateError) {
-      console.error('Failed to update project with fallback PRD:', updateError);
-    }
   }
 }

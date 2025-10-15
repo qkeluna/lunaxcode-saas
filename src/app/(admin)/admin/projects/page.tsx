@@ -10,7 +10,8 @@ import {
   Calendar,
   DollarSign,
   Users,
-  Clock
+  Clock,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -85,6 +86,7 @@ export default function AdminProjectsPage() {
   const [paymentFilter, setPaymentFilter] = useState('all');
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [generatingPRD, setGeneratingPRD] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState({
     status: '',
     paymentStatus: '',
@@ -176,6 +178,34 @@ export default function AdminProjectsPage() {
       }
     } catch (error) {
       console.error('Error deleting project:', error);
+    }
+  };
+
+  const handleGeneratePRD = async (projectId: number) => {
+    if (!confirm('Generate PRD and tasks for this project? This will replace any existing PRD and tasks.')) return;
+
+    setGeneratingPRD(projectId);
+    try {
+      const response = await fetch(`/api/admin/projects/${projectId}/generate-prd`, {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(`✅ PRD generated successfully!\n\n` +
+          `- PRD Length: ${data.prdLength} characters\n` +
+          `- Tasks Created: ${data.tasksCount} tasks`);
+        fetchProjects();
+      } else {
+        alert(`❌ Failed to generate PRD:\n\n${data.error}`);
+        console.error('Failed to generate PRD:', data.error);
+      }
+    } catch (error) {
+      alert('❌ Error generating PRD. Check console for details.');
+      console.error('Error generating PRD:', error);
+    } finally {
+      setGeneratingPRD(null);
     }
   };
 
@@ -380,6 +410,20 @@ export default function AdminProjectsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleGeneratePRD(item.project.id)}
+                        disabled={generatingPRD === item.project.id}
+                        className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                        title="Generate PRD & Tasks with AI"
+                      >
+                        {generatingPRD === item.project.id ? (
+                          <div className="h-4 w-4 animate-spin rounded-full border-2 border-purple-600 border-t-transparent" />
+                        ) : (
+                          <Sparkles className="h-4 w-4" />
+                        )}
+                      </Button>
                       <Button
                         variant="ghost"
                         size="sm"

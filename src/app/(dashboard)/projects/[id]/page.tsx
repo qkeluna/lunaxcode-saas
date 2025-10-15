@@ -11,30 +11,63 @@ import FilesSection from '@/components/projects/FilesSection';
 import MessagingCenter from '@/components/projects/MessagingCenter';
 import PaymentReminder from '@/components/projects/PaymentReminder';
 import ProgressTracker from '@/components/projects/ProgressTracker';
+import { getCloudflareContext } from '@/lib/db/context';
+import { drizzle } from 'drizzle-orm/d1';
+import { projects, users, tasks } from '@/lib/db/schema';
+import { eq, and } from 'drizzle-orm';
 
-// Fetch single project with tasks from API
-async function getProject(projectId: string) {
+// Fetch single project with tasks directly from database
+async function getProject(projectId: string, userEmail: string) {
   try {
-    const response = await fetch(`${process.env.NEXTAUTH_URL}/api/projects/${projectId}`, {
-      cache: 'no-store',
-    });
-
-    if (response.status === 404) {
-      return { notFound: true };
-    }
-
-    if (response.status === 503) {
-      // Database not connected
-      const data = await response.json();
-      return { setupRequired: true, message: data.message };
-    }
-
-    if (!response.ok) {
+    const context = getCloudflareContext();
+    if (!context?.env?.DB) {
+      console.error('Database not available');
       return { error: true };
     }
 
-    const data = await response.json();
-    return data;
+    const db = drizzle(context.env.DB);
+
+    // Get user by email
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, userEmail))
+      .limit(1);
+
+    if (!user) {
+      console.error('User not found:', userEmail);
+      return { error: true };
+    }
+
+    // Get project by ID and verify ownership
+    const [project] = await db
+      .select()
+      .from(projects)
+      .where(
+        and(
+          eq(projects.id, parseInt(projectId)),
+          eq(projects.userId, user.id)
+        )
+      )
+      .limit(1);
+
+    if (!project) {
+      return { notFound: true };
+    }
+
+    // Get tasks for this project
+    const projectTasks = await db
+      .select()
+      .from(tasks)
+      .where(eq(tasks.projectId, project.id))
+      .orderBy(tasks.order);
+
+    return {
+      project: {
+        ...project,
+        tasks: projectTasks
+      }
+    };
   } catch (error) {
     console.error('Error fetching project:', error);
     return { error: true };
@@ -48,12 +81,12 @@ export default async function ProjectDetailPage({
 }) {
   const session = await auth();
 
-  if (!session) {
+  if (!session?.user?.email) {
     redirect('/login');
   }
 
   const { id } = await params;
-  const result = await getProject(id);
+  const result = await getProject(id, session.user.email);
 
   // Handle different error states
   if (result.notFound) {
@@ -73,28 +106,6 @@ export default async function ProjectDetailPage({
           >
             Back to Projects
           </Link>
-        </div>
-      </div>
-    );
-  }
-
-  if (result.setupRequired) {
-    return (
-      <div className="space-y-6">
-        <div className="bg-white rounded-lg shadow p-8">
-          <h1 className="text-3xl font-bold mb-4">Project #{params.id}</h1>
-
-          <div className="space-y-6">
-            <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg">
-              <h2 className="text-xl font-semibold mb-4">Setup Required</h2>
-              <p className="text-gray-700 mb-4">{result.message}</p>
-              <ol className="list-decimal list-inside space-y-2 text-sm text-gray-600">
-                <li>Run: <code className="bg-gray-200 px-2 py-1 rounded">bash scripts/setup-d1.sh</code></li>
-                <li>Follow the instructions to set up D1 database</li>
-                <li>Restart the development server</li>
-              </ol>
-            </div>
-          </div>
         </div>
       </div>
     );
