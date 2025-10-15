@@ -131,12 +131,50 @@ export async function POST(request: NextRequest) {
     const geminiApiKey = context.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
     
     if (!geminiApiKey) {
-      console.warn('⚠️ GEMINI_API_KEY not found. PRD will not be generated.');
-      // Update project with a placeholder PRD
+      console.error('⚠️ GEMINI_API_KEY not found. PRD will not be generated.');
+      console.error('Please set GEMINI_API_KEY in Cloudflare secrets for AI generation.');
+      // Update project with a professional client-facing PRD
       await db
         .update(projects)
         .set({
-          prd: `# Project Requirements Document\n\n**Project**: ${serviceName} for ${clientName}\n\n**Description**: ${description}\n\n⚠️ AI-generated PRD is not available. Please configure GEMINI_API_KEY in Cloudflare secrets.\n\nTo generate PRD:\n1. Set GEMINI_API_KEY secret in Cloudflare\n2. Edit this project to regenerate`,
+          prd: `# Project Requirements Document
+
+## Project Overview
+
+**Project Name**: ${serviceName} for ${clientName}
+
+**Service Type**: ${serviceName}
+
+**Description**: ${description}
+
+---
+
+## Project Details
+
+Your project has been successfully created and our team will review it shortly. We'll be creating a comprehensive Project Requirements Document (PRD) that includes:
+
+- **Executive Summary** - Overview of project goals and objectives
+- **Technical Specifications** - Detailed technical requirements and architecture
+- **Feature Breakdown** - Complete list of features and functionality
+- **Design Guidelines** - UI/UX specifications and branding
+- **Timeline & Milestones** - Project phases and delivery schedule
+- **Success Metrics** - How we'll measure project success
+
+## Next Steps
+
+1. **Initial Review** - Our team will review your requirements (24-48 hours)
+2. **PRD Creation** - We'll create a detailed requirements document
+3. **Client Approval** - You'll review and approve the PRD
+4. **Payment** - 50% deposit to begin development
+5. **Project Kickoff** - Development begins once deposit is verified
+
+## Questions?
+
+If you have any questions or need to update your requirements, please contact our team.
+
+---
+
+*This document will be updated with detailed specifications by our team.*`,
           updatedAt: new Date()
         })
         .where(eq(projects.id, project.id));
@@ -244,18 +282,53 @@ async function generatePRDAndTasks(
 
   } catch (error: any) {
     console.error(`❌ Failed to generate PRD/tasks for project ${projectId}:`, error);
+    console.error('Error details:', error.message);
     
-    // Save error message as PRD so user knows what happened
+    // Save professional client-facing message (hide technical errors)
     try {
       await db
         .update(projects)
         .set({
-          prd: `# Project Requirements Document\n\n**Error Generating PRD**\n\n⚠️ An error occurred while generating the AI-powered PRD.\n\n**Error**: ${error.message || 'Unknown error'}\n\n**What to do:**\n1. Check that GEMINI_API_KEY is properly configured\n2. Verify your Gemini API quota\n3. Try creating a new project\n\n**Project Details:**\n- Service: ${serviceName}\n- Description: ${description}\n\nPlease contact support if this issue persists.`,
+          prd: `# Project Requirements Document
+
+## Project Overview
+
+**Project Name**: ${serviceName}
+
+**Description**: ${description}
+
+---
+
+## Status Update
+
+Your project has been successfully created! Our team will be reviewing your requirements and creating a detailed Project Requirements Document.
+
+## What Happens Next?
+
+1. **Team Review** - Our experts will analyze your project requirements
+2. **PRD Creation** - We'll create a comprehensive requirements document manually
+3. **Timeline Planning** - We'll establish milestones and deliverables
+4. **Your Review** - You'll have a chance to review and provide feedback
+5. **Project Kickoff** - Once approved, we'll begin development
+
+## Expected Timeline
+
+- **PRD Completion**: 24-48 hours
+- **Your Review**: 2-3 business days
+- **Project Start**: After 50% deposit payment is verified
+
+## Need Changes?
+
+If you need to update your project requirements or have questions, please contact our team anytime.
+
+---
+
+*Our team will reach out to you shortly with the complete Project Requirements Document.*`,
           updatedAt: new Date()
         })
         .where(eq(projects.id, projectId));
     } catch (updateError) {
-      console.error('Failed to update project with error message:', updateError);
+      console.error('Failed to update project with fallback PRD:', updateError);
     }
   }
 }
