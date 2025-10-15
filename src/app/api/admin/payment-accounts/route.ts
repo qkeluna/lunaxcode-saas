@@ -1,21 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { getDb } from '@/lib/db/client';
+import { getCloudflareContext } from '@/lib/db/context';
+import { drizzle } from 'drizzle-orm/d1';
 import { paymentAccounts } from '@/lib/db/schema';
+import { checkIsAdmin } from '@/lib/auth/check-admin';
 
 export const runtime = 'edge';
 
 // GET all payment accounts (admin)
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    const { isAdmin, error } = await checkIsAdmin(request);
+    if (!isAdmin) {
+      return NextResponse.json({ error: error || 'Unauthorized' }, { status: 403 });
     }
 
-    const db = await getDb();
+    const context = getCloudflareContext();
+    if (!context?.env?.DB) {
+      return NextResponse.json({ error: 'Database not available' }, { status: 503 });
+    }
+
+    const db = drizzle(context.env.DB);
     
     const accounts = await db
       .select()
@@ -36,10 +40,9 @@ export async function GET(request: NextRequest) {
 // POST - Create new payment account
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    const { isAdmin, error } = await checkIsAdmin(request);
+    if (!isAdmin) {
+      return NextResponse.json({ error: error || 'Unauthorized' }, { status: 403 });
     }
 
     const body = await request.json();
@@ -60,7 +63,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const db = await getDb();
+    const context = getCloudflareContext();
+    if (!context?.env?.DB) {
+      return NextResponse.json({ error: 'Database not available' }, { status: 503 });
+    }
+
+    const db = drizzle(context.env.DB);
     const now = new Date();
 
     // Get max order for new account

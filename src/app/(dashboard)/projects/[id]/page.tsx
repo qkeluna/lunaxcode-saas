@@ -263,23 +263,30 @@ export default async function ProjectDetailPage({
         </div>
       </div>
 
-      {/* PRD Section */}
+      {/* Project Description Section */}
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          Project Requirements Document
+          Project Description
         </h2>
-        <div className="prose prose-slate max-w-none">
-          {project.prd ? (
-            <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
-              {project.prd}
-            </div>
-          ) : (
-            <div className="flex items-center justify-center py-12 text-gray-500">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-                <p className="text-lg font-medium">Generating PRD with AI...</p>
-                <p className="text-sm mt-2">This may take 30-60 seconds</p>
-              </div>
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold text-gray-700 mb-2">What You Want to Build</h3>
+            <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+              {project.description}
+            </p>
+          </div>
+          
+          <div className="pt-4 border-t">
+            <h3 className="text-sm font-semibold text-gray-700 mb-2">Service Type</h3>
+            <p className="text-gray-700">{project.service}</p>
+          </div>
+
+          {project.status === 'pending' && (
+            <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>📋 Status:</strong> Your project is currently under review by our team. 
+                We'll create a detailed project plan and task breakdown for you shortly (24-48 hours).
+              </p>
             </div>
           )}
         </div>
