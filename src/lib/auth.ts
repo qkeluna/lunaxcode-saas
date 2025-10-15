@@ -1,10 +1,10 @@
-import { NextAuthOptions } from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { getDb } from '@/lib/db';
+import type { NextAuthConfig } from 'next-auth';
 
 // This will be properly initialized in the API route with Cloudflare context
-export function getAuthOptions(db: any): NextAuthOptions {
+export function getAuthOptions(db: any): NextAuthConfig {
   return {
     adapter: DrizzleAdapter(db) as any,
     providers: [
@@ -14,19 +14,24 @@ export function getAuthOptions(db: any): NextAuthOptions {
       }),
     ],
     callbacks: {
-      async session({ session, user }) {
+      async session({ session, user, token }: any) {
         if (session.user) {
-          session.user.id = user.id;
-          session.user.role = (user as any).role || 'client';
+          // Use token for JWT strategy, user for database strategy
+          session.user.id = token?.id as string || user?.id;
+          session.user.role = (token?.role as string) || (user as any)?.role || 'client';
         }
         return session;
       },
-      async jwt({ token, user }) {
+      async jwt({ token, user }: any) {
         if (user) {
           token.id = user.id;
           token.role = (user as any).role || 'client';
         }
         return token;
+      },
+      async signIn({ user }: any) {
+        // Allow sign in - redirect will be handled by middleware
+        return true;
       },
     },
     pages: {
@@ -38,7 +43,7 @@ export function getAuthOptions(db: any): NextAuthOptions {
       strategy: 'jwt',
     },
     secret: process.env.NEXTAUTH_SECRET,
-  };
+  } as NextAuthConfig;
 }
 
 // Type augmentation for NextAuth
@@ -58,7 +63,7 @@ declare module 'next-auth' {
   }
 }
 
-declare module 'next-auth/jwt' {
+declare module '@auth/core/jwt' {
   interface JWT {
     id?: string;
     role?: string;

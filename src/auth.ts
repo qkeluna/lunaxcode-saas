@@ -90,16 +90,40 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.email = user.email;
       }
 
-      // Always fetch fresh role from database on sign in
-      // This ensures we get the current role even if it was changed
-      if (user || !token.role) {
-        // Default to client
-        token.role = 'client';
+      // Always fetch fresh role from database on sign in or if role not set
+      if ((user || !token.role) && token.email) {
+        try {
+          // Import dynamically to work in edge runtime
+          const { getRequestContext } = await import('@cloudflare/next-on-pages');
+          const { drizzle } = await import('drizzle-orm/d1');
 
-        // Note: getDatabase() doesn't work here without context
-        // Role will be set to default 'client' and must be refreshed after login
-        // The middleware will handle actual role verification from database
-        console.log('JWT callback: User signed in, role set to client by default');
+          const context = getRequestContext();
+          if (context?.env?.DB) {
+            const db = drizzle(context.env.DB);
+
+            // Fetch user's role from database
+            const [dbUser] = await db
+              .select({ role: users.role })
+              .from(users)
+              .where(eq(users.email, token.email as string))
+              .limit(1);
+
+            if (dbUser) {
+              token.role = dbUser.role || 'client';
+              console.log(`[Auth] JWT callback: Role fetched from DB for ${token.email}: ${token.role}`);
+            } else {
+              token.role = 'client';
+              console.log(`[Auth] JWT callback: User not in DB yet, defaulting to client`);
+            }
+          } else {
+            // Fallback if DB not available
+            token.role = 'client';
+            console.log('[Auth] JWT callback: DB not available, defaulting to client');
+          }
+        } catch (error) {
+          console.error('[Auth] Error fetching role in JWT callback:', error);
+          token.role = 'client';
+        }
       }
 
       return token;
