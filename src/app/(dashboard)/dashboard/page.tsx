@@ -1,18 +1,42 @@
 import { auth } from '@/auth';
 import Link from 'next/link';
 import { FolderKanban, Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { getCloudflareContext } from '@/lib/db/context';
+import { drizzle } from 'drizzle-orm/d1';
+import { projects, users } from '@/lib/db/schema';
+import { eq, desc } from 'drizzle-orm';
 
-// Fetch projects from API
-async function getProjects() {
+// Fetch projects directly from database
+async function getProjects(userEmail: string) {
   try {
-    const response = await fetch(`${process.env.NEXTAUTH_URL}/api/projects`, {
-      cache: 'no-store',
-    });
+    const context = getCloudflareContext();
+    if (!context?.env?.DB) {
+      console.error('Database not available');
+      return { projects: [], usingDatabase: false };
+    }
 
-    if (!response.ok) return { projects: [], usingDatabase: false };
+    const db = drizzle(context.env.DB);
 
-    const data = await response.json();
-    return data;
+    // Get user by email
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, userEmail))
+      .limit(1);
+
+    if (!user) {
+      console.error('User not found:', userEmail);
+      return { projects: [], usingDatabase: false };
+    }
+
+    // Get user's projects
+    const userProjects = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.userId, user.id))
+      .orderBy(desc(projects.createdAt));
+
+    return { projects: userProjects, usingDatabase: true };
   } catch (error) {
     console.error('Error fetching projects:', error);
     return { projects: [], usingDatabase: false };
@@ -21,7 +45,12 @@ async function getProjects() {
 
 export default async function DashboardPage() {
   const session = await auth();
-  const { projects, usingDatabase } = await getProjects();
+  
+  if (!session?.user?.email) {
+    return <div>Please log in to view your dashboard</div>;
+  }
+
+  const { projects, usingDatabase } = await getProjects(session.user.email);
 
   // Calculate stats
   const stats = {
