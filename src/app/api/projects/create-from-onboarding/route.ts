@@ -127,22 +127,37 @@ export async function POST(request: NextRequest) {
       console.log(`✅ ${answers.length} question answers stored`);
     }
 
-    // 8. Generate PRD and tasks asynchronously (don't wait)
-    // This runs in the background and updates the project when complete
-    generatePRDAndTasks(
-      project.id,
-      service,
-      serviceName,
-      description,
-      questionAnswers,
-      context.env.DB,
-      context.env.GEMINI_API_KEY // Pass API key from Cloudflare context
-    )
-      .catch(error => {
-        console.error(`❌ Failed to generate PRD/tasks for project ${project.id}:`, error);
-      });
+    // 8. Check if Gemini API key is available
+    const geminiApiKey = context.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY;
+    
+    if (!geminiApiKey) {
+      console.warn('⚠️ GEMINI_API_KEY not found. PRD will not be generated.');
+      // Update project with a placeholder PRD
+      await db
+        .update(projects)
+        .set({
+          prd: `# Project Requirements Document\n\n**Project**: ${serviceName} for ${clientName}\n\n**Description**: ${description}\n\n⚠️ AI-generated PRD is not available. Please configure GEMINI_API_KEY in Cloudflare secrets.\n\nTo generate PRD:\n1. Set GEMINI_API_KEY secret in Cloudflare\n2. Edit this project to regenerate`,
+          updatedAt: new Date()
+        })
+        .where(eq(projects.id, project.id));
+    } else {
+      // Generate PRD and tasks asynchronously (don't wait)
+      // This runs in the background and updates the project when complete
+      generatePRDAndTasks(
+        project.id,
+        service,
+        serviceName,
+        description,
+        questionAnswers,
+        context.env.DB,
+        geminiApiKey
+      )
+        .catch(error => {
+          console.error(`❌ Failed to generate PRD/tasks for project ${project.id}:`, error);
+        });
 
-    console.log('🤖 AI generation started in background');
+      console.log('🤖 AI generation started in background');
+    }
 
     // 9. Return success immediately (PRD generation happens in background)
     return NextResponse.json({
@@ -227,8 +242,20 @@ async function generatePRDAndTasks(
 
     console.log(`✅ All tasks saved to database for project ${projectId}`);
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(`❌ Failed to generate PRD/tasks for project ${projectId}:`, error);
-    // Don't throw - just log the error so the project is still created
+    
+    // Save error message as PRD so user knows what happened
+    try {
+      await db
+        .update(projects)
+        .set({
+          prd: `# Project Requirements Document\n\n**Error Generating PRD**\n\n⚠️ An error occurred while generating the AI-powered PRD.\n\n**Error**: ${error.message || 'Unknown error'}\n\n**What to do:**\n1. Check that GEMINI_API_KEY is properly configured\n2. Verify your Gemini API quota\n3. Try creating a new project\n\n**Project Details:**\n- Service: ${serviceName}\n- Description: ${description}\n\nPlease contact support if this issue persists.`,
+          updatedAt: new Date()
+        })
+        .where(eq(projects.id, projectId));
+    } catch (updateError) {
+      console.error('Failed to update project with error message:', updateError);
+    }
   }
 }
