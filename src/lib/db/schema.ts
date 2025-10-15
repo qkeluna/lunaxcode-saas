@@ -98,16 +98,29 @@ export const tasks = sqliteTable('tasks', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
-// Payments table
+// Payments table - Manual bank transfer verification
 export const payments = sqliteTable('payments', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   projectId: integer('project_id').notNull().references(() => projects.id),
   userId: text('user_id').notNull(),
   amount: integer('amount').notNull(),
-  paymentMethod: text('payment_method').notNull(), // 'card' | 'gcash' | 'paymaya'
-  paymentIntentId: text('payment_intent_id').notNull(),
-  status: text('status').notNull(), // 'processing' | 'succeeded' | 'failed'
-  metadata: text('metadata'), // JSON string
+  paymentType: text('payment_type').notNull(), // 'deposit' | 'completion' (50% each)
+  paymentMethod: text('payment_method').notNull(), // 'gcash' | 'seabank' | 'paymaya' | 'bank_transfer'
+  
+  // Payment proof details
+  proofImageUrl: text('proof_image_url'), // R2 URL or base64 data URL
+  referenceNumber: text('reference_number'), // Transaction reference from bank
+  senderName: text('sender_name'), // Name of person who sent payment
+  senderAccountNumber: text('sender_account_number'), // Last 4 digits or partial account
+  
+  // Admin verification
+  status: text('status').notNull().default('pending'), // 'pending' | 'verified' | 'rejected'
+  verifiedBy: text('verified_by'), // Admin user ID who verified
+  verifiedAt: integer('verified_at', { mode: 'timestamp' }),
+  rejectionReason: text('rejection_reason'),
+  adminNotes: text('admin_notes'),
+  
+  metadata: text('metadata'), // JSON string for additional data
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
@@ -182,6 +195,21 @@ export const features = sqliteTable('features', {
   order: integer('order').default(0),
   isActive: integer('is_active', { mode: 'boolean' }).default(true),
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+// Payment Accounts table (admin-managed bank accounts for receiving payments)
+export const paymentAccounts = sqliteTable('payment_accounts', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  accountType: text('account_type').notNull(), // 'gcash' | 'seabank' | 'paymaya' | 'bank_transfer'
+  accountName: text('account_name').notNull(), // Account holder name
+  accountNumber: text('account_number').notNull(), // Phone number for e-wallets, account number for banks
+  bankName: text('bank_name'), // Only for bank_transfer type
+  instructions: text('instructions'), // Special instructions for this payment method
+  qrCodeUrl: text('qr_code_url'), // Optional QR code image for GCash/PayMaya
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  order: integer('order').default(0),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
 // NextAuth Session table

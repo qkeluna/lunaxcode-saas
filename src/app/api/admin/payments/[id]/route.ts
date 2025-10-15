@@ -1,99 +1,118 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkIsAdmin } from '@/lib/auth/check-admin';
-import { getDatabase } from '@/lib/db/client';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import { getDb } from '@/lib/db/client';
 import { payments, projects } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
+export const runtime = 'edge';
+
+// PATCH - Verify or reject payment
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { isAdmin, error } = await checkIsAdmin(request);
-
-  if (!isAdmin) {
-    return NextResponse.json(
-      { error: error || 'Forbidden' },
-      { status: error === 'Unauthorized' ? 401 : 403 }
-    );
-  }
-
   try {
-    const db = getDatabase();
-
-    if (!db) {
-      return NextResponse.json(
-        { error: 'Database not connected' },
-        { status: 503 }
-      );
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     const paymentId = parseInt(params.id);
     const body = await request.json();
+    const { status, adminNotes, rejectionReason } = body;
 
-    const { status } = body;
-
-    if (!status) {
+    if (!status || !['verified', 'rejected'].includes(status)) {
       return NextResponse.json(
-        { error: 'Status is required' },
+        { error: 'Invalid status. Must be "verified" or "rejected"' },
         { status: 400 }
       );
     }
 
-    // Update payment status
-    const [updatedPayment] = await db
-      .update(payments)
-      .set({
-        status,
-        updatedAt: new Date(),
-      })
-      .where(eq(payments.id, paymentId))
-      .returning();
-
-    if (!updatedPayment) {
+    if (status === 'rejected' && !rejectionReason) {
       return NextResponse.json(
-        { error: 'Payment not found' },
-        { status: 404 }
+        { error: 'Rejection reason is required when rejecting payment' },
+        { status: 400 }
       );
     }
 
-    // If payment succeeded, update project payment status
-    if (status === 'succeeded') {
+    const db = await getDb();
+
+    // Get payment details
+    const payment = await db
+      .select()
+      .from(payments)
+      .where(eq(payments.id, paymentId))
+      .get();
+
+    if (!payment) {
+      return NextResponse.json({ error: 'Payment not found' }, { status: 404 });
+    }
+
+    const now = new Date();
+
+    // Update payment status
+    await db
+      .update(payments)
+      .set({
+        status,
+        verifiedBy: status === 'verified' ? session.user.id : null,
+        verifiedAt: status === 'verified' ? now : null,
+        rejectionReason: status === 'rejected' ? rejectionReason : null,
+        adminNotes,
+        updatedAt: now,
+      })
+      .where(eq(payments.id, paymentId));
+
+    // Update project payment status based on verification
+    if (status === 'verified') {
       const project = await db
         .select()
         .from(projects)
-        .where(eq(projects.id, updatedPayment.projectId));
+        .where(eq(projects.id, payment.projectId))
+        .get();
 
-      if (project.length > 0) {
-        const currentProject = project[0];
-        const newDepositAmount = (currentProject.depositAmount || 0) + updatedPayment.amount;
-        const totalPrice = currentProject.price || 0;
+      if (project) {
+        let newPaymentStatus = project.paymentStatus;
+        let newProjectStatus = project.status;
 
-        let newPaymentStatus = 'pending';
-        if (newDepositAmount >= totalPrice) {
-          newPaymentStatus = 'paid';
-        } else if (newDepositAmount > 0) {
+        if (payment.paymentType === 'deposit') {
+          // Deposit verified - project can now start
           newPaymentStatus = 'partially-paid';
+          if (project.status === 'pending') {
+            newProjectStatus = 'in-progress'; // Start the project
+          }
+        } else if (payment.paymentType === 'completion') {
+          // Completion payment verified - project fully paid
+          newPaymentStatus = 'paid';
+          // Optionally mark project as completed if not already
+          if (project.status === 'in-progress') {
+            newProjectStatus = 'completed';
+          }
         }
 
         await db
           .update(projects)
           .set({
-            depositAmount: newDepositAmount,
             paymentStatus: newPaymentStatus,
-            updatedAt: new Date(),
+            status: newProjectStatus,
+            startDate: payment.paymentType === 'deposit' && !project.startDate ? now : project.startDate,
+            updatedAt: now,
           })
-          .where(eq(projects.id, updatedPayment.projectId));
+          .where(eq(projects.id, payment.projectId));
       }
     }
 
-    return NextResponse.json({ payment: updatedPayment });
-  } catch (error: any) {
+    return NextResponse.json({
+      success: true,
+      message: `Payment ${status} successfully`,
+    });
+  } catch (error) {
     console.error('Error updating payment:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to update payment' },
+      { error: 'Failed to update payment' },
       { status: 500 }
     );
   }
 }
-
-export const runtime = 'edge';
