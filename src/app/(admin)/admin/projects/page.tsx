@@ -12,6 +12,7 @@ import {
   Users,
   Clock
 } from 'lucide-react';
+import Link from 'next/link';
 import GeneratePRDModal from '@/components/admin/GeneratePRDModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,6 +40,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 
 interface Project {
@@ -86,6 +97,7 @@ export default function AdminProjectsPage() {
   const [paymentFilter, setPaymentFilter] = useState('all');
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [deleteProjectId, setDeleteProjectId] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState({
     status: '',
     paymentStatus: '',
@@ -109,9 +121,9 @@ export default function AdminProjectsPage() {
       if (searchQuery) params.append('search', searchQuery);
 
       const response = await fetch(`/api/admin/projects?${params.toString()}`);
-      const data = await response.json();
+      const data = await response.json() as { projects?: Project[]; error?: string };
 
-      if (response.ok) {
+      if (response.ok && data.projects) {
         setProjects(data.projects);
       } else {
         console.error('Failed to fetch projects:', data.error);
@@ -159,13 +171,11 @@ export default function AdminProjectsPage() {
     }
   };
 
-  const handleDeleteProject = async (projectId: number) => {
-    if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) {
-      return;
-    }
+  const confirmDelete = async () => {
+    if (!deleteProjectId) return;
 
     try {
-      const response = await fetch(`/api/admin/projects/${projectId}`, {
+      const response = await fetch(`/api/admin/projects/${deleteProjectId}`, {
         method: 'DELETE',
       });
 
@@ -177,6 +187,8 @@ export default function AdminProjectsPage() {
       }
     } catch (error) {
       console.error('Error deleting project:', error);
+    } finally {
+      setDeleteProjectId(null);
     }
   };
 
@@ -381,6 +393,15 @@ export default function AdminProjectsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
+                      <Link href={`/admin/projects/${item.project.id}`}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title="View Project Details"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </Link>
                       <GeneratePRDModal
                         projectId={item.project.id}
                         projectName={item.project.name}
@@ -396,7 +417,7 @@ export default function AdminProjectsPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleDeleteProject(item.project.id)}
+                        onClick={() => setDeleteProjectId(item.project.id)}
                         className="text-red-600 hover:text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -533,6 +554,27 @@ export default function AdminProjectsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteProjectId !== null} onOpenChange={() => setDeleteProjectId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Project?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this project? This action cannot be undone and will permanently remove all project data, tasks, and files.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

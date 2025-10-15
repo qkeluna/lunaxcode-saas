@@ -14,6 +14,7 @@ import {
   Briefcase,
   HelpCircle,
   UserCog,
+  Bot,
 } from 'lucide-react';
 
 const navigation = [
@@ -33,7 +34,14 @@ const navigation = [
       { name: 'FAQs', href: '/admin/cms/faqs', icon: HelpCircle },
     ],
   },
-  { name: 'Settings', href: '/admin/settings', icon: Settings },
+  {
+    name: 'Settings',
+    icon: Settings,
+    children: [
+      { name: 'General', href: '/admin/settings', icon: Settings },
+      { name: 'AI Settings', href: '/admin/settings/ai-settings', icon: Bot },
+    ],
+  },
 ];
 
 export default function AdminSidebar() {

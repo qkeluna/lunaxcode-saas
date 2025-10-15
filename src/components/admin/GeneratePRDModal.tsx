@@ -55,6 +55,16 @@ export default function GeneratePRDModal({
   };
 
   const handleGenerate = async () => {
+    // Check if AI is configured
+    const aiProvider = localStorage.getItem('ai_provider');
+    const aiApiKey = localStorage.getItem('ai_api_key');
+    const aiModel = localStorage.getItem('ai_model');
+
+    if (!aiProvider || !aiApiKey) {
+      setError('Please configure your AI provider in Settings → AI Settings first.');
+      return;
+    }
+
     setIsGenerating(true);
     setError(null);
     setCurrentStep(0);
@@ -73,6 +83,16 @@ export default function GeneratePRDModal({
     try {
       const response = await fetch(`/api/admin/projects/${projectId}/generate-prd`, {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          aiConfig: {
+            provider: aiProvider,
+            apiKey: aiApiKey,
+            model: aiModel || 'gemini-2.5-pro'
+          }
+        })
       });
 
       const data = await response.json() as { prdLength: number; tasksCount: number; error?: string };
@@ -237,9 +257,19 @@ export default function GeneratePRDModal({
                   <h4 className="text-lg font-semibold text-red-600">
                     Failed to Generate PRD
                   </h4>
-                  <p className="text-sm text-gray-600">{error}</p>
+                  <div className="max-w-md mx-auto">
+                    <p className="text-sm text-gray-700 bg-red-50 p-3 rounded-md font-mono text-left">
+                      {error}
+                    </p>
+                  </div>
                   <p className="text-xs text-gray-500 pt-2">
-                    Please try again or check the logs for details.
+                    {error.includes('GEMINI_API_KEY') ? (
+                      <>Set GEMINI_API_KEY in Cloudflare secrets</>
+                    ) : error.includes('quota') ? (
+                      <>API quota exceeded. Wait a moment and try again.</>
+                    ) : (
+                      <>Please try again or check the logs for details.</>
+                    )}
                   </p>
                 </div>
               </div>

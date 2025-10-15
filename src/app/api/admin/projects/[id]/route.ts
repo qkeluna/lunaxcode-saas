@@ -1,110 +1,235 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { checkIsAdmin } from '@/lib/auth/check-admin';
-import { getDatabase } from '@/lib/db/client';
-import { projects } from '@/lib/db/schema';
+import { getCloudflareContext } from '@/lib/db/context';
+import { drizzle } from 'drizzle-orm/d1';
+import { projects, tasks, users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { checkIsAdmin } from '@/lib/auth/check-admin';
 
-export async function PATCH(
+export const runtime = 'edge';
+
+/**
+ * GET /api/admin/projects/[id]
+ * Fetch a single project with its tasks
+ */
+export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { isAdmin, error } = await checkIsAdmin(request);
-
-  if (!isAdmin) {
-    return NextResponse.json(
-      { error: error || 'Forbidden' },
-      { status: error === 'Unauthorized' ? 401 : 403 }
-    );
-  }
-
   try {
-    const db = getDatabase();
-
-    if (!db) {
+    // Check admin authentication
+    const { isAdmin, error } = await checkIsAdmin(request);
+    if (!isAdmin) {
       return NextResponse.json(
-        { error: 'Database not connected' },
+        { error: error || 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
+    }
+
+    // Get Cloudflare context and database
+    const context = getCloudflareContext();
+    if (!context?.env?.DB) {
+      return NextResponse.json(
+        { error: 'Database not available' },
         { status: 503 }
       );
     }
 
-    const projectId = parseInt(params.id);
-    const body = await request.json();
+    const db = drizzle(context.env.DB);
+    const { id } = await params;
+    const projectId = parseInt(id);
 
-    const { status, paymentStatus, startDate, endDate, timeline, budget, price } = body;
-
-    // Build update object
-    const updateData: any = {
-      updatedAt: new Date(),
-    };
-
-    if (status !== undefined) updateData.status = status;
-    if (paymentStatus !== undefined) updateData.paymentStatus = paymentStatus;
-    if (startDate !== undefined) updateData.startDate = startDate ? new Date(startDate) : null;
-    if (endDate !== undefined) updateData.endDate = endDate ? new Date(endDate) : null;
-    if (timeline !== undefined) updateData.timeline = timeline;
-    if (budget !== undefined) updateData.budget = budget;
-    if (price !== undefined) updateData.price = price;
-
-    const [updatedProject] = await db
-      .update(projects)
-      .set(updateData)
+    // Fetch project
+    const [project] = await db
+      .select()
+      .from(projects)
       .where(eq(projects.id, projectId))
-      .returning();
+      .limit(1);
 
-    if (!updatedProject) {
+    if (!project) {
       return NextResponse.json(
         { error: 'Project not found' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ project: updatedProject });
-  } catch (error: any) {
-    console.error('Error updating project:', error);
+    // Fetch tasks for this project
+    const projectTasks = await db
+      .select()
+      .from(tasks)
+      .where(eq(tasks.projectId, projectId))
+      .orderBy(tasks.order);
+
+    // Fetch user info
+    let user = null;
+    if (project.userId) {
+      const [userResult] = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, project.userId))
+        .limit(1);
+      
+      if (userResult) {
+        user = {
+          id: userResult.id,
+          name: userResult.name,
+          email: userResult.email,
+        };
+      }
+    }
+
+    return NextResponse.json({
+      project: {
+        id: project.id,
+        name: project.name,
+        service: project.service,
+        clientName: project.clientName,
+        clientEmail: project.clientEmail,
+        description: project.description,
+        timeline: project.timeline,
+        budget: project.budget,
+        price: project.price,
+        status: project.status,
+        paymentStatus: project.paymentStatus,
+        depositAmount: project.depositAmount,
+        prd: project.prd,
+        startDate: project.startDate,
+        endDate: project.endDate,
+        createdAt: project.createdAt,
+      },
+      tasks: projectTasks.map(task => ({
+        id: task.id,
+        title: task.title,
+        description: task.description,
+        section: task.section,
+        priority: task.priority,
+        status: task.status,
+        estimatedHours: task.estimatedHours,
+        dependencies: task.dependencies,
+        order: task.order,
+      })),
+      user,
+    });
+
+  } catch (error) {
+    console.error('Error fetching project:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to update project' },
+      { error: 'Failed to fetch project' },
       { status: 500 }
     );
   }
 }
 
-export async function DELETE(
+/**
+ * PATCH /api/admin/projects/[id]
+ * Update project details
+ */
+export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { isAdmin, error } = await checkIsAdmin(request);
-
-  if (!isAdmin) {
-    return NextResponse.json(
-      { error: error || 'Forbidden' },
-      { status: error === 'Unauthorized' ? 401 : 403 }
-    );
-  }
-
   try {
-    const db = getDatabase();
-
-    if (!db) {
+    // Check admin authentication
+    const { isAdmin, error } = await checkIsAdmin(request);
+    if (!isAdmin) {
       return NextResponse.json(
-        { error: 'Database not connected' },
+        { error: error || 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
+    }
+
+    // Get Cloudflare context and database
+    const context = getCloudflareContext();
+    if (!context?.env?.DB) {
+      return NextResponse.json(
+        { error: 'Database not available' },
         { status: 503 }
       );
     }
 
-    const projectId = parseInt(params.id);
+    const db = drizzle(context.env.DB);
+    const { id } = await params;
+    const projectId = parseInt(id);
 
+    // Get update data from request body
+    const body = await request.json() as {
+      status?: string;
+      paymentStatus?: string;
+      startDate?: string;
+      endDate?: string;
+      timeline?: number;
+      budget?: number;
+      price?: number;
+    };
+
+    // Update project
     await db
-      .delete(projects)
+      .update(projects)
+      .set({
+        ...body,
+        updatedAt: new Date(),
+      })
       .where(eq(projects.id, projectId));
 
-    return NextResponse.json({ success: true });
-  } catch (error: any) {
-    console.error('Error deleting project:', error);
+    return NextResponse.json({ 
+      success: true,
+      message: 'Project updated successfully' 
+    });
+
+  } catch (error) {
+    console.error('Error updating project:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to delete project' },
+      { error: 'Failed to update project' },
       { status: 500 }
     );
   }
 }
 
-export const runtime = 'edge';
+/**
+ * DELETE /api/admin/projects/[id]
+ * Delete a project
+ */
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    // Check admin authentication
+    const { isAdmin, error } = await checkIsAdmin(request);
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: error || 'Unauthorized - Admin access required' },
+        { status: 401 }
+      );
+    }
+
+    // Get Cloudflare context and database
+    const context = getCloudflareContext();
+    if (!context?.env?.DB) {
+      return NextResponse.json(
+        { error: 'Database not available' },
+        { status: 503 }
+      );
+    }
+
+    const db = drizzle(context.env.DB);
+    const { id } = await params;
+    const projectId = parseInt(id);
+
+    // Delete project (CASCADE will delete related tasks, files, etc.)
+    await db
+      .delete(projects)
+      .where(eq(projects.id, projectId));
+
+    return NextResponse.json({ 
+      success: true,
+      message: 'Project deleted successfully' 
+    });
+
+  } catch (error) {
+    console.error('Error deleting project:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete project' },
+      { status: 500 }
+    );
+  }
+}
