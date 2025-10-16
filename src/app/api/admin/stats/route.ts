@@ -24,48 +24,88 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get all projects
+    // Optimized: Use SQL aggregation for counts instead of loading all records
+    const [{ totalProjects }] = await db
+      .select({ totalProjects: count() })
+      .from(projects);
+
+    const [{ activeProjects }] = await db
+      .select({ activeProjects: count() })
+      .from(projects)
+      .where(eq(projects.status, 'in-progress'));
+
+    const [{ completedProjects }] = await db
+      .select({ completedProjects: count() })
+      .from(projects)
+      .where(eq(projects.status, 'completed'));
+
+    const [{ totalClients }] = await db
+      .select({ totalClients: count() })
+      .from(users)
+      .where(eq(users.role, 'client'));
+
+    // Count projects with pending or partially-paid status
+    const [{ pendingPayments }] = await db
+      .select({ pendingPayments: count() })
+      .from(projects)
+      .where(
+        sql`${projects.paymentStatus} IN ('pending', 'partially-paid')`
+      );
+
+    // Calculate total revenue properly:
+    // - For 'paid' projects: count full price
+    // - For 'partially-paid' projects: count deposit amount only
+    // - For 'pending' projects: count nothing
     const allProjects = await db.select().from(projects);
 
-    // Calculate stats
-    const totalProjects = allProjects.length;
-    const activeProjects = allProjects.filter((p) => p.status === 'in-progress').length;
-    const completedProjects = allProjects.filter((p) => p.status === 'completed').length;
-    const pendingPayments = allProjects.filter((p) => p.paymentStatus === 'pending' || p.paymentStatus === 'partially-paid').length;
-
-    // Calculate total revenue (sum of all paid amounts)
     const totalRevenue = allProjects.reduce((sum, project) => {
-      return sum + (project.depositAmount || 0);
+      if (project.paymentStatus === 'paid') {
+        return sum + (project.price || 0);
+      } else if (project.paymentStatus === 'partially-paid') {
+        return sum + (project.depositAmount || 0);
+      }
+      return sum; // Don't count pending payments
     }, 0);
 
-    // Get total clients (unique users)
-    const allUsers = await db.select().from(users);
-    const totalClients = allUsers.filter((u) => u.role === 'client').length;
-
-    // Get recent projects (last 5)
-    const recentProjects = allProjects
-      .sort((a, b) => {
-        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return dateB - dateA;
+    // Get recent projects (last 5) - still need full query for sorting by timestamp
+    const recentProjectsRaw = await db
+      .select({
+        id: projects.id,
+        name: projects.name,
+        clientName: projects.clientName,
+        status: projects.status,
+        createdAt: projects.createdAt,
       })
-      .slice(0, 5)
-      .map((p) => ({
-        id: p.id,
-        name: p.name,
-        clientName: p.clientName,
-        status: p.status,
-      }));
+      .from(projects)
+      .orderBy(sql`${projects.createdAt} DESC`)
+      .limit(5);
 
-    // Get pending payments list
-    const pendingPaymentsList = allProjects
-      .filter((p) => p.paymentStatus === 'pending' || p.paymentStatus === 'partially-paid')
-      .map((p) => ({
-        id: p.id,
-        name: p.name,
-        balance: (p.price || 0) - (p.depositAmount || 0),
-      }))
-      .slice(0, 5);
+    const recentProjects = recentProjectsRaw.map((p) => ({
+      id: p.id,
+      name: p.name,
+      clientName: p.clientName,
+      status: p.status,
+    }));
+
+    // Get pending payments list (top 5 projects with outstanding balances)
+    const pendingPaymentsRaw = await db
+      .select({
+        id: projects.id,
+        name: projects.name,
+        price: projects.price,
+        depositAmount: projects.depositAmount,
+      })
+      .from(projects)
+      .where(
+        sql`${projects.paymentStatus} IN ('pending', 'partially-paid')`
+      )
+      .limit(5);
+
+    const pendingPaymentsList = pendingPaymentsRaw.map((p) => ({
+      id: p.id,
+      name: p.name,
+      balance: (p.price || 0) - (p.depositAmount || 0),
+    }));
 
     return NextResponse.json({
       totalProjects,

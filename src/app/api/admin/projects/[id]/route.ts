@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
-import { projects, tasks, users } from '@/lib/db/schema';
+import { projects, tasks, users, projectAnswers, questions } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { checkIsAdmin } from '@/lib/auth/check-admin';
 
@@ -59,6 +59,21 @@ export async function GET(
       .where(eq(tasks.projectId, projectId))
       .orderBy(tasks.order);
 
+    // Fetch onboarding answers with questions
+    const answersWithQuestions = await db
+      .select({
+        id: projectAnswers.id,
+        projectId: projectAnswers.projectId,
+        questionId: projectAnswers.questionId,
+        questionKey: projectAnswers.questionKey,
+        questionText: questions.questionText,
+        answerValue: projectAnswers.answerValue,
+        questionType: questions.questionType,
+      })
+      .from(projectAnswers)
+      .innerJoin(questions, eq(projectAnswers.questionId, questions.id))
+      .where(eq(projectAnswers.projectId, projectId));
+
     // Fetch user info
     let user = null;
     if (project.userId) {
@@ -106,6 +121,15 @@ export async function GET(
         estimatedHours: task.estimatedHours,
         dependencies: task.dependencies,
         order: task.order,
+      })),
+      onboardingAnswers: answersWithQuestions.map(answer => ({
+        id: answer.id,
+        projectId: answer.projectId,
+        questionId: answer.questionId,
+        questionKey: answer.questionKey,
+        questionText: answer.questionText,
+        answerValue: answer.answerValue,
+        questionType: answer.questionType,
       })),
       user,
     });
@@ -161,13 +185,23 @@ export async function PATCH(
       price?: number;
     };
 
+    // Convert string dates to Date objects if provided
+    const updateData: Record<string, unknown> = {
+      ...body,
+      updatedAt: new Date(),
+    };
+    
+    if (body.startDate) {
+      updateData.startDate = new Date(body.startDate);
+    }
+    if (body.endDate) {
+      updateData.endDate = new Date(body.endDate);
+    }
+
     // Update project
     await db
       .update(projects)
-      .set({
-        ...body,
-        updatedAt: new Date(),
-      })
+      .set(updateData)
       .where(eq(projects.id, projectId));
 
     return NextResponse.json({ 

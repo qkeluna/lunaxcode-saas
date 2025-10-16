@@ -141,18 +141,18 @@ export async function POST(
       // 11. Insert new tasks
       for (const task of generatedTasks) {
         await db.insert(tasks).values({
-          projectId: projectId,
-          title: task.title,
-          description: task.description,
-          section: task.section,
-          priority: task.priority,
-          status: 'pending',
-          estimatedHours: task.estimatedHours,
-          dependencies: task.dependencies,
-          order: task.order,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
+        projectId: projectId,
+        title: task.title,
+        description: task.description,
+        section: task.section,
+        priority: task.priority,
+        status: 'pending',
+        estimatedHours: task.estimatedHours,
+        dependencies: task.dependencies,
+        order: task.order,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
       }
 
       console.log(`✅ All tasks saved to database for project ${projectId}`);

@@ -1,4 +1,5 @@
 import { auth } from '@/auth';
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { FolderKanban, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { getCloudflareContext } from '@/lib/db/context';
@@ -50,6 +51,11 @@ export default async function DashboardPage() {
     return <div>Please log in to view your dashboard</div>;
   }
 
+  // Redirect admins to /admin dashboard
+  if (session.user.role === 'admin') {
+    redirect('/admin');
+  }
+
   const { projects, usingDatabase } = await getProjects(session.user.email);
 
   // Calculate stats
@@ -69,7 +75,7 @@ export default async function DashboardPage() {
           Welcome back, {session!.user?.name}!
         </h1>
         <p className="text-gray-600 mt-1">
-          Here's what's happening with your projects
+          Here&apos;s what&apos;s happening with your projects
         </p>
         {!usingDatabase && (
           <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">

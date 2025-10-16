@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { getDb } from '@/lib/db/client';
+import { checkIsAdmin } from '@/lib/auth/check-admin';
+import { getDatabase } from '@/lib/db/client';
 import { payments, projects } from '@/lib/db/schema';
 import { eq, sql } from 'drizzle-orm';
 
@@ -9,14 +8,24 @@ export const runtime = 'edge';
 
 // GET all payments (admin only)
 export async function GET(request: NextRequest) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session?.user || session.user.role !== 'admin') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-    }
+  const { isAdmin, error } = await checkIsAdmin(request);
 
-    const db = await getDb();
+  if (!isAdmin) {
+    return NextResponse.json(
+      { error: error || 'Forbidden' },
+      { status: error === 'Unauthorized' ? 401 : 403 }
+    );
+  }
+
+  try {
+    const db = getDatabase();
+
+    if (!db) {
+      return NextResponse.json(
+        { error: 'Database not connected' },
+        { status: 503 }
+      );
+    }
 
     // Get all payments with project details
     const allPayments = await db

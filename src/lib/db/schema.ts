@@ -90,7 +90,7 @@ export const tasks = sqliteTable('tasks', {
   description: text('description').notNull(),
   section: text('section').notNull(),
   priority: text('priority').notNull(), // 'low' | 'medium' | 'high'
-  status: text('status').default('pending'), // 'pending' | 'in-progress' | 'completed'
+  status: text('status').default('pending'), // 'pending' (backlog) | 'to-do' | 'in-progress' | 'testing' | 'done'
   estimatedHours: integer('estimated_hours').notNull(),
   dependencies: text('dependencies'),
   order: integer('order').notNull(),

@@ -1,8 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { getDatabase } from '@/lib/db/client';
-import { updateTaskStatus } from '@/lib/db/queries';
+import { getCloudflareContext } from '@/lib/db/context';
+import { drizzle } from 'drizzle-orm/d1';
+import { tasks } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 
+export const runtime = 'edge';
+
+/**
+ * PATCH /api/tasks/[id]
+ * Update task status
+ */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -13,44 +21,54 @@ export async function PATCH(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Try to get D1 database
-  const db = getDatabase();
-
-  if (!db) {
+  // Get Cloudflare context and database
+  const context = getCloudflareContext();
+  if (!context?.env?.DB) {
     return NextResponse.json(
-      {
-        error: 'Database not connected',
-        message: 'Please set up D1 database to update tasks',
-      },
+      { error: 'Database not available' },
       { status: 503 }
     );
   }
 
   try {
-    const body = await request.json();
-    const { status } = body;
+    const db = drizzle(context.env.DB);
+    const body = await request.json() as { status?: string; order?: number };
     const { id } = await params;
     const taskId = parseInt(id);
 
-    if (!status || !['pending', 'in-progress', 'completed'].includes(status)) {
-      return NextResponse.json(
-        { error: 'Invalid status. Must be: pending, in-progress, or completed' },
-        { status: 400 }
-      );
+    // Validate status if provided
+    if (body.status) {
+      const validStatuses = ['pending', 'to-do', 'in-progress', 'testing', 'done'];
+      if (!validStatuses.includes(body.status)) {
+        return NextResponse.json(
+          { error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` },
+          { status: 400 }
+        );
+      }
     }
 
-    const updatedTask = await updateTaskStatus(db, taskId, status);
+    // Build update object
+    const updateData: any = {
+      updatedAt: new Date(),
+    };
 
-    if (!updatedTask) {
-      return NextResponse.json(
-        { error: 'Task not found or update failed' },
-        { status: 404 }
-      );
+    if (body.status !== undefined) {
+      updateData.status = body.status;
     }
+
+    if (body.order !== undefined) {
+      updateData.order = body.order;
+    }
+
+    // Update task
+    await db
+      .update(tasks)
+      .set(updateData)
+      .where(eq(tasks.id, taskId));
 
     return NextResponse.json({
       success: true,
-      task: updatedTask,
+      message: 'Task updated successfully',
     });
   } catch (error) {
     console.error('Error updating task:', error);
@@ -60,5 +78,3 @@ export async function PATCH(
     );
   }
 }
-
-export const runtime = 'edge';

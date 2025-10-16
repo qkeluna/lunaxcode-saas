@@ -1,65 +1,164 @@
 import { FolderKanban, Users, CreditCard, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
+import { getDatabase } from '@/lib/db/client';
+import { projects, users } from '@/lib/db/schema';
+import { eq, count, sql } from 'drizzle-orm';
 
-// Fetch dashboard stats
+// Fetch dashboard stats directly from database
 async function getDashboardStats() {
   try {
-    const response = await fetch(`${process.env.NEXTAUTH_URL}/api/admin/stats`, {
-      cache: 'no-store',
-    });
+    const db = getDatabase();
 
-    if (!response.ok) return null;
+    if (!db) {
+      throw new Error('Database not connected');
+    }
 
-    const data = await response.json();
-    return data;
+    // Optimized: Use SQL aggregation for counts
+    const [{ totalProjects }] = await db
+      .select({ totalProjects: count() })
+      .from(projects);
+
+    const [{ activeProjects }] = await db
+      .select({ activeProjects: count() })
+      .from(projects)
+      .where(eq(projects.status, 'in-progress'));
+
+    const [{ completedProjects }] = await db
+      .select({ completedProjects: count() })
+      .from(projects)
+      .where(eq(projects.status, 'completed'));
+
+    const [{ totalClients }] = await db
+      .select({ totalClients: count() })
+      .from(users)
+      .where(eq(users.role, 'client'));
+
+    const [{ pendingPayments }] = await db
+      .select({ pendingPayments: count() })
+      .from(projects)
+      .where(
+        sql`${projects.paymentStatus} IN ('pending', 'partially-paid')`
+      );
+
+    // Calculate total revenue
+    const allProjects = await db.select().from(projects);
+
+    const totalRevenue = allProjects.reduce((sum, project) => {
+      if (project.paymentStatus === 'paid') {
+        return sum + (project.price || 0);
+      } else if (project.paymentStatus === 'partially-paid') {
+        return sum + (project.depositAmount || 0);
+      }
+      return sum;
+    }, 0);
+
+    // Get recent projects
+    const recentProjectsRaw = await db
+      .select({
+        id: projects.id,
+        name: projects.name,
+        clientName: projects.clientName,
+        status: projects.status,
+        createdAt: projects.createdAt,
+      })
+      .from(projects)
+      .orderBy(sql`${projects.createdAt} DESC`)
+      .limit(5);
+
+    const recentProjects = recentProjectsRaw.map((p) => ({
+      id: p.id,
+      name: p.name,
+      clientName: p.clientName,
+      status: p.status,
+    }));
+
+    // Get pending payments list
+    const pendingPaymentsRaw = await db
+      .select({
+        id: projects.id,
+        name: projects.name,
+        price: projects.price,
+        depositAmount: projects.depositAmount,
+      })
+      .from(projects)
+      .where(
+        sql`${projects.paymentStatus} IN ('pending', 'partially-paid')`
+      )
+      .limit(5);
+
+    const pendingPaymentsList = pendingPaymentsRaw.map((p) => ({
+      id: p.id,
+      name: p.name,
+      balance: (p.price || 0) - (p.depositAmount || 0),
+    }));
+
+    return {
+      totalProjects,
+      activeProjects,
+      completedProjects,
+      totalClients,
+      pendingPayments,
+      totalRevenue,
+      recentProjects,
+      pendingPaymentsList,
+    };
   } catch (error) {
     console.error('Error fetching dashboard stats:', error);
-    return null;
+    throw error;
   }
 }
 
 export default async function AdminDashboardPage() {
-  const stats = await getDashboardStats();
+  // Note: Authentication and admin role check is handled by the layout
+  let stats;
+  let hasError = false;
+
+  try {
+    stats = await getDashboardStats();
+  } catch (error) {
+    hasError = true;
+    console.error('Failed to load dashboard stats:', error);
+  }
 
   const dashboardStats = [
     {
       name: 'Total Projects',
-      value: stats?.totalProjects || 0,
+      value: stats?.totalProjects ?? 0,
       icon: FolderKanban,
       color: 'bg-blue-500',
       href: '/admin/projects',
     },
     {
       name: 'Active Projects',
-      value: stats?.activeProjects || 0,
+      value: stats?.activeProjects ?? 0,
       icon: Clock,
       color: 'bg-yellow-500',
       href: '/admin/projects?status=in-progress',
     },
     {
       name: 'Completed Projects',
-      value: stats?.completedProjects || 0,
+      value: stats?.completedProjects ?? 0,
       icon: CheckCircle2,
       color: 'bg-green-500',
       href: '/admin/projects?status=completed',
     },
     {
       name: 'Total Clients',
-      value: stats?.totalClients || 0,
+      value: stats?.totalClients ?? 0,
       icon: Users,
       color: 'bg-purple-500',
       href: '/admin/clients',
     },
     {
       name: 'Pending Payments',
-      value: stats?.pendingPayments || 0,
+      value: stats?.pendingPayments ?? 0,
       icon: AlertCircle,
       color: 'bg-red-500',
       href: '/admin/payments?status=pending',
     },
     {
       name: 'Total Revenue',
-      value: `₱${(stats?.totalRevenue || 0).toLocaleString()}`,
+      value: `₱${(stats?.totalRevenue ?? 0).toLocaleString()}`,
       icon: CreditCard,
       color: 'bg-indigo-500',
       href: '/admin/payments',
@@ -72,9 +171,26 @@ export default async function AdminDashboardPage() {
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
         <p className="mt-2 text-sm text-gray-700">
-          Welcome to the admin panel. Here's what's happening with your business.
+          Welcome to the admin panel. Here&apos;s what&apos;s happening with your business.
         </p>
       </div>
+
+      {/* Error Alert */}
+      {hasError && (
+        <div className="rounded-md bg-red-50 p-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <AlertCircle className="h-5 w-5 text-red-400" aria-hidden="true" />
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-red-800">Error loading dashboard statistics</h3>
+              <div className="mt-2 text-sm text-red-700">
+                <p>Unable to fetch dashboard data. Please refresh the page or try again later.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
