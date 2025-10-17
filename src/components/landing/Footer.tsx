@@ -60,7 +60,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold text-lg" style={{ marginBottom: 'var(--sp-space-4)' }}>Quick Links</h4>
+            <h4 className="font-bold text-lg" style={{ marginBottom: 'var(--sp-space-4)' }}>Quick Links</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-3)' }}>
               <li>
                 <a href="#portfolio" className="text-gray-400 hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
@@ -97,7 +97,7 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <h4 className="font-semibold text-lg" style={{ marginBottom: 'var(--sp-space-4)' }}>Services</h4>
+            <h4 className="font-bold text-lg" style={{ marginBottom: 'var(--sp-space-4)' }}>Services</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-3)' }}>
               <li>
                 <Link href="/onboarding" className="text-gray-400 hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
@@ -134,7 +134,7 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="font-semibold text-lg" style={{ marginBottom: 'var(--sp-space-4)' }}>Contact Us</h4>
+            <h4 className="font-bold text-lg" style={{ marginBottom: 'var(--sp-space-4)' }}>Contact Us</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-4)' }}>
               <li className="flex items-start" style={{ gap: 'var(--sp-space-3)' }}>
                 <MapPin className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
@@ -165,9 +165,9 @@ export default function Footer() {
             <div style={{ marginTop: 'var(--sp-space-6)' }}>
               <Link
                 href="/onboarding"
-                className="inline-flex items-center font-semibold text-white rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-gradient-to-r"
+                className="inline-flex items-center font-bold text-white rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-gradient-to-r py-3 px-6"
                 style={{
-                  padding: 'var(--sp-space-3) var(--sp-space-5)',
+                  minHeight: '48px',
                   gap: 'var(--sp-space-2)',
                   backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)`
                 }}

@@ -37,7 +37,10 @@ export default function Hero() {
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight">
+            <h1
+              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight"
+              style={{ letterSpacing: '-0.03em' }}
+            >
               Transform Your Ideas Into
               <br />
               <span
@@ -61,8 +64,8 @@ export default function Hero() {
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start" style={{ gap: 'var(--sp-space-4)', paddingTop: 'var(--sp-space-6)' }}>
               <Link
                 href="/onboarding"
-                className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[var(--sp-colors-accent)] to-purple-600 text-white rounded-lg font-semibold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center shadow-lg shadow-purple-500/50"
-                style={{ gap: 'var(--sp-space-2)' }}
+                className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[var(--sp-colors-accent)] to-purple-600 text-white rounded-lg font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center shadow-lg shadow-purple-500/50"
+                style={{ gap: 'var(--sp-space-2)', minHeight: '48px' }}
                 aria-label="Start your project for free"
               >
                 Start Your Project Free
@@ -70,8 +73,8 @@ export default function Hero() {
               </Link>
               <Link
                 href="#portfolio"
-                className="group w-full sm:w-auto px-8 py-4 bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 rounded-lg font-semibold text-lg hover:bg-white/20 hover:border-white/50 transition-all duration-300 flex items-center justify-center"
-                style={{ gap: 'var(--sp-space-2)' }}
+                className="group w-full sm:w-auto px-8 py-4 bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 rounded-lg font-bold text-lg hover:bg-white/20 hover:border-white/50 transition-all duration-300 flex items-center justify-center"
+                style={{ gap: 'var(--sp-space-2)', minHeight: '48px' }}
                 aria-label="View our portfolio"
               >
                 <Code className="w-5 h-5" aria-hidden="true" />

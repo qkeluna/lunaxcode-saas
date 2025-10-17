@@ -1,19 +1,30 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { FolderKanban, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
-import { projects, users } from '@/lib/db/schema';
+import { projects, users, payments } from '@/lib/db/schema';
 import { eq, desc } from 'drizzle-orm';
+import DashboardSkeleton, {
+  StatCardSkeleton,
+  ChartSkeleton,
+  FinancialSummarySkeleton,
+  ActivityTimelineSkeleton,
+  ProjectListSkeleton,
+} from '@/components/dashboard/DashboardSkeleton';
+import DashboardCharts from '@/components/dashboard/DashboardCharts';
+import FinancialSummary from '@/components/dashboard/FinancialSummary';
+import ActivityTimeline from '@/components/dashboard/ActivityTimeline';
 
-// Fetch projects directly from database
-async function getProjects(userEmail: string) {
+// Fetch projects and payments directly from database
+async function getDashboardData(userEmail: string) {
   try {
     const context = getCloudflareContext();
     if (!context?.env?.DB) {
       console.error('Database not available');
-      return { projects: [], usingDatabase: false };
+      return { projects: [], payments: [], usingDatabase: false };
     }
 
     const db = drizzle(context.env.DB);
@@ -27,28 +38,35 @@ async function getProjects(userEmail: string) {
 
     if (!user) {
       console.error('User not found:', userEmail);
-      return { projects: [], usingDatabase: false };
+      return { projects: [], payments: [], usingDatabase: false };
     }
 
-    // Get user's projects
-    const userProjects = await db
-      .select()
-      .from(projects)
-      .where(eq(projects.userId, user.id))
-      .orderBy(desc(projects.createdAt));
+    // Get user's projects and payments in parallel
+    const [userProjects, userPayments] = await Promise.all([
+      db
+        .select()
+        .from(projects)
+        .where(eq(projects.userId, user.id))
+        .orderBy(desc(projects.createdAt)),
+      db
+        .select()
+        .from(payments)
+        .where(eq(payments.userId, user.id))
+        .orderBy(desc(payments.createdAt)),
+    ]);
 
-    return { projects: userProjects, usingDatabase: true };
+    return { projects: userProjects, payments: userPayments, usingDatabase: true };
   } catch (error) {
-    console.error('Error fetching projects:', error);
-    return { projects: [], usingDatabase: false };
+    console.error('Error fetching dashboard data:', error);
+    return { projects: [], payments: [], usingDatabase: false };
   }
 }
 
 export default async function DashboardPage() {
   const session = await auth();
-  
+
   if (!session?.user?.email) {
-    return <div>Please log in to view your dashboard</div>;
+    redirect('/login');
   }
 
   // Redirect admins to /admin dashboard
@@ -56,23 +74,24 @@ export default async function DashboardPage() {
     redirect('/admin');
   }
 
-  const { projects, usingDatabase } = await getProjects(session.user.email);
+  const { projects, payments, usingDatabase } = await getDashboardData(session.user.email);
 
   // Calculate stats
   const stats = {
     total: projects.length,
-    active: projects.filter((p: any) => p.status === 'in-progress').length,
-    completed: projects.filter((p: any) => p.status === 'completed').length,
-    pendingPayment: projects.filter((p: any) => p.paymentStatus === 'pending').length,
+    active: projects.filter((p) => p.status === 'in-progress').length,
+    completed: projects.filter((p) => p.status === 'completed').length,
+    pendingPayment: projects.filter((p) => p.paymentStatus === 'pending').length,
   };
 
   const recentProjects = projects.slice(0, 5);
 
   return (
     <div className="space-y-8">
+      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">
-          Welcome back, {session!.user?.name}!
+          Welcome back, {session.user.name}!
         </h1>
         <p className="text-gray-600 mt-1">
           Here&apos;s what&apos;s happening with your projects
@@ -88,26 +107,47 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[
-          { title: 'Total Projects', value: stats.total, icon: FolderKanban, color: 'bg-blue-500' },
-          { title: 'Active', value: stats.active, icon: Clock, color: 'bg-yellow-500' },
-          { title: 'Completed', value: stats.completed, icon: CheckCircle, color: 'bg-green-500' },
-          { title: 'Pending Payment', value: stats.pendingPayment, icon: AlertCircle, color: 'bg-red-500' },
-        ].map((stat, index) => (
-          <div key={index} className="bg-white rounded-lg shadow p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">{stat.title}</p>
-                <p className="text-3xl font-bold mt-2">{stat.value}</p>
-              </div>
-              <div className={`${stat.color} p-3 rounded-lg`}>
-                <stat.icon className="w-6 h-6 text-white" />
+      <Suspense fallback={
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((i) => <StatCardSkeleton key={i} />)}
+        </div>
+      }>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            { title: 'Total Projects', value: stats.total, icon: FolderKanban, color: 'bg-blue-500' },
+            { title: 'Active', value: stats.active, icon: Clock, color: 'bg-yellow-500' },
+            { title: 'Completed', value: stats.completed, icon: CheckCircle, color: 'bg-green-500' },
+            { title: 'Pending Payment', value: stats.pendingPayment, icon: AlertCircle, color: 'bg-red-500' },
+          ].map((stat, index) => (
+            <div key={index} className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600">{stat.title}</p>
+                  <p className="text-3xl font-bold mt-2">{stat.value}</p>
+                </div>
+                <div className={`${stat.color} p-3 rounded-lg`}>
+                  <stat.icon className="w-6 h-6 text-white" />
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      </Suspense>
+
+      {/* Financial Summary */}
+      <Suspense fallback={<FinancialSummarySkeleton />}>
+        <FinancialSummary projects={projects} payments={payments} />
+      </Suspense>
+
+      {/* Charts Section */}
+      <Suspense fallback={
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ChartSkeleton />
+          <ChartSkeleton />
+        </div>
+      }>
+        <DashboardCharts projects={projects} />
+      </Suspense>
 
       {/* Quick Actions */}
       <div className="bg-white rounded-lg shadow p-6">
@@ -143,62 +183,74 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Recent Projects */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Recent Projects</h2>
-          {projects.length > 0 && (
-            <Link href="/projects" className="text-sm text-blue-600 hover:underline">
-              View all →
-            </Link>
-          )}
+      {/* Recent Projects and Activity Timeline */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Projects - Takes 2 columns */}
+        <div className="lg:col-span-2">
+          <Suspense fallback={<ProjectListSkeleton />}>
+            <div className="bg-white rounded-lg shadow p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Recent Projects</h2>
+                {projects.length > 0 && (
+                  <Link href="/projects" className="text-sm text-blue-600 hover:underline">
+                    View all →
+                  </Link>
+                )}
+              </div>
+
+              {recentProjects.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  <FolderKanban className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                  <p>No projects yet. Create your first project to get started!</p>
+                  <Link
+                    href="/onboarding"
+                    className="inline-block mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  >
+                    Create Project
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {recentProjects.map((project) => (
+                    <Link
+                      key={project.id}
+                      href={`/projects/${project.id}`}
+                      className="block p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-900">{project.name}</h3>
+                          <p className="text-sm text-gray-600 mt-1">{project.service}</p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className={`px-3 py-1 text-xs rounded-full ${
+                            project.status === 'completed' ? 'bg-green-100 text-green-800' :
+                            project.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
+                            'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {project.status}
+                          </span>
+                          <span className={`px-3 py-1 text-xs rounded-full ${
+                            project.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
+                            project.paymentStatus === 'partially-paid' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {project.paymentStatus}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Suspense>
         </div>
 
-        {recentProjects.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            <FolderKanban className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-            <p>No projects yet. Create your first project to get started!</p>
-            <Link
-              href="/onboarding"
-              className="inline-block mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Create Project
-            </Link>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {recentProjects.map((project: any) => (
-              <Link
-                key={project.id}
-                href={`/projects/${project.id}`}
-                className="block p-4 border rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-gray-900">{project.name}</h3>
-                    <p className="text-sm text-gray-600 mt-1">{project.service}</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`px-3 py-1 text-xs rounded-full ${
-                      project.status === 'completed' ? 'bg-green-100 text-green-800' :
-                      project.status === 'in-progress' ? 'bg-blue-100 text-blue-800' :
-                      'bg-yellow-100 text-yellow-800'
-                    }`}>
-                      {project.status}
-                    </span>
-                    <span className={`px-3 py-1 text-xs rounded-full ${
-                      project.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
-                      project.paymentStatus === 'partially-paid' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-red-100 text-red-800'
-                    }`}>
-                      {project.paymentStatus}
-                    </span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
+        {/* Activity Timeline - Takes 1 column */}
+        <Suspense fallback={<ActivityTimelineSkeleton />}>
+          <ActivityTimeline projects={projects} maxActivities={8} />
+        </Suspense>
       </div>
     </div>
   );

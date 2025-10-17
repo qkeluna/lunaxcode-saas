@@ -64,22 +64,30 @@ export default function Header() {
           <div className="hidden md:flex items-center space-x-4">
             <Link
               href="/login"
-              className="px-6 py-2.5 text-white hover:text-purple-300 transition-colors font-semibold"
+              className="px-6 py-3 text-white hover:text-purple-300 transition-colors font-bold"
+              style={{ minHeight: '48px' }}
             >
               Login
             </Link>
-            <Link
-              href="/onboarding"
-              className="px-6 py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-semibold hover:from-pink-600 hover:to-purple-700 transition-all hover:shadow-lg hover:scale-105"
+            <a
+              href="#pricing"
+              className="px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-bold hover:from-pink-600 hover:to-purple-700 transition-all hover:shadow-lg hover:scale-105"
+              style={{ minHeight: '48px' }}
+              onClick={(e) => {
+                e.preventDefault();
+                const element = document.querySelector('#pricing');
+                element?.scrollIntoView({ behavior: 'smooth' });
+              }}
             >
               Get Started
-            </Link>
+            </a>
           </div>
 
           {/* Mobile Menu Toggle */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden text-white p-2"
+            className="md:hidden text-white p-3"
+            style={{ minHeight: '48px', minWidth: '48px' }}
             aria-label="Toggle menu"
           >
             {isMobileMenuOpen ? (
@@ -116,13 +124,19 @@ export default function Header() {
               >
                 Login
               </Link>
-              <Link
-                href="/onboarding"
-                className="mx-4 px-6 py-2.5 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-semibold text-center hover:from-pink-600 hover:to-purple-700 transition-all"
-                onClick={() => setIsMobileMenuOpen(false)}
+              <a
+                href="#pricing"
+                className="mx-4 px-6 py-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-lg font-bold text-center hover:from-pink-600 hover:to-purple-700 transition-all"
+                style={{ minHeight: '48px' }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  const element = document.querySelector('#pricing');
+                  element?.scrollIntoView({ behavior: 'smooth' });
+                  setIsMobileMenuOpen(false);
+                }}
               >
                 Get Started
-              </Link>
+              </a>
             </nav>
           </div>
         )}

@@ -70,7 +70,7 @@ export default function Testimonials() {
         {/* Section Header */}
         <div className="text-center" style={{ marginBottom: 'var(--sp-space-8)' }}>
           <div
-            className="inline-flex items-center backdrop-blur-sm bg-purple-100 text-purple-700 rounded-full font-medium mb-4"
+            className="inline-flex items-center backdrop-blur-sm bg-purple-100 text-purple-700 rounded-full font-bold mb-4"
             style={{ padding: 'var(--sp-space-2) var(--sp-space-4)', gap: 'var(--sp-space-2)' }}
           >
             <MessageCircle className="w-4 h-4" aria-hidden="true" />
@@ -80,7 +80,7 @@ export default function Testimonials() {
           <h2
             id="testimonials-heading"
             className="text-4xl md:text-5xl font-bold text-gray-900"
-            style={{ marginBottom: 'var(--sp-space-4)' }}
+            style={{ marginBottom: 'var(--sp-space-4)', letterSpacing: '-0.02em' }}
           >
             What Our Clients Say
           </h2>
@@ -141,7 +141,7 @@ export default function Testimonials() {
                   {testimonial.avatar}
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">
+                  <div className="font-bold text-gray-900">
                     {testimonial.name}
                   </div>
                   <div className="text-sm text-gray-600">
@@ -159,16 +159,16 @@ export default function Testimonials() {
           style={{ marginTop: 'var(--sp-space-8)', padding: 'var(--sp-space-8)' }}
         >
           <p
-            className="text-gray-700 text-lg font-medium"
+            className="text-gray-700 text-lg font-bold"
             style={{ marginBottom: 'var(--sp-space-4)' }}
           >
             Join 50+ satisfied clients who trusted Lunaxcode with their projects
           </p>
           <a
             href="/onboarding"
-            className="inline-flex items-center font-semibold text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-gradient-to-r"
+            className="inline-flex items-center font-bold text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-gradient-to-r py-3 px-6"
             style={{
-              padding: 'var(--sp-space-4) var(--sp-space-6)',
+              minHeight: '48px',
               gap: 'var(--sp-space-2)',
               backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)`
             }}

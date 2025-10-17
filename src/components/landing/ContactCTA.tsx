@@ -17,7 +17,7 @@ export default function ContactCTA() {
 
       <div className="relative max-w-4xl mx-auto text-center" style={{ padding: '0 var(--sp-space-6)' }}>
         <div
-          className="inline-flex items-center backdrop-blur-md bg-white/20 rounded-full font-medium mb-4"
+          className="inline-flex items-center backdrop-blur-md bg-white/20 rounded-full font-bold mb-4"
           style={{ padding: 'var(--sp-space-2) var(--sp-space-4)', gap: 'var(--sp-space-2)' }}
         >
           <Rocket className="w-4 h-4 text-white" aria-hidden="true" />
@@ -27,7 +27,7 @@ export default function ContactCTA() {
         <h2
           id="contact-heading"
           className="text-4xl md:text-5xl font-bold text-white"
-          style={{ marginBottom: 'var(--sp-space-6)' }}
+          style={{ marginBottom: 'var(--sp-space-6)', letterSpacing: '-0.02em' }}
         >
           Ready to Transform Your Business?
         </h2>
@@ -45,8 +45,8 @@ export default function ContactCTA() {
         >
           <Link
             href="/onboarding"
-            className="px-8 py-4 bg-white rounded-xl font-semibold text-lg shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300"
-            style={{ color: 'var(--sp-colors-accent)' }}
+            className="px-8 py-3 bg-white rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300"
+            style={{ color: 'var(--sp-colors-accent)', minHeight: '48px' }}
             aria-label="Start your project for free"
           >
             Start Your Project Free
@@ -55,8 +55,8 @@ export default function ContactCTA() {
             href="https://wa.me/639123456789"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-8 py-4 bg-transparent text-white border-2 border-white rounded-xl font-semibold text-lg hover:bg-white/20 transition-all duration-300"
-            style={{ gap: 'var(--sp-space-2)' }}
+            className="inline-flex items-center justify-center px-8 py-3 bg-transparent text-white border-2 border-white rounded-xl font-bold text-lg hover:bg-white/20 transition-all duration-300"
+            style={{ gap: 'var(--sp-space-2)', minHeight: '48px' }}
             aria-label="Chat with us on WhatsApp"
           >
             <MessageCircle className="w-5 h-5" aria-hidden="true" />
@@ -74,7 +74,7 @@ export default function ContactCTA() {
             style={{ padding: 'var(--sp-space-6)' }}
           >
             <Mail className="w-8 h-8 mx-auto mb-3" aria-hidden="true" />
-            <div className="font-semibold mb-1">Email Us</div>
+            <div className="font-bold mb-1">Email Us</div>
             <a
               href="mailto:hello@lunaxcode.com"
               className="text-white/80 hover:text-white text-sm transition-colors"
@@ -88,7 +88,7 @@ export default function ContactCTA() {
             style={{ padding: 'var(--sp-space-6)' }}
           >
             <MessageCircle className="w-8 h-8 mx-auto mb-3" aria-hidden="true" />
-            <div className="font-semibold mb-1">WhatsApp</div>
+            <div className="font-bold mb-1">WhatsApp</div>
             <a
               href="https://wa.me/639123456789"
               target="_blank"
@@ -104,7 +104,7 @@ export default function ContactCTA() {
             style={{ padding: 'var(--sp-space-6)' }}
           >
             <Phone className="w-8 h-8 mx-auto mb-3" aria-hidden="true" />
-            <div className="font-semibold mb-1">Call Us</div>
+            <div className="font-bold mb-1">Call Us</div>
             <a
               href="tel:+639123456789"
               className="text-white/80 hover:text-white text-sm transition-colors"
@@ -116,7 +116,7 @@ export default function ContactCTA() {
 
         {/* Response time badge */}
         <div
-          className="mt-8 inline-flex items-center backdrop-blur-md bg-white/20 border border-white/30 rounded-full text-white font-medium shadow-lg"
+          className="mt-8 inline-flex items-center backdrop-blur-md bg-white/20 border border-white/30 rounded-full text-white font-bold shadow-lg"
           style={{ padding: 'var(--sp-space-3) var(--sp-space-5)', gap: 'var(--sp-space-2)' }}
         >
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" aria-hidden="true"></div>

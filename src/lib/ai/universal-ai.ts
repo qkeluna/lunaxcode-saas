@@ -348,7 +348,7 @@ async function generateDeepSeek(prompt: string, config: AIConfig): Promise<strin
 }
 
 async function generateGroq(prompt: string, config: AIConfig): Promise<string> {
-  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+  const response = await fetch('https://api.groq.com/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -363,8 +363,18 @@ async function generateGroq(prompt: string, config: AIConfig): Promise<string> {
   });
 
   if (!response.ok) {
-    const error = await response.json() as { error?: { message?: string } };
-    throw new Error(`Groq API error: ${error.error?.message || response.statusText}`);
+    const errorText = await response.text();
+    let errorMessage = response.statusText;
+
+    try {
+      const error = JSON.parse(errorText) as { error?: { message?: string } };
+      errorMessage = error.error?.message || response.statusText;
+    } catch {
+      // If error response is not JSON, use the text
+      errorMessage = errorText || response.statusText;
+    }
+
+    throw new Error(`Groq API error: ${errorMessage}`);
   }
 
   const data = await response.json() as { choices: Array<{ message: { content: string } }> };
