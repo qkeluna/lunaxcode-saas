@@ -86,12 +86,12 @@ export default async function Pricing() {
           </p>
 
           {/* Payment toggle - RULE 7: Multiple indicators (color + border + icon) */}
-          <div className="inline-flex items-center bg-green-500/10 border border-green-500/30 rounded-full px-5 py-3 gap-2">
+          {/* <div className="inline-flex items-center bg-green-500/10 border border-green-500/30 rounded-full px-5 py-3 gap-2">
             <Zap className="w-5 h-5 text-green-400" fill="currentColor" aria-hidden="true" />
             <span className="text-sm font-bold text-green-400">
               Pay annually (save 20%)
             </span>
-          </div>
+          </div> */}
         </div>
 
         {/* Pricing Grid - RULE 1: 8-point grid spacing (24px gap) */}
