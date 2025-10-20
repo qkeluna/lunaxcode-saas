@@ -11,6 +11,8 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Sparkles, CheckCircle2, Loader2 } from 'lucide-react';
+import { loadAIConfig, getDefaultProviderConfig } from '@/lib/ai/storage';
+import { getProvider } from '@/lib/ai/config';
 
 interface GeneratePRDModalProps {
   projectId: number;
@@ -55,13 +57,18 @@ export default function GeneratePRDModal({
   };
 
   const handleGenerate = async () => {
-    // Check if AI is configured
-    const aiProvider = localStorage.getItem('ai_provider');
-    const aiApiKey = localStorage.getItem('ai_api_key');
-    const aiModel = localStorage.getItem('ai_model');
+    // Check if AI is configured using new multi-provider system
+    const config = loadAIConfig();
+    const defaultProviderConfig = getDefaultProviderConfig(config);
 
-    if (!aiProvider || !aiApiKey) {
-      setError('Please configure your AI provider in Settings → AI Settings first.');
+    if (!defaultProviderConfig) {
+      setError('Please configure a default AI provider in Settings → AI Settings first.');
+      return;
+    }
+
+    const provider = getProvider(defaultProviderConfig.providerId);
+    if (!provider) {
+      setError('Invalid AI provider configuration.');
       return;
     }
 
@@ -88,9 +95,9 @@ export default function GeneratePRDModal({
         },
         body: JSON.stringify({
           aiConfig: {
-            provider: aiProvider,
-            apiKey: aiApiKey,
-            model: aiModel || 'gemini-2.5-pro'
+            provider: defaultProviderConfig.providerId,
+            apiKey: defaultProviderConfig.config.apiKey,
+            model: defaultProviderConfig.config.model
           }
         })
       });

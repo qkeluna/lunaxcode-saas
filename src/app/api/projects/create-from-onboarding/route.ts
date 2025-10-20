@@ -4,7 +4,6 @@ import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
 import { projects, projectAnswers, questions, serviceTypes, tasks, users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
-import { generatePRD, generateTasks } from '@/lib/ai/gemini';
 
 export const runtime = 'edge';
 
