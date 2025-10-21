@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { User, Bell, Lock, Save } from 'lucide-react';
+import { useAlertDialog } from '@/hooks/use-alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,6 +23,7 @@ import {
 } from '@/components/ui/tabs';
 
 export default function SettingsPage() {
+  const { showError, showSuccess, AlertDialog } = useAlertDialog();
   const { data: session } = useSession();
   const [saving, setSaving] = useState(false);
 
@@ -46,9 +48,9 @@ export default function SettingsPage() {
     try {
       // TODO: Implement profile update API
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      alert('Profile updated successfully!');
+      showSuccess('Profile updated successfully!');
     } catch (error) {
-      alert('Failed to update profile');
+      showError('Failed to update profile');
     } finally {
       setSaving(false);
     }
@@ -59,9 +61,9 @@ export default function SettingsPage() {
     try {
       // TODO: Implement notification preferences API
       await new Promise(resolve => setTimeout(resolve, 1000));
-      alert('Notification preferences updated!');
+      showSuccess('Notification preferences updated!');
     } catch (error) {
-      alert('Failed to update preferences');
+      showError('Failed to update preferences');
     } finally {
       setSaving(false);
     }
@@ -266,7 +268,7 @@ export default function SettingsPage() {
                   Google Account Security
                 </h3>
                 <p className="text-sm text-blue-700">
-                  You're signed in with Google. Your account security is managed through
+                  You&apos;re signed in with Google. Your account security is managed through
                   your Google account settings.
                 </p>
                 <a
@@ -297,6 +299,9 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Alert Dialog */}
+      <AlertDialog />
     </div>
   );
 }

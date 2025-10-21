@@ -35,7 +35,7 @@ import {
   SortableItemTrigger,
   SortableOverlay,
 } from '@/components/ui/sortable';
-import GeneratePRDModal from '@/components/admin/GeneratePRDModal';
+import GeneratePRDModalEnhanced from '@/components/admin/GeneratePRDModalEnhanced';
 
 // Droppable Column Component
 function DroppableColumn({ children, id }: { children: React.ReactNode; id: string }) {
@@ -500,7 +500,7 @@ export default function AdminProjectDetailPage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <GeneratePRDModal
+          <GeneratePRDModalEnhanced
             projectId={project.id}
             projectName={project.name}
             onSuccess={fetchProjectDetails}
@@ -742,7 +742,7 @@ export default function AdminProjectDetailPage() {
                   <p className="text-sm text-gray-600 mb-4">
                     Click the Sparkles button above to generate a comprehensive PRD with AI
                   </p>
-                  <GeneratePRDModal
+                  <GeneratePRDModalEnhanced
                     projectId={project.id}
                     projectName={project.name}
                     onSuccess={fetchProjectDetails}

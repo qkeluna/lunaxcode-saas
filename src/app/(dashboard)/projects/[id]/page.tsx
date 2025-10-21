@@ -284,8 +284,8 @@ export default async function ProjectDetailPage({
           {project.status === 'pending' && (
             <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>📋 Status:</strong> Your project is currently under review by our team. 
-                We'll create a detailed project plan and task breakdown for you shortly (24-48 hours).
+                <strong>📋 Status:</strong> Your project is currently under review by our team.
+                We&apos;ll create a detailed project plan and task breakdown for you shortly (24-48 hours).
               </p>
             </div>
           )}

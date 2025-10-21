@@ -189,7 +189,7 @@ export default async function Pricing() {
             Need Something Unique?
           </h3>
           <p className="text-gray-400 mb-6 max-w-2xl mx-auto">
-            We'll create a custom package tailored specifically for your business needs.
+            We&apos;ll create a custom package tailored specifically for your business needs.
           </p>
           <Link
             href="/onboarding"

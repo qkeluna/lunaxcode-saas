@@ -34,6 +34,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
+import { useAlertDialog } from '@/hooks/use-alert-dialog';
 
 interface Client {
   id: string;
@@ -68,6 +69,7 @@ interface ClientDetails {
 }
 
 export default function AdminClientsPage() {
+  const { showError, showSuccess, AlertDialog } = useAlertDialog();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -150,11 +152,11 @@ export default function AdminClientsPage() {
         fetchClients();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to update client');
+        showError(data.error || 'Failed to update client');
       }
     } catch (error) {
       console.error('Error updating client:', error);
-      alert('Failed to update client');
+      showError('Failed to update client');
     }
   };
 
@@ -172,11 +174,11 @@ export default function AdminClientsPage() {
         fetchClients();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to delete client');
+        showError(data.error || 'Failed to delete client');
       }
     } catch (error) {
       console.error('Error deleting client:', error);
-      alert('Failed to delete client');
+      showError('Failed to delete client');
     }
   };
 
@@ -496,6 +498,9 @@ export default function AdminClientsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Alert Dialog */}
+      <AlertDialog />
     </div>
   );
 }

@@ -65,7 +65,7 @@ export default async function Portfolio() {
             Recent Projects & Success Stories
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            See how we've helped Filipino businesses achieve their digital goals
+            See how we&apos;ve helped Filipino businesses achieve their digital goals
           </p>
         </div>
 

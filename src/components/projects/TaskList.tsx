@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { CheckCircle2, Circle, Clock, ChevronDown } from 'lucide-react';
+import { useAlertDialog } from '@/hooks/use-alert-dialog';
 
 interface Task {
   id: number;
@@ -24,6 +25,7 @@ interface TaskListProps {
 type TaskStatus = 'all' | 'pending' | 'in-progress' | 'completed';
 
 export default function TaskList({ initialTasks, projectId }: TaskListProps) {
+  const { showError, AlertDialog } = useAlertDialog();
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
   const [filter, setFilter] = useState<TaskStatus>('all');
   const [updatingTaskId, setUpdatingTaskId] = useState<number | null>(null);
@@ -82,7 +84,7 @@ export default function TaskList({ initialTasks, projectId }: TaskListProps) {
       );
     } catch (error) {
       console.error('Error updating task:', error);
-      alert('Failed to update task status. Please try again.');
+      showError('Failed to update task status. Please try again.');
     } finally {
       setUpdatingTaskId(null);
     }
@@ -255,6 +257,9 @@ export default function TaskList({ initialTasks, projectId }: TaskListProps) {
           ))}
         </div>
       )}
+
+      {/* Alert Dialog */}
+      <AlertDialog />
     </div>
   );
 }

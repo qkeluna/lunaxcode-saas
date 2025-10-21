@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { useAlertDialog } from '@/hooks/use-alert-dialog';
 
 interface Feature {
   id: number;
@@ -37,6 +38,7 @@ interface Feature {
 }
 
 export default function AdminFeaturesPage() {
+  const { showError, showSuccess, AlertDialog } = useAlertDialog();
   const [features, setFeatures] = useState<Feature[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -116,11 +118,11 @@ export default function AdminFeaturesPage() {
         fetchFeatures();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to save feature');
+        showError(data.error || 'Failed to save feature');
       }
     } catch (error) {
       console.error('Error saving feature:', error);
-      alert('Failed to save feature');
+      showError('Failed to save feature');
     }
   };
 
@@ -138,11 +140,11 @@ export default function AdminFeaturesPage() {
         fetchFeatures();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to delete feature');
+        showError(data.error || 'Failed to delete feature');
       }
     } catch (error) {
       console.error('Error deleting feature:', error);
-      alert('Failed to delete feature');
+      showError('Failed to delete feature');
     }
   };
 
@@ -408,6 +410,9 @@ export default function AdminFeaturesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Alert Dialog */}
+      <AlertDialog />
     </div>
   );
 }

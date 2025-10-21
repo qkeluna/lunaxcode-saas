@@ -13,7 +13,7 @@ import {
   Clock
 } from 'lucide-react';
 import Link from 'next/link';
-import GeneratePRDModal from '@/components/admin/GeneratePRDModal';
+import GeneratePRDModalEnhanced from '@/components/admin/GeneratePRDModalEnhanced';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -402,7 +402,7 @@ export default function AdminProjectsPage() {
                           <Eye className="h-4 w-4" />
                         </Button>
                       </Link>
-                      <GeneratePRDModal
+                      <GeneratePRDModalEnhanced
                         projectId={item.project.id}
                         projectName={item.project.name}
                         onSuccess={fetchProjects}

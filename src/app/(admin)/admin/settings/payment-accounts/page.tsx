@@ -29,6 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useAlertDialog } from '@/hooks/use-alert-dialog';
 
 interface PaymentAccount {
   id: number;
@@ -43,6 +44,7 @@ interface PaymentAccount {
 }
 
 export default function PaymentAccountsPage() {
+  const { showError, showSuccess, AlertDialog } = useAlertDialog();
   const [accounts, setAccounts] = useState<PaymentAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDialog, setShowDialog] = useState(false);
@@ -94,13 +96,13 @@ export default function PaymentAccountsPage() {
 
       if (!response.ok) throw new Error('Failed to save account');
 
-      alert(editingAccount ? 'Account updated!' : 'Account created!');
+      showSuccess(editingAccount ? 'Account updated!' : 'Account created!');
       setShowDialog(false);
       resetForm();
       fetchAccounts();
     } catch (error) {
       console.error('Error saving account:', error);
-      alert('Failed to save account');
+      showError('Failed to save account');
     }
   };
 
@@ -114,11 +116,11 @@ export default function PaymentAccountsPage() {
 
       if (!response.ok) throw new Error('Failed to delete account');
 
-      alert('Account deleted!');
+      showSuccess('Account deleted!');
       fetchAccounts();
     } catch (error) {
       console.error('Error deleting account:', error);
-      alert('Failed to delete account');
+      showError('Failed to delete account');
     }
   };
 
@@ -332,6 +334,9 @@ export default function PaymentAccountsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Alert Dialog */}
+      <AlertDialog />
     </div>
   );
 }

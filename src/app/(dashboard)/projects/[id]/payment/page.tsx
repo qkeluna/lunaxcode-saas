@@ -25,6 +25,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useAlertDialog } from '@/hooks/use-alert-dialog';
 
 interface Project {
   id: number;
@@ -66,6 +67,7 @@ const paymentMethodIcons = {
 export default function ProjectPaymentPage() {
   const params = useParams();
   const router = useRouter();
+  const { showAlert, showError, showSuccess, AlertDialog } = useAlertDialog();
   const projectId = params.id as string;
 
   const [project, setProject] = useState<Project | null>(null);
@@ -128,13 +130,13 @@ export default function ProjectPaymentPage() {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please upload an image file');
+      showError('Please upload an image file');
       return;
     }
 
     // Validate file size (5MB max)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Image size must be less than 5MB');
+      showError('Image size must be less than 5MB');
       return;
     }
 
@@ -147,35 +149,35 @@ export default function ProjectPaymentPage() {
         setUploadingImage(false);
       };
       reader.onerror = () => {
-        alert('Failed to read image');
+        showError('Failed to read image');
         setUploadingImage(false);
       };
       reader.readAsDataURL(file);
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert('Failed to upload image');
+      showError('Failed to upload image');
       setUploadingImage(false);
     }
   };
 
   const handleSubmitPayment = async () => {
     if (!selectedMethod) {
-      alert('Please select a payment method');
+      showError('Please select a payment method');
       return;
     }
 
     if (!referenceNumber.trim()) {
-      alert('Please enter the transaction reference number');
+      showError('Please enter the transaction reference number');
       return;
     }
 
     if (!senderName.trim()) {
-      alert('Please enter your name');
+      showError('Please enter your name');
       return;
     }
 
     if (!proofImage) {
-      alert('Please upload proof of payment');
+      showError('Please upload proof of payment');
       return;
     }
 
@@ -201,7 +203,7 @@ export default function ProjectPaymentPage() {
         throw new Error(error.error || 'Failed to submit payment');
       }
 
-      alert('Payment proof submitted successfully! We will verify it within 24 hours.');
+      showSuccess('Payment proof submitted successfully! We will verify it within 24 hours.');
       
       // Reset form
       setReferenceNumber('');
@@ -214,7 +216,7 @@ export default function ProjectPaymentPage() {
       
     } catch (error: any) {
       console.error('Error submitting payment:', error);
-      alert(error.message || 'Failed to submit payment');
+      showError(error.message || 'Failed to submit payment');
     } finally {
       setSubmitting(false);
     }
@@ -621,6 +623,9 @@ export default function ProjectPaymentPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Alert Dialog */}
+      <AlertDialog />
     </div>
   );
 }

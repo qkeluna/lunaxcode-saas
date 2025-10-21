@@ -139,8 +139,8 @@ export default function Hero() {
                   style={{ paddingTop: 'var(--sp-space-6)', marginTop: 'var(--sp-space-6)' }}
                 >
                   <p className="text-gray-300 text-sm leading-relaxed">
-                    "Lunaxcode transformed our business presence online.
-                    The AI-powered project management made everything seamless!"
+                    &quot;Lunaxcode transformed our business presence online.
+                    The AI-powered project management made everything seamless!&quot;
                   </p>
                   <p className="text-gray-400 text-xs mt-3">— Maria Santos, E-commerce Owner</p>
                 </div>

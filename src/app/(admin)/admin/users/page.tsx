@@ -29,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useAlertDialog } from '@/hooks/use-alert-dialog';
 
 interface User {
   id: string;
@@ -42,6 +43,7 @@ interface User {
 }
 
 export default function AdminUsersPage() {
+  const { showError, showSuccess, AlertDialog } = useAlertDialog();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -95,11 +97,11 @@ export default function AdminUsersPage() {
         fetchUsers();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to update user role');
+        showError(data.error || 'Failed to update user role');
       }
     } catch (error) {
       console.error('Error updating user role:', error);
-      alert('Failed to update user role');
+      showError('Failed to update user role');
     }
   };
 
@@ -362,6 +364,9 @@ export default function AdminUsersPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Alert Dialog */}
+      <AlertDialog />
     </div>
   );
 }

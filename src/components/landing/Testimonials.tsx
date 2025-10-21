@@ -126,7 +126,7 @@ export default function Testimonials() {
                 className="text-gray-700 leading-relaxed relative z-10"
                 style={{ marginBottom: 'var(--sp-space-6)' }}
               >
-                "{testimonial.text}"
+                &quot;{testimonial.text}&quot;
               </p>
 
               {/* Author */}

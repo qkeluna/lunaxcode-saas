@@ -180,7 +180,7 @@ export default function CreateProjectPage() {
               <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800">
                   <strong>Please wait...</strong> This process typically takes 20-30 seconds.
-                  We're using advanced AI to create a comprehensive project plan tailored to your needs.
+                  We&apos;re using advanced AI to create a comprehensive project plan tailored to your needs.
                 </p>
               </div>
             </div>

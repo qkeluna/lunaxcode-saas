@@ -38,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useAlertDialog } from '@/hooks/use-alert-dialog';
 
 interface Payment {
   id: number;
@@ -71,6 +72,7 @@ interface Stats {
 }
 
 export default function AdminPaymentsPage() {
+  const { showError, showSuccess, AlertDialog } = useAlertDialog();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [stats, setStats] = useState<Stats>({
     totalPending: 0,
@@ -121,7 +123,7 @@ export default function AdminPaymentsPage() {
     if (!selectedPayment) return;
 
     if (!approve && !rejectionReason.trim()) {
-      alert('Please provide a rejection reason');
+      showError('Please provide a rejection reason');
       return;
     }
 
@@ -142,7 +144,7 @@ export default function AdminPaymentsPage() {
         throw new Error(error.error || 'Failed to update payment');
       }
 
-      alert(approve ? 'Payment verified successfully!' : 'Payment rejected');
+      showSuccess(approve ? 'Payment verified successfully!' : 'Payment rejected');
       
       // Reset modal state
       setShowVerifyModal(false);
@@ -154,7 +156,7 @@ export default function AdminPaymentsPage() {
       await fetchPayments();
     } catch (error: any) {
       console.error('Error verifying payment:', error);
-      alert(error.message || 'Failed to update payment');
+      showError(error.message || 'Failed to update payment');
     } finally {
       setVerifying(false);
     }
@@ -571,6 +573,9 @@ export default function AdminPaymentsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Alert Dialog */}
+      <AlertDialog />
     </div>
   );
 }

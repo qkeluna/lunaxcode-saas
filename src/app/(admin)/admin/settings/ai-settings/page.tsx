@@ -40,6 +40,7 @@ import {
 } from '@/lib/ai/storage';
 import { testConnection } from '@/lib/ai/client';
 import type { AIConfig, ClientProviderConfig } from '@/lib/ai/types';
+import { useAlertDialog } from '@/hooks/use-alert-dialog';
 
 interface ProviderState {
   apiKey: string;
@@ -52,6 +53,7 @@ interface ProviderState {
 }
 
 export default function AISettingsPage() {
+  const { showError, showSuccess, AlertDialog } = useAlertDialog();
   const [config, setConfig] = useState<AIConfig | null>(null);
   const [providerStates, setProviderStates] = useState<Record<string, ProviderState>>({});
   const [showMigrationNotice, setShowMigrationNotice] = useState(false);
@@ -101,7 +103,7 @@ export default function AISettingsPage() {
   const handleSaveProvider = async (providerId: string) => {
     const state = providerStates[providerId];
     if (!state.apiKey.trim()) {
-      alert('Please enter an API key');
+      showError('Please enter an API key');
       return;
     }
 
@@ -126,7 +128,7 @@ export default function AISettingsPage() {
     } catch (error) {
       console.error('Failed to save provider:', error);
       updateState(providerId, { isSaving: false });
-      alert('Failed to save configuration');
+      showError('Failed to save configuration');
     }
   };
 
@@ -134,7 +136,7 @@ export default function AISettingsPage() {
   const handleTestConnection = async (providerId: string) => {
     const state = providerStates[providerId];
     if (!state.apiKey.trim()) {
-      alert('Please enter an API key first');
+      showError('Please enter an API key first');
       return;
     }
 
@@ -165,7 +167,7 @@ export default function AISettingsPage() {
       setConfig(updatedConfig);
     } catch (error) {
       console.error('Failed to set default provider:', error);
-      alert('Failed to set default provider. Make sure it is configured first.');
+      showError('Failed to set default provider. Make sure it is configured first.');
     }
   };
 
@@ -503,6 +505,9 @@ export default function AISettingsPage() {
           </div>
         </Card>
       )}
+
+      {/* Alert Dialog */}
+      <AlertDialog />
     </div>
   );
 }

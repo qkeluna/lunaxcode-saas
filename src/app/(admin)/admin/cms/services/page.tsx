@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { useAlertDialog } from '@/hooks/use-alert-dialog';
 
 interface Service {
   id: number;
@@ -36,6 +37,7 @@ interface Service {
 }
 
 export default function AdminServicesPage() {
+  const { showError, showSuccess, AlertDialog } = useAlertDialog();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
@@ -116,11 +118,11 @@ export default function AdminServicesPage() {
         fetchServices();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to create service');
+        showError(data.error || 'Failed to create service');
       }
     } catch (error) {
       console.error('Error creating service:', error);
-      alert('Failed to create service');
+      showError('Failed to create service');
     }
   };
 
@@ -147,11 +149,11 @@ export default function AdminServicesPage() {
         fetchServices();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to update service');
+        showError(data.error || 'Failed to update service');
       }
     } catch (error) {
       console.error('Error updating service:', error);
-      alert('Failed to update service');
+      showError('Failed to update service');
     }
   };
 
@@ -169,11 +171,11 @@ export default function AdminServicesPage() {
         fetchServices();
       } else {
         const data = await response.json();
-        alert(data.error || 'Failed to delete service');
+        showError(data.error || 'Failed to delete service');
       }
     } catch (error) {
       console.error('Error deleting service:', error);
-      alert('Failed to delete service');
+      showError('Failed to delete service');
     }
   };
 
@@ -493,6 +495,9 @@ export default function AdminServicesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Alert Dialog */}
+      <AlertDialog />
     </div>
   );
 }

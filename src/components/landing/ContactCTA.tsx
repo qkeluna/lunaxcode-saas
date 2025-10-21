@@ -21,7 +21,7 @@ export default function ContactCTA() {
           style={{ padding: 'var(--sp-space-2) var(--sp-space-4)', gap: 'var(--sp-space-2)' }}
         >
           <Rocket className="w-4 h-4 text-white" aria-hidden="true" />
-          <span className="text-sm text-white">Let's Build Together</span>
+          <span className="text-sm text-white">Let&apos;s Build Together</span>
         </div>
 
         <h2

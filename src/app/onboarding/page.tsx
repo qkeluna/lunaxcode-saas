@@ -11,6 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { loadAIConfig, getDefaultProviderConfig } from '@/lib/ai/storage';
+import { useAlertDialog } from '@/hooks/use-alert-dialog';
 
 interface ServiceType {
   id: number;
@@ -33,6 +35,7 @@ interface Question {
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { showAlert, showError, AlertDialog } = useAlertDialog();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [servicesLoading, setServicesLoading] = useState(true);
@@ -150,15 +153,18 @@ export default function OnboardingPage() {
   const handleGenerateSuggestions = async () => {
     if (!selectedService) return;
 
-    // Get AI config from localStorage
-    const aiProvider = localStorage.getItem('ai_provider');
-    const aiApiKey = localStorage.getItem('ai_api_key');
-    const aiModel = localStorage.getItem('ai_model');
+    // Get AI config from new multi-provider storage
+    const config = loadAIConfig();
+    const defaultProviderConfig = getDefaultProviderConfig(config);
 
-    if (!aiProvider || !aiApiKey) {
-      alert('Please configure AI settings first in Admin Settings > AI Settings');
+    if (!defaultProviderConfig) {
+      showError('Please configure a default AI provider in Admin Settings > AI Settings');
       return;
     }
+
+    const aiProvider = defaultProviderConfig.providerId;
+    const aiApiKey = defaultProviderConfig.config.apiKey;
+    const aiModel = defaultProviderConfig.config.model;
 
     setSuggestionsLoading(true);
     try {
@@ -181,11 +187,11 @@ export default function OnboardingPage() {
         setAiSuggestions(data.suggestions || []);
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to generate suggestions');
+        showError(error.error || 'Failed to generate suggestions');
       }
     } catch (error) {
       console.error('Error generating suggestions:', error);
-      alert('Failed to generate suggestions. Please check your AI settings.');
+      showError('Failed to generate suggestions. Please check your AI settings.');
     } finally {
       setSuggestionsLoading(false);
     }
@@ -195,15 +201,18 @@ export default function OnboardingPage() {
   const handleEnhanceDescription = async () => {
     if (!selectedService || !formData.description) return;
 
-    // Get AI config from localStorage
-    const aiProvider = localStorage.getItem('ai_provider');
-    const aiApiKey = localStorage.getItem('ai_api_key');
-    const aiModel = localStorage.getItem('ai_model');
+    // Get AI config from new multi-provider storage
+    const config = loadAIConfig();
+    const defaultProviderConfig = getDefaultProviderConfig(config);
 
-    if (!aiProvider || !aiApiKey) {
-      alert('Please configure AI settings first in Admin Settings > AI Settings');
+    if (!defaultProviderConfig) {
+      showError('Please configure a default AI provider in Admin Settings > AI Settings');
       return;
     }
+
+    const aiProvider = defaultProviderConfig.providerId;
+    const aiApiKey = defaultProviderConfig.config.apiKey;
+    const aiModel = defaultProviderConfig.config.model;
 
     setSuggestionsLoading(true);
     try {
@@ -229,11 +238,11 @@ export default function OnboardingPage() {
         }
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to enhance description');
+        showError(error.error || 'Failed to enhance description');
       }
     } catch (error) {
       console.error('Error enhancing description:', error);
-      alert('Failed to enhance description. Please check your AI settings.');
+      showError('Failed to enhance description. Please check your AI settings.');
     } finally {
       setSuggestionsLoading(false);
     }
@@ -510,7 +519,7 @@ export default function OnboardingPage() {
               Start Your Project
             </h1>
             <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto">
-              Tell us about your vision and we'll generate a comprehensive plan in seconds
+              Tell us about your vision and we&apos;ll generate a comprehensive plan in seconds
             </p>
           </div>
 
@@ -579,7 +588,7 @@ export default function OnboardingPage() {
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900" style={{ marginBottom: 'var(--sp-space-2)', letterSpacing: '-0.02em' }}>
                   Why do you want to build this?
                 </h2>
-                <p className="text-gray-600">Share your goals and what you're trying to achieve</p>
+                <p className="text-gray-600">Share your goals and what you&apos;re trying to achieve</p>
               </div>
 
               {/* Selected Service Display */}
@@ -964,7 +973,7 @@ export default function OnboardingPage() {
                   aria-describedby="phone-hint"
                 />
                 <p id="phone-hint" className="text-xs text-gray-600 mt-1">
-                  For faster communication. We'll use this for urgent project updates.
+                  For faster communication. We&apos;ll use this for urgent project updates.
                 </p>
               </div>
 
@@ -1022,7 +1031,7 @@ export default function OnboardingPage() {
 
               <div className="p-5 bg-blue-50 border border-blue-200 rounded-xl">
                 <p className="text-sm text-blue-900">
-                  <strong>Next Step:</strong> After submitting, you'll create an account to access your personalized project plan and dashboard.
+                  <strong>Next Step:</strong> After submitting, you&apos;ll create an account to access your personalized project plan and dashboard.
                 </p>
               </div>
             </div>
@@ -1099,6 +1108,9 @@ export default function OnboardingPage() {
           </div>
         </div>
       </div>
+
+      {/* Alert Dialog */}
+      <AlertDialog />
     </div>
   );
 }
