@@ -317,7 +317,14 @@ async function generateGoogle(prompt: string, config: AIConfig): Promise<string>
 
   if (!response.ok) {
     const error = await response.json() as { error?: { message?: string } };
-    throw new Error(`Google API error: ${error.error?.message || response.statusText}`);
+    const errorMessage = error.error?.message || response.statusText;
+
+    // Check for geofencing/location restriction
+    if (errorMessage.toLowerCase().includes('location') || errorMessage.toLowerCase().includes('not supported')) {
+      throw new Error(`Google Gemini API is not available in your region. Please use a different AI provider (OpenAI, Anthropic, Groq, DeepSeek, or Together AI) in Settings > AI Settings.`);
+    }
+
+    throw new Error(`Google API error: ${errorMessage}`);
   }
 
   const data = await response.json() as { candidates: Array<{ content: { parts: Array<{ text: string }> } }> };
@@ -348,7 +355,7 @@ async function generateDeepSeek(prompt: string, config: AIConfig): Promise<strin
 }
 
 async function generateGroq(prompt: string, config: AIConfig): Promise<string> {
-  const response = await fetch('https://api.groq.com/v1/chat/completions', {
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

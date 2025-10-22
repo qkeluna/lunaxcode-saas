@@ -100,31 +100,31 @@ export default function Footer() {
             <h4 className="font-bold text-lg" style={{ marginBottom: 'var(--sp-space-4)' }}>Services</h4>
             <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-3)' }}>
               <li>
-                <Link href="/onboarding" className="text-gray-400 hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
+                <Link href="#pricing" className="text-gray-400 hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
                   <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
                   Landing Pages
                 </Link>
               </li>
               <li>
-                <Link href="/onboarding" className="text-gray-400 hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
+                <Link href="#pricing" className="text-gray-400 hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
                   <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
                   Business Websites
                 </Link>
               </li>
               <li>
-                <Link href="/onboarding" className="text-gray-400 hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
+                <Link href="#pricing" className="text-gray-400 hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
                   <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
                   E-Commerce Platforms
                 </Link>
               </li>
               <li>
-                <Link href="/onboarding" className="text-gray-400 hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
+                <Link href="#pricing" className="text-gray-400 hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
                   <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
                   Web Applications
                 </Link>
               </li>
               <li>
-                <Link href="/onboarding" className="text-gray-400 hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
+                <Link href="#pricing" className="text-gray-400 hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
                   <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
                   Mobile Apps
                 </Link>
@@ -164,16 +164,16 @@ export default function Footer() {
 
             <div style={{ marginTop: 'var(--sp-space-6)' }}>
               <Link
-                href="/onboarding"
+                href="#pricing"
                 className="inline-flex items-center font-bold text-white rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-gradient-to-r py-3 px-6"
                 style={{
                   minHeight: '48px',
                   gap: 'var(--sp-space-2)',
                   backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)`
                 }}
-                aria-label="Get started"
+                aria-label="View pricing"
               >
-                Get Started
+                View Pricing
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </Link>
             </div>

@@ -288,6 +288,9 @@ PAYMONGO_PUBLIC_KEY=pk_test_<your-key>
 PAYMONGO_SECRET_KEY=sk_test_<your-key>
 PAYMONGO_WEBHOOK_SECRET=whsec_<your-secret>
 
+# Resend (Email service for contact form)
+RESEND_API_KEY=<from-resend.com>
+
 # App URL
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```

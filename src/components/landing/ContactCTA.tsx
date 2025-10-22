@@ -1,68 +1,83 @@
+'use client';
+
+import { useState } from 'react';
 import { Mail, MessageCircle, Phone, Rocket } from 'lucide-react';
 import Link from 'next/link';
+import ContactModal from '@/components/modals/ContactModal';
 
 export default function ContactCTA() {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
   return (
-    <section
-      id="contact"
-      className="relative py-24 overflow-hidden"
-      style={{ background: `linear-gradient(to bottom right, var(--sp-colors-accent), #a78bfa, #ec4899)` }}
-      aria-labelledby="contact-heading"
-    >
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-10" aria-hidden="true">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl"></div>
-      </div>
-
-      <div className="relative max-w-4xl mx-auto text-center" style={{ padding: '0 var(--sp-space-6)' }}>
-        <div
-          className="inline-flex items-center backdrop-blur-md bg-white/20 rounded-full font-bold mb-4"
-          style={{ padding: 'var(--sp-space-2) var(--sp-space-4)', gap: 'var(--sp-space-2)' }}
-        >
-          <Rocket className="w-4 h-4 text-white" aria-hidden="true" />
-          <span className="text-sm text-white">Let&apos;s Build Together</span>
+    <>
+      <section
+        id="contact"
+        className="relative py-24 overflow-hidden"
+        style={{ background: `linear-gradient(to bottom right, var(--sp-colors-accent), #a78bfa, #ec4899)` }}
+        aria-labelledby="contact-heading"
+      >
+        {/* Background decoration */}
+        <div className="absolute inset-0 opacity-10" aria-hidden="true">
+          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full mix-blend-multiply filter blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl"></div>
         </div>
 
-        <h2
-          id="contact-heading"
-          className="text-4xl md:text-5xl font-bold text-white"
-          style={{ marginBottom: 'var(--sp-space-6)', letterSpacing: '-0.02em' }}
-        >
-          Ready to Transform Your Business?
-        </h2>
-        <p
-          className="text-xl text-white/90 max-w-2xl mx-auto"
-          style={{ marginBottom: 'var(--sp-space-8)' }}
-        >
-          Get your project started today with our AI-powered platform. Free consultation, instant quote, and transparent pricing.
-        </p>
+        <div className="relative max-w-4xl mx-auto text-center" style={{ padding: '0 var(--sp-space-6)' }}>
+          <div
+            className="inline-flex items-center backdrop-blur-md bg-white/20 rounded-full font-bold mb-4"
+            style={{ padding: 'var(--sp-space-2) var(--sp-space-4)', gap: 'var(--sp-space-2)' }}
+          >
+            <Rocket className="w-4 h-4 text-white" aria-hidden="true" />
+            <span className="text-sm text-white">Let&apos;s Build Together</span>
+          </div>
 
-        {/* CTA Buttons */}
-        <div
-          className="flex flex-col sm:flex-row justify-center"
-          style={{ gap: 'var(--sp-space-4)', marginBottom: 'var(--sp-space-8)' }}
-        >
-          <Link
-            href="/onboarding"
-            className="px-8 py-3 bg-white rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300"
-            style={{ color: 'var(--sp-colors-accent)', minHeight: '48px' }}
-            aria-label="Start your project for free"
+          <h2
+            id="contact-heading"
+            className="text-4xl md:text-5xl font-bold text-white"
+            style={{ marginBottom: 'var(--sp-space-6)', letterSpacing: '-0.02em' }}
           >
-            Start Your Project Free
-          </Link>
-          <a
-            href="https://wa.me/639123456789"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center px-8 py-3 bg-transparent text-white border-2 border-white rounded-xl font-bold text-lg hover:bg-white/20 transition-all duration-300"
-            style={{ gap: 'var(--sp-space-2)', minHeight: '48px' }}
-            aria-label="Chat with us on WhatsApp"
+            Ready to Transform Your Business?
+          </h2>
+          <p
+            className="text-xl text-white/90 max-w-2xl mx-auto"
+            style={{ marginBottom: 'var(--sp-space-8)' }}
           >
-            <MessageCircle className="w-5 h-5" aria-hidden="true" />
-            Chat on WhatsApp
-          </a>
-        </div>
+            Get your project started today with our AI-powered platform. Professional consultation, instant quote, and transparent pricing.
+          </p>
+
+          {/* CTA Buttons */}
+          <div
+            className="flex flex-col sm:flex-row justify-center"
+            style={{ gap: 'var(--sp-space-4)', marginBottom: 'var(--sp-space-8)' }}
+          >
+            <button
+              onClick={() => setIsContactModalOpen(true)}
+              className="px-8 py-3 bg-white rounded-xl font-bold text-lg shadow-2xl hover:shadow-3xl hover:scale-105 transition-all duration-300"
+              style={{ color: 'var(--sp-colors-accent)', minHeight: '48px' }}
+              aria-label="Request custom quote"
+            >
+              Request Custom Quote
+            </button>
+            <Link
+              href="#pricing"
+              className="inline-flex items-center justify-center px-8 py-3 bg-transparent text-white border-2 border-white rounded-xl font-bold text-lg hover:bg-white/20 transition-all duration-300"
+              style={{ minHeight: '48px' }}
+              aria-label="View pricing"
+            >
+              View Pricing
+            </Link>
+            <a
+              href="https://wa.me/639123456789"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-8 py-3 bg-transparent text-white border-2 border-white rounded-xl font-bold text-lg hover:bg-white/20 transition-all duration-300"
+              style={{ gap: 'var(--sp-space-2)', minHeight: '48px' }}
+              aria-label="Chat with us on WhatsApp"
+            >
+              <MessageCircle className="w-5 h-5" aria-hidden="true" />
+              Chat on WhatsApp
+            </a>
+          </div>
 
         {/* Contact methods */}
         <div
@@ -124,5 +139,9 @@ export default function ContactCTA() {
         </div>
       </div>
     </section>
+
+    {/* Contact Modal */}
+    <ContactModal open={isContactModalOpen} onOpenChange={setIsContactModalOpen} />
+    </>
   );
 }

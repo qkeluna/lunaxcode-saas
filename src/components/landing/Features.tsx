@@ -167,16 +167,16 @@ export default async function Features() {
             Join hundreds of Filipino businesses already using Lunaxcode to streamline their projects
           </p>
           <a
-            href="/onboarding"
+            href="#pricing"
             className="inline-flex items-center font-bold text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-gradient-to-r py-3 px-6"
             style={{
               minHeight: '48px',
               gap: 'var(--sp-space-2)',
               backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)`
             }}
-            aria-label="Get started for free"
+            aria-label="View pricing"
           >
-            Get Started Free
+            View Pricing
             <Zap className="w-5 h-5" fill="currentColor" aria-hidden="true" />
           </a>
         </div>

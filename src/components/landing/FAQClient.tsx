@@ -131,7 +131,7 @@ export default function FAQClient({ faqs }: FAQClientProps) {
             Our team is ready to help you with anything you need
           </p>
           <a
-            href="mailto:hello@lunaxcode.com"
+            href="mailto:lunaxcode2030@gmail.com"
             className="inline-flex items-center font-bold text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-gradient-to-r py-3 px-6"
             style={{
               minHeight: '48px',

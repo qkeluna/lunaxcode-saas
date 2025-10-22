@@ -63,12 +63,12 @@ export default function Hero() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start" style={{ gap: 'var(--sp-space-4)', paddingTop: 'var(--sp-space-6)' }}>
               <Link
-                href="/onboarding"
+                href="#pricing"
                 className="group w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-[var(--sp-colors-accent)] to-purple-600 text-white rounded-lg font-bold text-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 flex items-center justify-center shadow-lg shadow-purple-500/50"
                 style={{ gap: 'var(--sp-space-2)', minHeight: '48px' }}
-                aria-label="Start your project for free"
+                aria-label="View pricing"
               >
-                Start Your Project Free
+                Start Your Project
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
               </Link>
               <Link
