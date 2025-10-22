@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { z } from 'zod';
 
+// Edge Runtime required for Cloudflare Pages
+export const runtime = 'edge';
+
 // Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
 

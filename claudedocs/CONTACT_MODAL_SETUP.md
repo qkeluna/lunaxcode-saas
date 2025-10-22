@@ -137,6 +137,7 @@ If you're still experiencing issues:
 
 ## ✅ Testing Checklist
 
+### Local Development:
 - [ ] Dev server restarted
 - [ ] Browser cache cleared (or tested in Incognito)
 - [ ] "Request Custom Quote" button visible
@@ -146,3 +147,26 @@ If you're still experiencing issues:
 - [ ] Email sends successfully
 - [ ] Toast notification appears
 - [ ] Email received at lunaxcode2030@gmail.com
+
+### Production Deployment:
+- [ ] RESEND_API_KEY added to Cloudflare Pages environment variables
+- [ ] Environment variable set for both Production and Preview
+- [ ] Redeployed after adding environment variable
+- [ ] Test contact form on production site
+- [ ] Verify email delivery in production
+
+## 🚀 Production Setup
+
+### Add RESEND_API_KEY to Cloudflare Pages
+
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Navigate to: **Pages** → **lunaxcode-saas** → **Settings** → **Environment variables**
+3. Click **"Add variable"**
+4. Add:
+   - **Variable name:** `RESEND_API_KEY`
+   - **Value:** `re_4q65mVUb_6yykhGtRAN7pdWvzNpwCMJJE` (or your key)
+   - **Environment:** Select **both "Production" and "Preview"**
+5. Click **"Save"**
+6. **Redeploy** your site (push to GitHub or manual deploy) for changes to take effect
+
+**Important:** Cloudflare Pages requires a redeploy after adding environment variables!

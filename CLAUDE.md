@@ -514,26 +514,53 @@ git merge task-XXX-description
 ## Deployment
 
 ### Production Deployment
+
+#### Step 1: Create Production Database
 ```bash
-# 1. Create production database
 wrangler d1 create lunaxcode-prod
+```
 
-# 2. Run migrations
+#### Step 2: Run Migrations
+```bash
 wrangler d1 migrations apply lunaxcode-prod --remote
+```
 
-# 3. Seed production database
+#### Step 3: Seed Production Database
+```bash
 npm run db:seed:prod
+```
 
-# 4. Set production secrets (if not already set)
-wrangler secret put NEXTAUTH_SECRET
-wrangler secret put GOOGLE_CLIENT_ID
-wrangler secret put GOOGLE_CLIENT_SECRET
-wrangler secret put GEMINI_API_KEY
-wrangler secret put PAYMONGO_PUBLIC_KEY
-wrangler secret put PAYMONGO_SECRET_KEY
-wrangler secret put PAYMONGO_WEBHOOK_SECRET
+#### Step 4: Set Environment Variables in Cloudflare Dashboard
 
-# 5. Build and deploy (IMPORTANT: Use pages:build, not build!)
+**IMPORTANT:** Cloudflare Pages uses environment variables (not secrets). Add these via the dashboard:
+
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Navigate to: **Pages** → **lunaxcode-saas** → **Settings** → **Environment variables**
+3. Add the following variables for **Production** and **Preview**:
+
+```
+NEXTAUTH_SECRET=<your-secret>
+NEXTAUTH_URL=https://lunaxcode-saas.pages.dev (or your custom domain)
+
+GOOGLE_CLIENT_ID=<your-google-client-id>
+GOOGLE_CLIENT_SECRET=<your-google-client-secret>
+
+GEMINI_API_KEY=<your-gemini-api-key>
+
+PAYMONGO_PUBLIC_KEY=<your-paymongo-public-key>
+PAYMONGO_SECRET_KEY=<your-paymongo-secret-key>
+PAYMONGO_WEBHOOK_SECRET=<your-webhook-secret>
+
+RESEND_API_KEY=<your-resend-api-key>
+
+NEXT_PUBLIC_APP_URL=https://lunaxcode-saas.pages.dev (or your custom domain)
+```
+
+**Note:** For Workers (not Pages), you would use `wrangler secret put`, but Pages uses environment variables set via the dashboard.
+
+#### Step 5: Build and Deploy
+```bash
+# IMPORTANT: Use pages:build, not build!
 npm run pages:build    # Builds specifically for Cloudflare Pages
 npm run deploy         # Or: npm run pages:build && wrangler pages deploy
 ```
