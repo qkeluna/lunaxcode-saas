@@ -86,8 +86,8 @@ export function ClientSidebar({ user, ...props }: ClientSidebarProps) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-2"
             >
-              <Link href="/dashboard">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground transition-all duration-300 hover:scale-110 hover:rotate-6">
+              <Link href="/dashboard" className="group">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
                   <LayoutDashboardIcon className="size-4 transition-transform duration-300" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -116,7 +116,7 @@ export function ClientSidebar({ user, ...props }: ClientSidebarProps) {
                       isActive={isActive}
                     >
                       <Link href={item.url}>
-                        <item.icon className="transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-3" />
+                        <item.icon className="transition-all duration-300 ease-in-out group-hover/menu-item:scale-110 group-hover/menu-item:rotate-3" />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -140,7 +140,7 @@ export function ClientSidebar({ user, ...props }: ClientSidebarProps) {
                     className="text-sidebar-foreground/70"
                   >
                     <Link href={item.url}>
-                      <item.icon className="transition-all duration-300 ease-in-out group-hover:scale-125 group-hover:rotate-90" />
+                      <item.icon className="transition-all duration-300 ease-in-out group-hover/menu-item:scale-125 group-hover/menu-item:rotate-90" />
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
@@ -165,7 +165,7 @@ export function ClientSidebar({ user, ...props }: ClientSidebarProps) {
                       size="sm"
                     >
                       <Link href={item.url}>
-                        <item.icon className="transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:-rotate-6" />
+                        <item.icon className="transition-all duration-300 ease-in-out group-hover/menu-item:scale-110 group-hover/menu-item:-rotate-6" />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>

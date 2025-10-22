@@ -144,8 +144,8 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-2"
             >
-              <Link href="/admin">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground transition-all duration-300 hover:scale-110 hover:rotate-12">
+              <Link href="/admin" className="group">
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground transition-all duration-300 group-hover:scale-110 group-hover:rotate-12">
                   <ShieldIcon className="size-4 transition-transform duration-300" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
@@ -174,7 +174,7 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
                       isActive={isActive}
                     >
                       <Link href={item.url}>
-                        <item.icon className="transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-3" />
+                        <item.icon className="transition-all duration-300 ease-in-out group-hover/menu-item:scale-110 group-hover/menu-item:rotate-3" />
                         <span>{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -202,9 +202,9 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton tooltip={item.title}>
-                        <item.icon className="transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-6" />
+                        <item.icon className="transition-all duration-300 ease-in-out group-hover/menu-item:scale-110 group-hover/menu-item:rotate-6" />
                         <span>{item.title}</span>
-                        <ChevronRight className="ml-auto transition-all duration-300 ease-out group-data-[state=open]/collapsible:rotate-90 group-hover:scale-125" />
+                        <ChevronRight className="ml-auto transition-all duration-300 ease-out group-data-[state=open]/collapsible:rotate-90 group-hover/menu-item:scale-125" />
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
@@ -218,7 +218,7 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
                                 isActive={isActive}
                               >
                                 <Link href={subItem.url}>
-                                  <subItem.icon className="!size-4 transition-all duration-300 ease-in-out group-hover:scale-125 group-hover:-rotate-12" />
+                                  <subItem.icon className="!size-4 transition-all duration-300 ease-in-out group-hover/menu-item:scale-125 group-hover/menu-item:-rotate-12" />
                                   <span>{subItem.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>
@@ -250,9 +250,9 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
                       <SidebarMenuButton tooltip={item.title} size="sm">
-                        <item.icon className="transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12" />
+                        <item.icon className="transition-all duration-300 ease-in-out group-hover/menu-item:scale-110 group-hover/menu-item:rotate-12" />
                         <span>{item.title}</span>
-                        <ChevronRight className="ml-auto transition-all duration-300 ease-out group-data-[state=open]/collapsible:rotate-90 group-hover:scale-125" />
+                        <ChevronRight className="ml-auto transition-all duration-300 ease-out group-data-[state=open]/collapsible:rotate-90 group-hover/menu-item:scale-125" />
                       </SidebarMenuButton>
                     </CollapsibleTrigger>
                     <CollapsibleContent>
@@ -266,7 +266,7 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
                                 isActive={isActive}
                               >
                                 <Link href={subItem.url}>
-                                  <subItem.icon className="!size-4 transition-all duration-300 ease-in-out group-hover:scale-125 group-hover:-rotate-12" />
+                                  <subItem.icon className="!size-4 transition-all duration-300 ease-in-out group-hover/menu-item:scale-125 group-hover/menu-item:-rotate-12" />
                                   <span>{subItem.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>
