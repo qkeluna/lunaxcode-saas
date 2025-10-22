@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, MessageCircle, Phone, Rocket } from 'lucide-react';
+import { Mail, MessageCircle, Phone, Rocket, Facebook } from 'lucide-react';
 import Link from 'next/link';
 import ContactModal from '@/components/modals/ContactModal';
 
@@ -67,7 +67,7 @@ export default function ContactCTA() {
               View Pricing
             </Link>
             <a
-              href="https://wa.me/639123456789"
+              href="https://wa.me/639190852974"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center px-8 py-3 bg-transparent text-white border-2 border-white rounded-xl font-bold text-lg hover:bg-white/20 transition-all duration-300"
@@ -76,6 +76,17 @@ export default function ContactCTA() {
             >
               <MessageCircle className="w-5 h-5" aria-hidden="true" />
               Chat on WhatsApp
+            </a>
+            <a
+              href="https://m.me/373536033045669"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-8 py-3 bg-transparent text-white border-2 border-white rounded-xl font-bold text-lg hover:bg-white/20 transition-all duration-300"
+              style={{ gap: 'var(--sp-space-2)', minHeight: '48px' }}
+              aria-label="Chat with us on Messenger"
+            >
+              <Facebook className="w-5 h-5" aria-hidden="true" />
+              Chat on Messenger
             </a>
           </div>
 
@@ -94,7 +105,7 @@ export default function ContactCTA() {
               href="mailto:hello@lunaxcode.com"
               className="text-white/80 hover:text-white text-sm transition-colors"
             >
-              hello@lunaxcode.com
+              lunaxcode2030@gmail.com
             </a>
           </div>
 
@@ -110,7 +121,7 @@ export default function ContactCTA() {
               rel="noopener noreferrer"
               className="text-white/80 hover:text-white text-sm transition-colors"
             >
-              +63 912 345 6789
+              +63 919 085 2974
             </a>
           </div>
 
@@ -124,7 +135,7 @@ export default function ContactCTA() {
               href="tel:+639123456789"
               className="text-white/80 hover:text-white text-sm transition-colors"
             >
-              +63 912 345 6789
+              +63 919 085 2974
             </a>
           </div>
         </div>

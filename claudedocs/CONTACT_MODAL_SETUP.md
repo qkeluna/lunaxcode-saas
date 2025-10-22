@@ -2,32 +2,37 @@
 
 ## ✅ Implementation Complete
 
-The "Request Custom Quote" CTA button with contact modal has been successfully implemented in **TWO locations** on the landing page.
+The "Request Custom Quote" CTA button with contact modal has been successfully implemented in **TWO locations** on the landing page. The modal now uses **shadcn/ui input-group** components with icons for a polished UI.
 
 ## 📍 Button Locations
 
 ### 1. ContactCTA Section (Bottom of page)
 - **Primary white button**: "Request Custom Quote" → Opens contact modal ✅
+- **Outlined button**: "View Pricing" → Scrolls to pricing section ✅
+- **Outlined button with icon**: "Chat on WhatsApp" → Opens WhatsApp chat ✅
+- **Outlined button with icon**: "Chat on Messenger" → Opens Facebook Messenger ✅ **NEW!**
 - Located in the Contact/CTA section near footer
 
 ### 2. Pricing Section (Middle of page)
 - **Gradient button**: "Request Custom Quote" → Opens contact modal ✅
 - Located in "Need Something Unique?" section below pricing cards
 
-**Note**: Both buttons now open the same ContactModal instead of redirecting to `/onboarding`
+**Note**: Both "Request Custom Quote" buttons open the same ContactModal instead of redirecting to `/onboarding`
 
 ## 📦 Files Created/Modified
 
 ### Created:
-1. **`src/components/modals/ContactModal.tsx`** - Contact form modal component
-2. **`src/app/api/contact/route.ts`** - API endpoint for sending emails via Resend
+1. **`src/components/modals/ContactModal.tsx`** - Contact form modal with input-group components
+2. **`src/app/api/contact/route.ts`** - API endpoint for sending emails via Resend (Edge Runtime)
 3. **`src/components/landing/PricingClient.tsx`** - Client component for Pricing with modal
+4. **`src/components/ui/input-group.tsx`** - shadcn/ui input-group component ✨ **NEW!**
 
 ### Modified:
-1. **`src/components/landing/ContactCTA.tsx`** - Added modal trigger button
-2. **`src/components/landing/Pricing.tsx`** - Refactored to use PricingClient
-3. **`src/app/providers.tsx`** - Added Toaster for toast notifications
-4. **`CLAUDE.md`** - Added RESEND_API_KEY to environment variables documentation
+1. **`src/components/landing/ContactCTA.tsx`** - Added modal trigger + Messenger button ✨ **UPDATED!**
+2. **`src/components/modals/ContactModal.tsx`** - Updated to use input-group with icons ✨ **UPDATED!**
+3. **`src/components/landing/Pricing.tsx`** - Refactored to use PricingClient
+4. **`src/app/providers.tsx`** - Added Toaster for toast notifications
+5. **`CLAUDE.md`** - Added RESEND_API_KEY to environment variables documentation
 
 ## 🔧 Setup Complete
 
@@ -35,6 +40,7 @@ The "Request Custom Quote" CTA button with contact modal has been successfully i
 - ✅ RESEND_API_KEY already configured in `.env.local`
 - ✅ Toaster component added to providers
 - ✅ All shadcn/ui components available (Dialog, Input, Textarea, Label, Button)
+- ✅ Input-group component installed (`npx shadcn@latest add input-group`) ✨ **NEW!**
 
 ## 🎯 Features Implemented
 

@@ -13,10 +13,16 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+  InputGroupTextarea,
+} from '@/components/ui/input-group';
+import { User, Building2, Mail, Phone, MessageSquare } from 'lucide-react';
 
 // Form validation schema
 const contactFormSchema = z.object({
@@ -99,12 +105,20 @@ export default function ContactModal({ open, onOpenChange }: ContactModalProps) 
             <Label htmlFor="fullName">
               Full Name <span className="text-red-500">*</span>
             </Label>
-            <Input
-              id="fullName"
-              placeholder="Juan dela Cruz"
-              {...register('fullName')}
-              disabled={isSubmitting}
-            />
+            <InputGroup>
+              <InputGroupAddon>
+                <InputGroupText>
+                  <User />
+                </InputGroupText>
+              </InputGroupAddon>
+              <InputGroupInput
+                id="fullName"
+                placeholder="Juan dela Cruz"
+                {...register('fullName')}
+                disabled={isSubmitting}
+                aria-invalid={!!errors.fullName}
+              />
+            </InputGroup>
             {errors.fullName && (
               <p className="text-sm text-red-500">{errors.fullName.message}</p>
             )}
@@ -115,12 +129,20 @@ export default function ContactModal({ open, onOpenChange }: ContactModalProps) 
             <Label htmlFor="companyName">
               Company Name <span className="text-red-500">*</span>
             </Label>
-            <Input
-              id="companyName"
-              placeholder="ABC Company Inc."
-              {...register('companyName')}
-              disabled={isSubmitting}
-            />
+            <InputGroup>
+              <InputGroupAddon>
+                <InputGroupText>
+                  <Building2 />
+                </InputGroupText>
+              </InputGroupAddon>
+              <InputGroupInput
+                id="companyName"
+                placeholder="ABC Company Inc."
+                {...register('companyName')}
+                disabled={isSubmitting}
+                aria-invalid={!!errors.companyName}
+              />
+            </InputGroup>
             {errors.companyName && (
               <p className="text-sm text-red-500">{errors.companyName.message}</p>
             )}
@@ -131,13 +153,21 @@ export default function ContactModal({ open, onOpenChange }: ContactModalProps) 
             <Label htmlFor="email">
               Email Address <span className="text-red-500">*</span>
             </Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="juan@example.com"
-              {...register('email')}
-              disabled={isSubmitting}
-            />
+            <InputGroup>
+              <InputGroupAddon>
+                <InputGroupText>
+                  <Mail />
+                </InputGroupText>
+              </InputGroupAddon>
+              <InputGroupInput
+                id="email"
+                type="email"
+                placeholder="juan@example.com"
+                {...register('email')}
+                disabled={isSubmitting}
+                aria-invalid={!!errors.email}
+              />
+            </InputGroup>
             {errors.email && (
               <p className="text-sm text-red-500">{errors.email.message}</p>
             )}
@@ -146,13 +176,21 @@ export default function ContactModal({ open, onOpenChange }: ContactModalProps) 
           {/* Contact Number (Optional) */}
           <div className="space-y-2">
             <Label htmlFor="contactNumber">Contact Number (Optional)</Label>
-            <Input
-              id="contactNumber"
-              type="tel"
-              placeholder="+63 912 345 6789"
-              {...register('contactNumber')}
-              disabled={isSubmitting}
-            />
+            <InputGroup>
+              <InputGroupAddon>
+                <InputGroupText>
+                  <Phone />
+                </InputGroupText>
+              </InputGroupAddon>
+              <InputGroupInput
+                id="contactNumber"
+                type="tel"
+                placeholder="+63 912 345 6789"
+                {...register('contactNumber')}
+                disabled={isSubmitting}
+                aria-invalid={!!errors.contactNumber}
+              />
+            </InputGroup>
             {errors.contactNumber && (
               <p className="text-sm text-red-500">{errors.contactNumber.message}</p>
             )}
@@ -163,13 +201,21 @@ export default function ContactModal({ open, onOpenChange }: ContactModalProps) 
             <Label htmlFor="message">
               Message <span className="text-red-500">*</span>
             </Label>
-            <Textarea
-              id="message"
-              placeholder="Tell us about your project requirements..."
-              rows={4}
-              {...register('message')}
-              disabled={isSubmitting}
-            />
+            <InputGroup>
+              <InputGroupAddon align="block-start">
+                <InputGroupText>
+                  <MessageSquare />
+                </InputGroupText>
+              </InputGroupAddon>
+              <InputGroupTextarea
+                id="message"
+                placeholder="Tell us about your project requirements..."
+                rows={4}
+                {...register('message')}
+                disabled={isSubmitting}
+                aria-invalid={!!errors.message}
+              />
+            </InputGroup>
             {errors.message && (
               <p className="text-sm text-red-500">{errors.message.message}</p>
             )}
