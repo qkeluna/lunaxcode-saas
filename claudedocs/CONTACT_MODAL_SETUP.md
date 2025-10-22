@@ -95,7 +95,7 @@ The "Request Custom Quote" CTA button with contact modal has been successfully i
 
 1. **Verify RESEND_API_KEY in `.env.local`:**
    ```env
-   RESEND_API_KEY=re_8iqWbrVs_4pEURSPpuWuGxnuFcnkN8C1w
+   RESEND_API_KEY=your_resend_api_key_here
    ```
 
 2. **Check API route logs:**
@@ -170,7 +170,7 @@ If you're still experiencing issues:
 3. Click **"Add variable"**
 4. Add:
    - **Variable name:** `RESEND_API_KEY`
-   - **Value:** `re_4q65mVUb_6yykhGtRAN7pdWvzNpwCMJJE` (or your key)
+   - **Value:** `your_resend_api_key_here`
    - **Environment:** Select **both "Production" and "Preview"**
 5. Click **"Save"**
 6. **Redeploy** your site (push to GitHub or manual deploy) for changes to take effect

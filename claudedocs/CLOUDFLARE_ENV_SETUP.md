@@ -19,7 +19,7 @@
 4. **Add RESEND_API_KEY**
    ```
    Variable name: RESEND_API_KEY
-   Value: re_4q65mVUb_6yykhGtRAN7pdWvzNpwCMJJE
+   Value: your_resend_api_key_here
    Environment: ✅ Production  ✅ Preview
    ```
 
