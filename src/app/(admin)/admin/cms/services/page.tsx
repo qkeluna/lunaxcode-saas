@@ -191,8 +191,8 @@ export default function AdminServicesPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Service Types</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-foreground">Service Types</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage service offerings and pricing plans
           </p>
         </div>
@@ -204,32 +204,32 @@ export default function AdminServicesPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card border overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <DollarSign className="h-6 w-6 text-gray-400" />
+                <DollarSign className="h-6 w-6 text-muted-foreground" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total Services</dt>
-                  <dd className="text-lg font-semibold text-gray-900">{services.length}</dd>
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Total Services</dt>
+                  <dd className="text-lg font-semibold text-foreground">{services.length}</dd>
                 </dl>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card border overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Eye className="h-6 w-6 text-green-400" />
+                <Eye className="h-6 w-6 text-green-400 dark:text-green-300" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Active</dt>
-                  <dd className="text-lg font-semibold text-gray-900">
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Active</dt>
+                  <dd className="text-lg font-semibold text-foreground">
                     {services.filter(s => s.isActive).length}
                   </dd>
                 </dl>
@@ -238,16 +238,16 @@ export default function AdminServicesPage() {
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card border overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <EyeOff className="h-6 w-6 text-gray-400" />
+                <EyeOff className="h-6 w-6 text-muted-foreground" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Inactive</dt>
-                  <dd className="text-lg font-semibold text-gray-900">
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Inactive</dt>
+                  <dd className="text-lg font-semibold text-foreground">
                     {services.filter(s => !s.isActive).length}
                   </dd>
                 </dl>
@@ -258,7 +258,7 @@ export default function AdminServicesPage() {
       </div>
 
       {/* Services Table */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-card border shadow rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -273,13 +273,13 @@ export default function AdminServicesPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                   Loading services...
                 </TableCell>
               </TableRow>
             ) : services.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                   No services found. Create your first service to get started.
                 </TableCell>
               </TableRow>
@@ -299,7 +299,7 @@ export default function AdminServicesPage() {
                       <Badge variant="outline">{features.length} features</Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge className={service.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                      <Badge className={service.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-gray-100 text-foreground'}>
                         {service.isActive ? 'Active' : 'Inactive'}
                       </Badge>
                     </TableCell>
@@ -316,7 +316,7 @@ export default function AdminServicesPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleDelete(service.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="text-red-600 dark:text-red-400 hover:text-red-700 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

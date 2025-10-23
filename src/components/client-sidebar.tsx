@@ -13,6 +13,7 @@ import {
 } from "lucide-react"
 
 import { NavUser } from "@/components/nav-user"
+import { ThemeToggle } from "@/components/ThemeToggle"
 import {
   Sidebar,
   SidebarContent,
@@ -178,6 +179,10 @@ export function ClientSidebar({ user, ...props }: ClientSidebarProps) {
       </SidebarContent>
 
       <SidebarFooter>
+        <div className="flex items-center justify-between px-2 py-2 border-t border-sidebar-border">
+          <span className="text-xs font-medium text-sidebar-foreground">Theme</span>
+          <ThemeToggle />
+        </div>
         <NavUser
           user={{
             name: user.name || "User",

@@ -85,8 +85,8 @@ export default function AdminSettingsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-foreground">Settings</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Manage your account, system preferences, and notifications
         </p>
       </div>
@@ -279,20 +279,20 @@ export default function AdminSettingsPage() {
             <CardContent>
               <div className="space-y-3">
                 <div className="flex justify-between items-center py-2 border-b">
-                  <span className="text-sm font-medium text-gray-600">Database Type</span>
-                  <span className="text-sm text-gray-900">Cloudflare D1 (SQLite)</span>
+                  <span className="text-sm font-medium text-muted-foreground">Database Type</span>
+                  <span className="text-sm text-foreground">Cloudflare D1 (SQLite)</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b">
-                  <span className="text-sm font-medium text-gray-600">ORM</span>
-                  <span className="text-sm text-gray-900">Drizzle ORM</span>
+                  <span className="text-sm font-medium text-muted-foreground">ORM</span>
+                  <span className="text-sm text-foreground">Drizzle ORM</span>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b">
-                  <span className="text-sm font-medium text-gray-600">Region</span>
-                  <span className="text-sm text-gray-900">APAC (Asia-Pacific)</span>
+                  <span className="text-sm font-medium text-muted-foreground">Region</span>
+                  <span className="text-sm text-foreground">APAC (Asia-Pacific)</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-sm font-medium text-gray-600">Last Backup</span>
-                  <span className="text-sm text-gray-900">Automated by Cloudflare</span>
+                  <span className="text-sm font-medium text-muted-foreground">Last Backup</span>
+                  <span className="text-sm text-foreground">Automated by Cloudflare</span>
                 </div>
               </div>
             </CardContent>
@@ -312,7 +312,7 @@ export default function AdminSettingsPage() {
               <div className="flex items-center justify-between py-3 border-b">
                 <div>
                   <p className="font-medium text-sm">New Project Created</p>
-                  <p className="text-sm text-gray-500">Get notified when a new project is created</p>
+                  <p className="text-sm text-muted-foreground">Get notified when a new project is created</p>
                 </div>
                 <Switch
                   checked={notificationSettings.emailNewProject}
@@ -325,7 +325,7 @@ export default function AdminSettingsPage() {
               <div className="flex items-center justify-between py-3 border-b">
                 <div>
                   <p className="font-medium text-sm">Payment Received</p>
-                  <p className="text-sm text-gray-500">Get notified when a payment is received</p>
+                  <p className="text-sm text-muted-foreground">Get notified when a payment is received</p>
                 </div>
                 <Switch
                   checked={notificationSettings.emailPaymentReceived}
@@ -338,7 +338,7 @@ export default function AdminSettingsPage() {
               <div className="flex items-center justify-between py-3 border-b">
                 <div>
                   <p className="font-medium text-sm">Task Completed</p>
-                  <p className="text-sm text-gray-500">Get notified when a task is marked as completed</p>
+                  <p className="text-sm text-muted-foreground">Get notified when a task is marked as completed</p>
                 </div>
                 <Switch
                   checked={notificationSettings.emailTaskCompleted}
@@ -351,7 +351,7 @@ export default function AdminSettingsPage() {
               <div className="flex items-center justify-between py-3 border-b">
                 <div>
                   <p className="font-medium text-sm">Client Message</p>
-                  <p className="text-sm text-gray-500">Get notified when a client sends a message</p>
+                  <p className="text-sm text-muted-foreground">Get notified when a client sends a message</p>
                 </div>
                 <Switch
                   checked={notificationSettings.emailClientMessage}
@@ -364,7 +364,7 @@ export default function AdminSettingsPage() {
               <div className="flex items-center justify-between py-3">
                 <div>
                   <p className="font-medium text-sm">Push Notifications</p>
-                  <p className="text-sm text-gray-500">Enable browser push notifications</p>
+                  <p className="text-sm text-muted-foreground">Enable browser push notifications</p>
                 </div>
                 <Switch
                   checked={notificationSettings.pushNotifications}
@@ -396,7 +396,7 @@ export default function AdminSettingsPage() {
               <div className="flex items-center justify-between py-3 border-b">
                 <div>
                   <p className="font-medium text-sm">Two-Factor Authentication</p>
-                  <p className="text-sm text-gray-500">Add an extra layer of security to your account</p>
+                  <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>
                 </div>
                 <Switch
                   checked={securitySettings.twoFactorEnabled}
@@ -410,7 +410,7 @@ export default function AdminSettingsPage() {
                 <Label htmlFor="sessionTimeout" className="text-sm font-medium">
                   Session Timeout (minutes)
                 </Label>
-                <p className="text-sm text-gray-500 mb-2">
+                <p className="text-sm text-muted-foreground mb-2">
                   Automatically log out after period of inactivity
                 </p>
                 <Input
@@ -427,7 +427,7 @@ export default function AdminSettingsPage() {
               <div className="flex items-center justify-between py-3">
                 <div>
                   <p className="font-medium text-sm">Require Password Change</p>
-                  <p className="text-sm text-gray-500">Force password change every 90 days</p>
+                  <p className="text-sm text-muted-foreground">Force password change every 90 days</p>
                 </div>
                 <Switch
                   checked={securitySettings.requirePasswordChange}
@@ -476,7 +476,7 @@ export default function AdminSettingsPage() {
                 </div>
                 <div>
                   <p className="font-medium text-sm">Google OAuth</p>
-                  <p className="text-sm text-gray-500">Secure authentication via Google</p>
+                  <p className="text-sm text-muted-foreground">Secure authentication via Google</p>
                 </div>
               </div>
             </CardContent>

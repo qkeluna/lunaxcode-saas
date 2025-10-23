@@ -17,7 +17,7 @@ export default function FAQClient({ faqs }: FAQClientProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="relative py-24 bg-gradient-to-b from-gray-50 to-white overflow-hidden" aria-labelledby="faq-heading">
+    <section id="faq" className="relative py-24 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 overflow-hidden" aria-labelledby="faq-heading">
       {/* Background decoration */}
       <div className="absolute inset-0 opacity-5" aria-hidden="true">
         <div
@@ -30,7 +30,7 @@ export default function FAQClient({ faqs }: FAQClientProps) {
         {/* Section Header */}
         <div className="text-center" style={{ marginBottom: 'var(--sp-space-8)' }}>
           <div
-            className="inline-flex items-center backdrop-blur-sm bg-purple-100 text-purple-700 rounded-full font-bold mb-4"
+            className="inline-flex items-center backdrop-blur-sm bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-bold mb-4"
             style={{ padding: 'var(--sp-space-2) var(--sp-space-4)', gap: 'var(--sp-space-2)' }}
           >
             <HelpCircle className="w-4 h-4" aria-hidden="true" />
@@ -39,12 +39,12 @@ export default function FAQClient({ faqs }: FAQClientProps) {
 
           <h2
             id="faq-heading"
-            className="text-4xl md:text-5xl font-bold text-gray-900"
+            className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white"
             style={{ marginBottom: 'var(--sp-space-4)', letterSpacing: '-0.02em' }}
           >
             Frequently Asked Questions
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             Everything you need to know before starting your project with us
           </p>
         </div>
@@ -56,22 +56,22 @@ export default function FAQClient({ faqs }: FAQClientProps) {
             return (
               <div
                 key={faq.id || index}
-                className={`backdrop-blur-sm bg-white/80 border rounded-2xl overflow-hidden transition-all duration-300 ${
+                className={`backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 border rounded-2xl overflow-hidden transition-all duration-300 ${
                   isOpen
-                    ? 'border-purple-300 shadow-lg shadow-purple-100'
-                    : 'border-gray-200 hover:border-purple-200 shadow-sm hover:shadow-md'
+                    ? 'border-purple-300 dark:border-purple-700 shadow-lg shadow-purple-100 dark:shadow-purple-900/50'
+                    : 'border-gray-200 dark:border-gray-700 hover:border-purple-200 dark:hover:border-purple-700 shadow-sm hover:shadow-md'
                 }`}
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="w-full flex items-center justify-between text-left hover:bg-gray-50/50 transition-colors"
+                  className="w-full flex items-center justify-between text-left hover:bg-gray-50/50 dark:hover:bg-gray-700/50 transition-colors"
                   style={{ padding: 'var(--sp-space-5) var(--sp-space-6)' }}
                   aria-expanded={isOpen}
                   aria-controls={`faq-answer-${index}`}
                 >
                   <span
                     className={`font-bold pr-8 transition-colors ${
-                      isOpen ? 'text-purple-700' : 'text-gray-900'
+                      isOpen ? 'text-purple-700 dark:text-purple-400' : 'text-gray-900 dark:text-white'
                     }`}
                   >
                     {faq.question}
@@ -80,7 +80,7 @@ export default function FAQClient({ faqs }: FAQClientProps) {
                     className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
                       isOpen
                         ? 'bg-gradient-to-br shadow-sm'
-                        : 'bg-gray-100'
+                        : 'bg-gray-100 dark:bg-gray-700'
                     }`}
                     style={
                       isOpen
@@ -90,7 +90,7 @@ export default function FAQClient({ faqs }: FAQClientProps) {
                   >
                     <ChevronDown
                       className={`w-5 h-5 transition-all duration-300 ${
-                        isOpen ? 'transform rotate-180 text-white' : 'text-gray-600'
+                        isOpen ? 'transform rotate-180 text-white' : 'text-gray-600 dark:text-gray-300'
                       }`}
                       aria-hidden="true"
                     />
@@ -105,7 +105,7 @@ export default function FAQClient({ faqs }: FAQClientProps) {
                   aria-labelledby={`faq-question-${index}`}
                 >
                   <div
-                    className="text-gray-600 leading-relaxed border-t border-gray-100"
+                    className="text-gray-600 dark:text-gray-300 leading-relaxed border-t border-gray-100 dark:border-gray-700"
                     style={{ padding: 'var(--sp-space-5) var(--sp-space-6)' }}
                   >
                     {faq.answer}
@@ -118,16 +118,16 @@ export default function FAQClient({ faqs }: FAQClientProps) {
 
         {/* Contact CTA */}
         <div
-          className="text-center backdrop-blur-sm bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-100 rounded-2xl shadow-sm"
+          className="text-center backdrop-blur-sm bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-100 dark:border-purple-800 rounded-2xl shadow-sm"
           style={{ marginTop: 'var(--sp-space-8)', padding: 'var(--sp-space-6)' }}
         >
           <h3
-            className="text-xl font-bold text-gray-900"
+            className="text-xl font-bold text-gray-900 dark:text-white"
             style={{ marginBottom: 'var(--sp-space-2)' }}
           >
             Still Have Questions?
           </h3>
-          <p className="text-gray-600" style={{ marginBottom: 'var(--sp-space-4)' }}>
+          <p className="text-gray-600 dark:text-gray-300" style={{ marginBottom: 'var(--sp-space-4)' }}>
             Our team is ready to help you with anything you need
           </p>
           <a

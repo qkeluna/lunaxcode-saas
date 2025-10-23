@@ -208,8 +208,8 @@ export default function AdminClientsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Client Management</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-foreground">Client Management</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage all clients and view their project history
           </p>
         </div>
@@ -217,32 +217,32 @@ export default function AdminClientsPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card border overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Mail className="h-6 w-6 text-gray-400" />
+                <Mail className="h-6 w-6 text-muted-foreground" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total Clients</dt>
-                  <dd className="text-lg font-semibold text-gray-900">{clients.length}</dd>
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Total Clients</dt>
+                  <dd className="text-lg font-semibold text-foreground">{clients.length}</dd>
                 </dl>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card border overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Clock className="h-6 w-6 text-blue-400" />
+                <Clock className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Active Clients</dt>
-                  <dd className="text-lg font-semibold text-gray-900">
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Active Clients</dt>
+                  <dd className="text-lg font-semibold text-foreground">
                     {clients.filter(c => c.stats.activeProjects > 0).length}
                   </dd>
                 </dl>
@@ -251,16 +251,16 @@ export default function AdminClientsPage() {
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card border overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <FolderKanban className="h-6 w-6 text-green-400" />
+                <FolderKanban className="h-6 w-6 text-green-600 dark:text-green-400" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total Projects</dt>
-                  <dd className="text-lg font-semibold text-gray-900">
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Total Projects</dt>
+                  <dd className="text-lg font-semibold text-foreground">
                     {clients.reduce((sum, c) => sum + c.stats.totalProjects, 0)}
                   </dd>
                 </dl>
@@ -269,16 +269,16 @@ export default function AdminClientsPage() {
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card border overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <DollarSign className="h-6 w-6 text-yellow-400" />
+                <DollarSign className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total Revenue</dt>
-                  <dd className="text-lg font-semibold text-gray-900">
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Total Revenue</dt>
+                  <dd className="text-lg font-semibold text-foreground">
                     {formatCurrency(clients.reduce((sum, c) => sum + c.stats.totalSpent, 0))}
                   </dd>
                 </dl>
@@ -289,9 +289,9 @@ export default function AdminClientsPage() {
       </div>
 
       {/* Search */}
-      <div className="bg-white p-4 rounded-lg shadow">
+      <div className="bg-card border p-4 rounded-lg shadow">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Search clients by name or email..."
@@ -303,7 +303,7 @@ export default function AdminClientsPage() {
       </div>
 
       {/* Clients Table */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-card border shadow rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -320,13 +320,13 @@ export default function AdminClientsPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                   Loading clients...
                 </TableCell>
               </TableRow>
             ) : filteredClients.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                   No clients found
                 </TableCell>
               </TableRow>
@@ -335,7 +335,7 @@ export default function AdminClientsPage() {
                 <TableRow key={client.id}>
                   <TableCell className="font-medium">{client.name}</TableCell>
                   <TableCell>
-                    <a href={`mailto:${client.email}`} className="text-blue-600 hover:underline">
+                    <a href={`mailto:${client.email}`} className="text-blue-600 dark:text-blue-400 hover:underline">
                       {client.email}
                     </a>
                   </TableCell>
@@ -343,13 +343,13 @@ export default function AdminClientsPage() {
                     <Badge variant="outline">{client.stats.totalProjects}</Badge>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm text-blue-600">{client.stats.activeProjects}</span>
+                    <span className="text-sm text-blue-600 dark:text-blue-400">{client.stats.activeProjects}</span>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm text-green-600">{client.stats.completedProjects}</span>
+                    <span className="text-sm text-green-600 dark:text-green-400">{client.stats.completedProjects}</span>
                   </TableCell>
                   <TableCell>{formatCurrency(client.stats.totalSpent)}</TableCell>
-                  <TableCell className="text-sm text-gray-500">
+                  <TableCell className="text-sm text-muted-foreground">
                     {formatDate(client.createdAt)}
                   </TableCell>
                   <TableCell className="text-right">
@@ -372,7 +372,7 @@ export default function AdminClientsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDeleteClient(client.id)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -398,27 +398,27 @@ export default function AdminClientsPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Name</p>
-                  <p className="text-base text-gray-900">{selectedClient.client.name}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Name</p>
+                  <p className="text-base text-foreground">{selectedClient.client.name}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Email</p>
-                  <p className="text-base text-gray-900">{selectedClient.client.email}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Email</p>
+                  <p className="text-base text-foreground">{selectedClient.client.email}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Role</p>
+                  <p className="text-sm font-medium text-muted-foreground">Role</p>
                   <Badge>{selectedClient.client.role}</Badge>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Joined</p>
-                  <p className="text-base text-gray-900">{formatDate(selectedClient.client.createdAt)}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Joined</p>
+                  <p className="text-base text-foreground">{formatDate(selectedClient.client.createdAt)}</p>
                 </div>
               </div>
 
               <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-3">Projects</h4>
+                <h4 className="text-sm font-medium text-foreground mb-3">Projects</h4>
                 {selectedClient.projects.length === 0 ? (
-                  <p className="text-sm text-gray-500">No projects yet</p>
+                  <p className="text-sm text-muted-foreground">No projects yet</p>
                 ) : (
                   <div className="space-y-2">
                     {selectedClient.projects.map((project) => (
@@ -428,7 +428,7 @@ export default function AdminClientsPage() {
                       >
                         <div>
                           <p className="font-medium text-sm">{project.name}</p>
-                          <p className="text-xs text-gray-500">{formatDate(project.createdAt)}</p>
+                          <p className="text-xs text-muted-foreground">{formatDate(project.createdAt)}</p>
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge className="text-xs">

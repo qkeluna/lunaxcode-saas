@@ -195,23 +195,23 @@ export default function AdminPaymentsPage() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">Payment Management</h1>
-        <p className="text-gray-600 mt-1">Verify and manage client payment submissions</p>
+        <p className="text-muted-foreground mt-1">Verify and manage client payment submissions</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Pending Review
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline justify-between">
               <div className="text-2xl font-bold">{stats.totalPending}</div>
-              <Clock className="w-5 h-5 text-yellow-600" />
+              <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400 dark:text-yellow-300" />
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               ₱{stats.pendingAmount.toLocaleString()}
             </p>
           </CardContent>
@@ -219,16 +219,16 @@ export default function AdminPaymentsPage() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Verified
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline justify-between">
               <div className="text-2xl font-bold">{stats.totalVerified}</div>
-              <CheckCircle className="w-5 h-5 text-green-600" />
+              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 dark:text-green-300" />
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted-foreground mt-1">
               ₱{stats.verifiedAmount.toLocaleString()}
             </p>
           </CardContent>
@@ -236,21 +236,21 @@ export default function AdminPaymentsPage() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Rejected
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-baseline justify-between">
               <div className="text-2xl font-bold">{stats.totalRejected}</div>
-              <XCircle className="w-5 h-5 text-red-600" />
+              <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Received
             </CardTitle>
           </CardHeader>
@@ -259,14 +259,14 @@ export default function AdminPaymentsPage() {
               <div className="text-2xl font-bold">
                 ₱{(stats.verifiedAmount / 1000).toFixed(0)}K
               </div>
-              <DollarSign className="w-5 h-5 text-green-600" />
+              <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400 dark:text-green-300" />
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
               Pending Value
             </CardTitle>
           </CardHeader>
@@ -275,7 +275,7 @@ export default function AdminPaymentsPage() {
               <div className="text-2xl font-bold">
                 ₱{(stats.pendingAmount / 1000).toFixed(0)}K
               </div>
-              <TrendingUp className="w-5 h-5 text-yellow-600" />
+              <TrendingUp className="w-5 h-5 text-yellow-600 dark:text-yellow-400 dark:text-yellow-300" />
             </div>
           </CardContent>
         </Card>
@@ -288,7 +288,7 @@ export default function AdminPaymentsPage() {
             <div>
               <Label>Search</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                 <Input
                   placeholder="Search by reference, name, or project..."
                   value={searchTerm}
@@ -326,7 +326,7 @@ export default function AdminPaymentsPage() {
         <CardContent>
           {filteredPayments.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-gray-500">No payments found</p>
+              <p className="text-muted-foreground">No payments found</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -347,7 +347,7 @@ export default function AdminPaymentsPage() {
                           {payment.paymentType === 'deposit' ? '50% Deposit' : '50% Completion'}
                         </Badge>
                       </div>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-muted-foreground">
                         Client: {payment.project?.clientName || 'Unknown'}
                       </p>
                     </div>
@@ -365,21 +365,21 @@ export default function AdminPaymentsPage() {
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-3">
                     <div>
-                      <span className="text-gray-600">Amount:</span>
+                      <span className="text-muted-foreground">Amount:</span>
                       <p className="font-semibold text-lg">₱{payment.amount.toLocaleString()}</p>
                     </div>
                     <div>
-                      <span className="text-gray-600">Method:</span>
+                      <span className="text-muted-foreground">Method:</span>
                       <p className="font-medium capitalize">
                         {payment.paymentMethod.replace('_', ' ')}
                       </p>
                     </div>
                     <div>
-                      <span className="text-gray-600">Reference:</span>
+                      <span className="text-muted-foreground">Reference:</span>
                       <p className="font-medium font-mono">{payment.referenceNumber}</p>
                     </div>
                     <div>
-                      <span className="text-gray-600">Sender:</span>
+                      <span className="text-muted-foreground">Sender:</span>
                       <p className="font-medium">{payment.senderName}</p>
                     </div>
                   </div>
@@ -395,7 +395,7 @@ export default function AdminPaymentsPage() {
                     </div>
                   )}
 
-                  <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
                     <span>Submitted: {new Date(payment.createdAt).toLocaleString()}</span>
                     {payment.verifiedAt && (
                       <>
@@ -408,14 +408,14 @@ export default function AdminPaymentsPage() {
                   {payment.rejectionReason && (
                     <div className="bg-red-50 border border-red-200 rounded p-3 mb-3">
                       <p className="text-sm text-red-800 font-medium">Rejection Reason:</p>
-                      <p className="text-sm text-red-600">{payment.rejectionReason}</p>
+                      <p className="text-sm text-red-600 dark:text-red-400">{payment.rejectionReason}</p>
                     </div>
                   )}
 
                   {payment.adminNotes && (
                     <div className="bg-blue-50 border border-blue-200 rounded p-3 mb-3">
                       <p className="text-sm text-blue-800 font-medium">Admin Notes:</p>
-                      <p className="text-sm text-blue-600">{payment.adminNotes}</p>
+                      <p className="text-sm text-blue-600 dark:text-blue-400 dark:text-blue-300">{payment.adminNotes}</p>
                     </div>
                   )}
 
@@ -501,7 +501,7 @@ export default function AdminPaymentsPage() {
                     className="w-full border rounded mt-2 cursor-pointer"
                     onClick={() => window.open(selectedPayment.proofImageUrl, '_blank')}
                   />
-                  <p className="text-xs text-gray-500 mt-1">Click to view full size</p>
+                  <p className="text-xs text-muted-foreground mt-1">Click to view full size</p>
                 </div>
               )}
 

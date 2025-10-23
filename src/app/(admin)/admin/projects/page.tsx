@@ -77,16 +77,16 @@ interface Project {
 }
 
 const statusColors: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  'in-progress': 'bg-blue-100 text-blue-800',
-  completed: 'bg-green-100 text-green-800',
-  'on-hold': 'bg-red-100 text-red-800',
+  pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+  'in-progress': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
+  completed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
+  'on-hold': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
 };
 
 const paymentStatusColors: Record<string, string> = {
-  pending: 'bg-red-100 text-red-800',
-  'partially-paid': 'bg-yellow-100 text-yellow-800',
-  paid: 'bg-green-100 text-green-800',
+  pending: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+  'partially-paid': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+  paid: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
 };
 
 export default function AdminProjectsPage() {
@@ -213,8 +213,8 @@ export default function AdminProjectsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Projects Management</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-foreground">Projects Management</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage all client projects, update status, and track progress
           </p>
         </div>
@@ -222,32 +222,32 @@ export default function AdminProjectsPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card border overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Users className="h-6 w-6 text-gray-400" />
+                <Users className="h-6 w-6 text-muted-foreground" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Total Projects</dt>
-                  <dd className="text-lg font-semibold text-gray-900">{projects.length}</dd>
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Total Projects</dt>
+                  <dd className="text-lg font-semibold text-foreground">{projects.length}</dd>
                 </dl>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card border overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Clock className="h-6 w-6 text-blue-400" />
+                <Clock className="h-6 w-6 text-blue-400 dark:text-blue-300" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">In Progress</dt>
-                  <dd className="text-lg font-semibold text-gray-900">
+                  <dt className="text-sm font-medium text-muted-foreground truncate">In Progress</dt>
+                  <dd className="text-lg font-semibold text-foreground">
                     {projects.filter(p => p.project.status === 'in-progress').length}
                   </dd>
                 </dl>
@@ -256,16 +256,16 @@ export default function AdminProjectsPage() {
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card border overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Calendar className="h-6 w-6 text-green-400" />
+                <Calendar className="h-6 w-6 text-green-400 dark:text-green-300" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Completed</dt>
-                  <dd className="text-lg font-semibold text-gray-900">
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Completed</dt>
+                  <dd className="text-lg font-semibold text-foreground">
                     {projects.filter(p => p.project.status === 'completed').length}
                   </dd>
                 </dl>
@@ -274,16 +274,16 @@ export default function AdminProjectsPage() {
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card border overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <DollarSign className="h-6 w-6 text-yellow-400" />
+                <DollarSign className="h-6 w-6 text-yellow-400 dark:text-yellow-300" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Pending Payment</dt>
-                  <dd className="text-lg font-semibold text-gray-900">
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Pending Payment</dt>
+                  <dd className="text-lg font-semibold text-foreground">
                     {projects.filter(p => p.project.paymentStatus !== 'paid').length}
                   </dd>
                 </dl>
@@ -294,10 +294,10 @@ export default function AdminProjectsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-4 rounded-lg shadow">
+      <div className="bg-card border p-4 rounded-lg shadow">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="text"
               placeholder="Search projects, clients..."
@@ -335,7 +335,7 @@ export default function AdminProjectsPage() {
       </div>
 
       {/* Projects Table */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-card border shadow rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -353,13 +353,13 @@ export default function AdminProjectsPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                   Loading projects...
                 </TableCell>
               </TableRow>
             ) : projects.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                   No projects found
                 </TableCell>
               </TableRow>
@@ -370,25 +370,25 @@ export default function AdminProjectsPage() {
                   <TableCell>
                     <div>
                       <div className="font-medium text-sm">{item.project.clientName}</div>
-                      <div className="text-xs text-gray-500">{item.project.clientEmail}</div>
+                      <div className="text-xs text-muted-foreground">{item.project.clientEmail}</div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm text-gray-600">{item.project.service}</span>
+                    <span className="text-sm text-muted-foreground">{item.project.service}</span>
                   </TableCell>
                   <TableCell>
-                    <Badge className={statusColors[item.project.status] || 'bg-gray-100 text-gray-800'}>
+                    <Badge className={statusColors[item.project.status] || 'bg-gray-100 text-foreground'}>
                       {item.project.status}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge className={paymentStatusColors[item.project.paymentStatus] || 'bg-gray-100 text-gray-800'}>
+                    <Badge className={paymentStatusColors[item.project.paymentStatus] || 'bg-gray-100 text-foreground'}>
                       {item.project.paymentStatus}
                     </Badge>
                   </TableCell>
                   <TableCell>{formatCurrency(item.project.price)}</TableCell>
                   <TableCell>{item.project.timeline} days</TableCell>
-                  <TableCell className="text-sm text-gray-500">
+                  <TableCell className="text-sm text-muted-foreground">
                     {formatDate(item.project.createdAt)}
                   </TableCell>
                   <TableCell className="text-right">
@@ -418,7 +418,7 @@ export default function AdminProjectsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setDeleteProjectId(item.project.id)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        className="text-red-600 dark:text-red-400 hover:text-red-700 hover:bg-red-50"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

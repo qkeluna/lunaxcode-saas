@@ -127,8 +127,8 @@ export default function AdminPortfolioPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Portfolio</h1>
-          <p className="mt-1 text-sm text-gray-500">Manage case studies and project showcase</p>
+          <h1 className="text-2xl font-bold text-foreground">Portfolio</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Manage case studies and project showcase</p>
         </div>
         <Button onClick={handleCreate}>
           <Plus className="h-4 w-4 mr-2" />
@@ -136,7 +136,7 @@ export default function AdminPortfolioPage() {
         </Button>
       </div>
 
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-card border shadow rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -167,7 +167,7 @@ export default function AdminPortfolioPage() {
                   </TableCell>
                   <TableCell>{item.order}</TableCell>
                   <TableCell>
-                    <Badge className={item.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                    <Badge className={item.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-gray-100 text-foreground'}>
                       {item.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
@@ -176,7 +176,7 @@ export default function AdminPortfolioPage() {
                       <Button variant="ghost" size="sm" onClick={() => handleEdit(item)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(item.id)} className="text-red-600">
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(item.id)} className="text-red-600 dark:text-red-400">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import TaskList from '@/components/projects/TaskList';
 import FilesSection from '@/components/projects/FilesSection';
-import MessagingCenter from '@/components/projects/MessagingCenter';
 import PaymentReminder from '@/components/projects/PaymentReminder';
 import ProgressTracker from '@/components/projects/ProgressTracker';
 import { getCloudflareContext } from '@/lib/db/context';
@@ -298,8 +297,28 @@ export default async function ProjectDetailPage({
       {/* Files Section */}
       <FilesSection projectId={project.id} />
 
-      {/* Messaging Center */}
-      <MessagingCenter projectId={project.id} clientName={project.clientName} />
+      {/* Messages Section */}
+      <Link
+        href={`/projects/${project.id}/messages`}
+        className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow p-6 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500"
+      >
+        <div className="flex items-center gap-4">
+          <div className="flex-shrink-0 w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
+            <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-foreground">Project Messages</h3>
+            <p className="text-sm text-muted-foreground">
+              Chat with the admin team about your project • Click to view conversation
+            </p>
+          </div>
+          <svg className="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </Link>
     </div>
   );
 }

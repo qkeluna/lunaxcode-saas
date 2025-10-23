@@ -35,7 +35,7 @@ export default async function Portfolio() {
   return (
     <section
       id="portfolio"
-      className="relative py-24 bg-gradient-to-b from-white to-gray-50 overflow-hidden"
+      className="relative py-24 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 overflow-hidden"
       aria-labelledby="portfolio-heading"
     >
       {/* Background decoration */}
@@ -50,7 +50,7 @@ export default async function Portfolio() {
         {/* Section Header */}
         <div className="text-center" style={{ marginBottom: 'var(--sp-space-8)' }}>
           <div
-            className="inline-flex items-center backdrop-blur-sm bg-purple-100 text-purple-700 rounded-full font-bold mb-4"
+            className="inline-flex items-center backdrop-blur-sm bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-bold mb-4"
             style={{ padding: 'var(--sp-space-2) var(--sp-space-4)', gap: 'var(--sp-space-2)' }}
           >
             <Briefcase className="w-4 h-4" aria-hidden="true" />
@@ -59,12 +59,12 @@ export default async function Portfolio() {
 
           <h2
             id="portfolio-heading"
-            className="text-4xl md:text-5xl font-bold text-gray-900"
+            className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white"
             style={{ marginBottom: 'var(--sp-space-4)', letterSpacing: '-0.02em' }}
           >
             Recent Projects & Success Stories
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             See how we&apos;ve helped Filipino businesses achieve their digital goals
           </p>
         </div>
@@ -77,7 +77,7 @@ export default async function Portfolio() {
           {projects.map((project, index) => (
             <div
               key={project.id || index}
-              className="group relative backdrop-blur-sm bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+              className="group relative backdrop-blur-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-2xl dark:hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
             >
               {/* Project Image */}
               <div className="relative h-64 overflow-hidden bg-gradient-to-br" style={{ backgroundImage: `linear-gradient(to bottom right, var(--sp-colors-accent), #a78bfa)` }}>
@@ -125,12 +125,12 @@ export default async function Portfolio() {
               {/* Project Info */}
               <div style={{ padding: 'var(--sp-space-6)' }}>
                 <h3
-                  className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors"
+                  className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors"
                   style={{ marginBottom: 'var(--sp-space-2)' }}
                 >
                   {project.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed" style={{ marginBottom: 'var(--sp-space-4)' }}>
+                <p className="text-gray-600 dark:text-gray-300 leading-relaxed" style={{ marginBottom: 'var(--sp-space-4)' }}>
                   {project.description}
                 </p>
 
@@ -140,7 +140,7 @@ export default async function Portfolio() {
                     {JSON.parse(project.technologies).map((tag: string, tagIndex: number) => (
                       <span
                         key={tagIndex}
-                        className="backdrop-blur-sm bg-purple-50 text-purple-700 text-xs font-medium rounded-lg"
+                        className="backdrop-blur-sm bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-lg"
                         style={{ padding: 'var(--sp-space-1) var(--sp-space-3)' }}
                       >
                         {tag}
@@ -155,17 +155,17 @@ export default async function Portfolio() {
 
         {/* CTA */}
         <div
-          className="text-center backdrop-blur-sm bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-100 rounded-2xl shadow-sm"
+          className="text-center backdrop-blur-sm bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-100 dark:border-purple-800 rounded-2xl shadow-sm"
           style={{ marginTop: 'var(--sp-space-8)', padding: 'var(--sp-space-8)' }}
         >
           <h3
-            className="text-2xl font-bold text-gray-900"
+            className="text-2xl font-bold text-gray-900 dark:text-white"
             style={{ marginBottom: 'var(--sp-space-3)' }}
           >
             Ready to See Your Project Here?
           </h3>
           <p
-            className="text-gray-600 max-w-xl mx-auto"
+            className="text-gray-600 dark:text-gray-300 max-w-xl mx-auto"
             style={{ marginBottom: 'var(--sp-space-4)' }}
           >
             Join our growing portfolio of successful projects

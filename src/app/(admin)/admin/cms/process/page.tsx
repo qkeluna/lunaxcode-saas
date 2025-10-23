@@ -104,8 +104,8 @@ export default function AdminProcessPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Process Steps</h1>
-          <p className="mt-1 text-sm text-gray-500">Manage how you work process steps</p>
+          <h1 className="text-2xl font-bold text-foreground">Process Steps</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Manage how you work process steps</p>
         </div>
         <Button onClick={handleCreate}>
           <Plus className="h-4 w-4 mr-2" />
@@ -113,7 +113,7 @@ export default function AdminProcessPage() {
         </Button>
       </div>
 
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-card border shadow rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -141,12 +141,12 @@ export default function AdminProcessPage() {
                     {step.icon ? (
                       <span className="text-2xl">{step.icon}</span>
                     ) : (
-                      <span className="text-gray-400">—</span>
+                      <span className="text-muted-foreground">—</span>
                     )}
                   </TableCell>
                   <TableCell>{step.order}</TableCell>
                   <TableCell>
-                    <Badge className={step.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                    <Badge className={step.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-gray-100 text-foreground'}>
                       {step.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
@@ -155,7 +155,7 @@ export default function AdminProcessPage() {
                       <Button variant="ghost" size="sm" onClick={() => handleEdit(step)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(step.id)} className="text-red-600">
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(step.id)} className="text-red-600 dark:text-red-400">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

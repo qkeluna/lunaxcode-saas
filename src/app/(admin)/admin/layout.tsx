@@ -15,6 +15,7 @@ import { getRequestContext } from '@cloudflare/next-on-pages';
 import { drizzle } from 'drizzle-orm/d1';
 import { users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { NotificationBadgeIcon } from '@/components/NotificationBadge';
 
 export default async function AdminLayout({
   children,
@@ -79,6 +80,9 @@ export default async function AdminLayout({
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
+          <div className="ml-auto">
+            <NotificationBadgeIcon size={22} />
+          </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4">
           {children}

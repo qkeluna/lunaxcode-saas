@@ -4,7 +4,7 @@ import { ArrowRight, Code, Sparkles, Zap, Shield, Clock } from 'lucide-react';
 export default function Hero() {
   return (
     <section
-      className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-[#161616] via-[#292929] to-[#161616]"
+      className="relative min-h-screen flex items-center overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-[#161616] dark:via-[#292929] dark:to-[#161616]"
       aria-label="Hero section"
     >
       {/* Animated gradient orbs */}
@@ -31,14 +31,14 @@ export default function Hero() {
           <div className="space-y-8 text-center lg:text-left">
 
             {/* Badge */}
-            <div className="inline-flex items-center backdrop-blur-md bg-white/10 border border-white/20 rounded-full shadow-lg" style={{ padding: 'var(--sp-space-3) var(--sp-space-5)', gap: 'var(--sp-space-2)' }}>
+            <div className="inline-flex items-center backdrop-blur-md bg-purple-100 dark:bg-white/10 border border-purple-200 dark:border-white/20 rounded-full shadow-lg" style={{ padding: 'var(--sp-space-3) var(--sp-space-5)', gap: 'var(--sp-space-2)' }}>
               <Sparkles className="w-4 h-4" style={{ color: 'var(--sp-colors-accent)' }} aria-hidden="true" />
-              <span className="text-sm font-medium text-white">AI-Powered Development Platform</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">AI-Powered Development Platform</span>
             </div>
 
             {/* Main Heading */}
             <h1
-              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 dark:text-white leading-tight"
               style={{ letterSpacing: '-0.03em' }}
             >
               Transform Your Ideas Into
@@ -54,10 +54,10 @@ export default function Hero() {
             </h1>
 
             {/* Subheading */}
-            <p className="text-lg sm:text-xl text-gray-300 max-w-2xl leading-relaxed">
+            <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 max-w-2xl leading-relaxed">
               Professional web development services for Filipino businesses.
               From landing pages to complex applications—
-              <strong className="text-white"> powered by cutting-edge AI!</strong>
+              <strong className="text-gray-900 dark:text-white"> powered by cutting-edge AI!</strong>
             </p>
 
             {/* CTA Buttons */}
@@ -73,7 +73,7 @@ export default function Hero() {
               </Link>
               <Link
                 href="#portfolio"
-                className="group w-full sm:w-auto px-8 py-4 bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 rounded-lg font-bold text-lg hover:bg-white/20 hover:border-white/50 transition-all duration-300 flex items-center justify-center"
+                className="group w-full sm:w-auto px-8 py-4 bg-gray-200 dark:bg-white/10 backdrop-blur-sm text-gray-900 dark:text-white border-2 border-gray-300 dark:border-white/30 rounded-lg font-bold text-lg hover:bg-gray-300 dark:hover:bg-white/20 hover:border-gray-400 dark:hover:border-white/50 transition-all duration-300 flex items-center justify-center"
                 style={{ gap: 'var(--sp-space-2)', minHeight: '48px' }}
                 aria-label="View our portfolio"
               >
@@ -84,15 +84,15 @@ export default function Hero() {
 
             {/* Trust Badges */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start" style={{ gap: 'var(--sp-space-6)', paddingTop: 'var(--sp-space-6)' }}>
-              <div className="flex items-center text-gray-300" style={{ gap: 'var(--sp-space-2)' }}>
+              <div className="flex items-center text-gray-600 dark:text-gray-300" style={{ gap: 'var(--sp-space-2)' }}>
                 <Zap className="w-5 h-5" style={{ color: 'var(--sp-colors-accent)' }} aria-hidden="true" />
                 <span className="text-sm">AI-Powered</span>
               </div>
-              <div className="flex items-center text-gray-300" style={{ gap: 'var(--sp-space-2)' }}>
+              <div className="flex items-center text-gray-600 dark:text-gray-300" style={{ gap: 'var(--sp-space-2)' }}>
                 <Shield className="w-5 h-5" style={{ color: 'var(--sp-colors-accent)' }} aria-hidden="true" />
                 <span className="text-sm">100% Secure</span>
               </div>
-              <div className="flex items-center text-gray-300" style={{ gap: 'var(--sp-space-2)' }}>
+              <div className="flex items-center text-gray-600 dark:text-gray-300" style={{ gap: 'var(--sp-space-2)' }}>
                 <Clock className="w-5 h-5" style={{ color: 'var(--sp-colors-accent)' }} aria-hidden="true" />
                 <span className="text-sm">24/7 Support</span>
               </div>
@@ -102,7 +102,7 @@ export default function Hero() {
           {/* Right Column - Stats Card */}
           <div className="hidden lg:block">
             <div
-              className="relative backdrop-blur-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 rounded-3xl shadow-2xl overflow-hidden"
+              className="relative backdrop-blur-xl bg-gradient-to-br from-gray-100 to-gray-50 dark:from-white/10 dark:to-white/5 border border-gray-200 dark:border-white/20 rounded-3xl shadow-2xl overflow-hidden"
               style={{ padding: 'var(--sp-space-8)' }}
             >
               {/* Decorative glow */}
@@ -113,36 +113,36 @@ export default function Hero() {
               ></div>
 
               <div className="relative space-y-8">
-                <h3 className="text-2xl font-bold text-white mb-6">Why Choose Lunaxcode?</h3>
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Why Choose Lunaxcode?</h3>
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="text-center">
-                    <div className="text-5xl font-bold text-white mb-2">50+</div>
-                    <div className="text-gray-400 text-sm">Projects Delivered</div>
+                    <div className="text-5xl font-bold text-gray-900 dark:text-white mb-2">50+</div>
+                    <div className="text-gray-600 dark:text-gray-400 text-sm">Projects Delivered</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-5xl font-bold text-white mb-2">100%</div>
-                    <div className="text-gray-400 text-sm">Client Satisfaction</div>
+                    <div className="text-5xl font-bold text-gray-900 dark:text-white mb-2">100%</div>
+                    <div className="text-gray-600 dark:text-gray-400 text-sm">Client Satisfaction</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-5xl font-bold text-white mb-2">24/7</div>
-                    <div className="text-gray-400 text-sm">Support Available</div>
+                    <div className="text-5xl font-bold text-gray-900 dark:text-white mb-2">24/7</div>
+                    <div className="text-gray-600 dark:text-gray-400 text-sm">Support Available</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-5xl font-bold text-white mb-2">&lt;30s</div>
-                    <div className="text-gray-400 text-sm">AI Response Time</div>
+                    <div className="text-5xl font-bold text-gray-900 dark:text-white mb-2">&lt;30s</div>
+                    <div className="text-gray-600 dark:text-gray-400 text-sm">AI Response Time</div>
                   </div>
                 </div>
 
                 <div
-                  className="border-t border-white/10"
+                  className="border-t border-gray-200 dark:border-white/10"
                   style={{ paddingTop: 'var(--sp-space-6)', marginTop: 'var(--sp-space-6)' }}
                 >
-                  <p className="text-gray-300 text-sm leading-relaxed">
+                  <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
                     &quot;Lunaxcode transformed our business presence online.
                     The AI-powered project management made everything seamless!&quot;
                   </p>
-                  <p className="text-gray-400 text-xs mt-3">— Maria Santos, E-commerce Owner</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs mt-3">— Maria Santos, E-commerce Owner</p>
                 </div>
               </div>
             </div>
@@ -153,28 +153,28 @@ export default function Hero() {
         {/* Mobile Stats - Show below on mobile */}
         <div className="lg:hidden grid grid-cols-2 sm:grid-cols-4 gap-6 mt-12">
           <div className="text-center">
-            <div className="text-4xl font-bold text-white mb-2">50+</div>
-            <div className="text-gray-400 text-sm">Projects</div>
+            <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">50+</div>
+            <div className="text-gray-600 dark:text-gray-400 text-sm">Projects</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-white mb-2">100%</div>
-            <div className="text-gray-400 text-sm">Satisfied</div>
+            <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">100%</div>
+            <div className="text-gray-600 dark:text-gray-400 text-sm">Satisfied</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-white mb-2">24/7</div>
-            <div className="text-gray-400 text-sm">Support</div>
+            <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">24/7</div>
+            <div className="text-gray-600 dark:text-gray-400 text-sm">Support</div>
           </div>
           <div className="text-center">
-            <div className="text-4xl font-bold text-white mb-2">&lt;30s</div>
-            <div className="text-gray-400 text-sm">AI Speed</div>
+            <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">&lt;30s</div>
+            <div className="text-gray-600 dark:text-gray-400 text-sm">AI Speed</div>
           </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce" aria-hidden="true">
-        <div className="w-6 h-10 border-2 border-white/30 rounded-full flex items-start justify-center p-2">
-          <div className="w-1 h-3 bg-white/30 rounded-full"></div>
+        <div className="w-6 h-10 border-2 border-gray-400 dark:border-white/30 rounded-full flex items-start justify-center p-2">
+          <div className="w-1 h-3 bg-gray-400 dark:bg-white/30 rounded-full"></div>
         </div>
       </div>
     </section>

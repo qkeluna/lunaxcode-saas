@@ -106,8 +106,8 @@ export default function AdminFaqsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">FAQs</h1>
-          <p className="mt-1 text-sm text-gray-500">Manage frequently asked questions</p>
+          <h1 className="text-2xl font-bold text-foreground">FAQs</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Manage frequently asked questions</p>
         </div>
         <Button onClick={handleCreate}>
           <Plus className="h-4 w-4 mr-2" />
@@ -115,7 +115,7 @@ export default function AdminFaqsPage() {
         </Button>
       </div>
 
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-card border shadow rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -143,12 +143,12 @@ export default function AdminFaqsPage() {
                     {faq.category ? (
                       <Badge variant="outline">{faq.category}</Badge>
                     ) : (
-                      <span className="text-gray-400">—</span>
+                      <span className="text-muted-foreground">—</span>
                     )}
                   </TableCell>
                   <TableCell>{faq.order}</TableCell>
                   <TableCell>
-                    <Badge className={faq.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                    <Badge className={faq.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'}>
                       {faq.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>
@@ -157,7 +157,7 @@ export default function AdminFaqsPage() {
                       <Button variant="ghost" size="sm" onClick={() => handleEdit(faq)}>
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(faq.id)} className="text-red-600">
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(faq.id)} className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

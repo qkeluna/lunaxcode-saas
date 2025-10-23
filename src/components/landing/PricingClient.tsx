@@ -27,7 +27,7 @@ export default function PricingClient({ plans }: PricingClientProps) {
     <>
       <section
         id="pricing"
-        className="relative py-24 overflow-hidden bg-gradient-to-br from-gray-950 via-gray-900 to-black"
+        className="relative py-24 overflow-hidden bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-black"
         aria-labelledby="pricing-heading"
       >
         {/* Background decoration */}
@@ -39,20 +39,20 @@ export default function PricingClient({ plans }: PricingClientProps) {
         <div className="relative max-w-7xl mx-auto px-6">
           {/* Section Header */}
           <div className="text-center mb-16">
-            <div className="inline-flex items-center bg-purple-500/10 border border-purple-500/20 text-purple-400 rounded-full px-4 py-2 gap-2 mb-6 font-bold text-sm">
+            <div className="inline-flex items-center bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full px-4 py-2 gap-2 mb-6 font-bold text-sm">
               <Star className="w-4 h-4" fill="currentColor" aria-hidden="true" />
               <span>Simple & Transparent Pricing</span>
             </div>
 
             <h2
               id="pricing-heading"
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6"
               style={{ letterSpacing: '-0.03em' }}
             >
               Choose the plan that works for you and your team.
             </h2>
 
-            <p className="text-lg md:text-xl text-gray-400 max-w-3xl mx-auto mb-8">
+            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-8">
               No hidden fees. Flexible payment options with 50% deposit to start.
             </p>
           </div>
@@ -64,8 +64,8 @@ export default function PricingClient({ plans }: PricingClientProps) {
                 key={plan.id}
                 className={`relative rounded-2xl border transition-all duration-300 hover:scale-[1.02] flex flex-col ${
                   plan.popular
-                    ? 'bg-gradient-to-br from-gray-900 to-gray-950 border-purple-500/30 shadow-xl shadow-purple-500/20 scale-[1.02]'
-                    : 'bg-gray-900/50 border-gray-800 hover:border-gray-700'
+                    ? 'bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-950 border-purple-500/30 shadow-xl shadow-purple-500/20 scale-[1.02]'
+                    : 'bg-white dark:bg-gray-900/50 border-gray-200 dark:border-gray-800 hover:border-purple-200 dark:hover:border-gray-700'
                 }`}
               >
                 {/* Popular badge */}
@@ -79,27 +79,27 @@ export default function PricingClient({ plans }: PricingClientProps) {
                 <div className="p-8 flex flex-col flex-grow">
                   {/* Plan header */}
                   <div className="mb-8">
-                    <h3 className="text-2xl font-bold text-white mb-2" style={{ letterSpacing: '-0.02em' }}>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2" style={{ letterSpacing: '-0.02em' }}>
                       {plan.name}
                     </h3>
-                    <p className="text-sm text-gray-400 leading-relaxed">{plan.description}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{plan.description}</p>
                   </div>
 
                   {/* Price */}
                   <div className="mb-8 text-center">
                     <div className="flex items-baseline justify-center gap-1 mb-2">
-                      <span className="text-sm font-bold text-gray-400">₱</span>
-                      <span className="text-5xl font-bold text-white" style={{ letterSpacing: '-0.04em' }}>
+                      <span className="text-sm font-bold text-gray-600 dark:text-gray-400">₱</span>
+                      <span className="text-5xl font-bold text-gray-900 dark:text-white" style={{ letterSpacing: '-0.04em' }}>
                         {plan.price}
                       </span>
-                      <span className="text-sm font-normal text-gray-500">/ project</span>
+                      <span className="text-sm font-normal text-gray-500 dark:text-gray-500">/ project</span>
                     </div>
-                    <p className="text-sm text-gray-500 mb-3">One-time payment</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-500 mb-3">One-time payment</p>
 
                     {/* Timeline badge */}
                     <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 rounded-full px-3 py-2">
-                      <Zap className="w-4 h-4 text-purple-400" aria-hidden="true" />
-                      <span className="text-xs font-bold text-purple-400">{plan.timeline}</span>
+                      <Zap className="w-4 h-4 text-purple-600 dark:text-purple-400" aria-hidden="true" />
+                      <span className="text-xs font-bold text-purple-600 dark:text-purple-400">{plan.timeline}</span>
                     </div>
                   </div>
 
@@ -107,8 +107,8 @@ export default function PricingClient({ plans }: PricingClientProps) {
                   <ul className="space-y-4 mb-8 flex-grow">
                     {plan.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 flex-shrink-0 text-green-400 mt-0.5" aria-hidden="true" />
-                        <span className="text-sm text-gray-300 leading-relaxed font-normal">{feature}</span>
+                        <Check className="w-5 h-5 flex-shrink-0 text-green-500 dark:text-green-400 mt-0.5" aria-hidden="true" />
+                        <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed font-normal">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -118,8 +118,8 @@ export default function PricingClient({ plans }: PricingClientProps) {
                     href={`/onboarding?serviceId=${plan.id}`}
                     className={`block w-full py-4 px-6 rounded-xl font-bold text-center transition-all duration-300 ${
                       plan.popular
-                        ? 'bg-white text-gray-900 hover:bg-gray-100 shadow-lg'
-                        : 'bg-transparent border-2 border-gray-700 text-white hover:border-gray-600 hover:bg-gray-800/50'
+                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-500 hover:to-blue-500 shadow-lg'
+                        : 'bg-transparent border-2 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:border-purple-500 dark:hover:border-gray-600 hover:bg-purple-50 dark:hover:bg-gray-800/50'
                     }`}
                     style={{ minHeight: '48px' }}
                     aria-label={`Get started with ${plan.name} plan`}
@@ -132,11 +132,11 @@ export default function PricingClient({ plans }: PricingClientProps) {
           </div>
 
           {/* Custom solution CTA */}
-          <div className="text-center py-12 border-t border-gray-800">
-            <h3 className="text-2xl font-bold text-white mb-4" style={{ letterSpacing: '-0.02em' }}>
+          <div className="text-center py-12 border-t border-gray-200 dark:border-gray-800">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4" style={{ letterSpacing: '-0.02em' }}>
               Need Something Unique?
             </h3>
-            <p className="text-gray-400 mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
               We&apos;ll create a custom package tailored specifically for your business needs.
             </p>
             <button
@@ -151,24 +151,24 @@ export default function PricingClient({ plans }: PricingClientProps) {
           </div>
 
           {/* Trust indicators */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12 border-t border-gray-800">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12 border-t border-gray-200 dark:border-gray-800">
             <div className="text-center">
-              <div className="text-4xl font-bold text-purple-400 mb-2" style={{ letterSpacing: '-0.03em' }}>
+              <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2" style={{ letterSpacing: '-0.03em' }}>
                 7 Days
               </div>
-              <p className="text-sm text-gray-400 font-medium">Money-Back Guarantee</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Money-Back Guarantee</p>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-purple-400 mb-2" style={{ letterSpacing: '-0.03em' }}>
+              <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2" style={{ letterSpacing: '-0.03em' }}>
                 24/7
               </div>
-              <p className="text-sm text-gray-400 font-medium">Customer Support</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Customer Support</p>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-purple-400 mb-2" style={{ letterSpacing: '-0.03em' }}>
+              <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2" style={{ letterSpacing: '-0.03em' }}>
                 Unlimited
               </div>
-              <p className="text-sm text-gray-400 font-medium">Revisions Included</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Revisions Included</p>
             </div>
           </div>
         </div>

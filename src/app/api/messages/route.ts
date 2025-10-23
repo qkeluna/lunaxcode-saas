@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { getDatabase } from '@/lib/db/client';
-import { messages } from '@/lib/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { messages, unreadCounts, projects, users } from '@/lib/db/schema';
+import { eq, desc, and, sql } from 'drizzle-orm';
 
 // In-memory fallback for when D1 is not available
 let messagesStore: any[] = [];
@@ -30,11 +30,22 @@ export async function POST(request: NextRequest) {
     const db = getDatabase();
     const userId = session.user.id || session.user.email!;
 
+    // Determine sender role (admin or client)
+    const [project] = db ? await db.select().from(projects).where(eq(projects.id, parseInt(projectId))).limit(1) : [];
+    if (!project && db) {
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 });
+    }
+
+    const isAdmin = session.user.role === 'admin';
+    const senderRole = isAdmin ? 'admin' : 'client';
+
     const messageData = {
       projectId: parseInt(projectId),
       senderId: userId,
+      senderRole,
       content: content.trim(),
-      createdAt: Math.floor(Date.now() / 1000),
+      status: 'sent' as const,
+      createdAt: new Date(),
     };
 
     let savedMessage: any;
@@ -43,6 +54,63 @@ export async function POST(request: NextRequest) {
       // Save to D1 database
       const [dbMessage] = await db.insert(messages).values(messageData).returning();
       savedMessage = dbMessage;
+
+      // Update unread count for recipient(s)
+      if (isAdmin && project) {
+        // Admin sent message, increment client's unread count
+        const recipientId = project.userId;
+        const [currentCount] = await db
+          .select()
+          .from(unreadCounts)
+          .where(eq(unreadCounts.userId, recipientId))
+          .limit(1);
+
+        if (currentCount) {
+          await db
+            .update(unreadCounts)
+            .set({
+              totalCount: currentCount.totalCount + 1,
+              lastUpdated: new Date()
+            })
+            .where(eq(unreadCounts.userId, recipientId));
+        } else {
+          await db.insert(unreadCounts).values({
+            userId: recipientId,
+            totalCount: 1,
+            lastUpdated: new Date()
+          });
+        }
+      } else {
+        // Client sent message, increment all admins' unread counts
+        const adminUsers = await db
+          .select({ id: users.id })
+          .from(users)
+          .where(eq(users.role, 'admin'));
+
+        for (const admin of adminUsers) {
+          const [currentCount] = await db
+            .select()
+            .from(unreadCounts)
+            .where(eq(unreadCounts.userId, admin.id))
+            .limit(1);
+
+          if (currentCount) {
+            await db
+              .update(unreadCounts)
+              .set({
+                totalCount: currentCount.totalCount + 1,
+                lastUpdated: new Date()
+              })
+              .where(eq(unreadCounts.userId, admin.id));
+          } else {
+            await db.insert(unreadCounts).values({
+              userId: admin.id,
+              totalCount: 1,
+              lastUpdated: new Date()
+            });
+          }
+        }
+      }
     } else {
       // Save to in-memory store
       savedMessage = {
@@ -94,6 +162,10 @@ export async function GET(request: NextRequest) {
     }
 
     const db = getDatabase();
+    const userId = session.user.id || session.user.email!;
+    const isAdmin = session.user.role === 'admin';
+    const userRole = isAdmin ? 'admin' : 'client';
+
     let projectMessages: any[];
 
     if (db) {
@@ -103,6 +175,54 @@ export async function GET(request: NextRequest) {
         .from(messages)
         .where(eq(messages.projectId, parseInt(projectId)))
         .orderBy(desc(messages.createdAt));
+
+      // Mark unread messages as read for current user (messages sent by others)
+      const unreadMessages = projectMessages.filter(
+        m => m.status === 'sent' && m.senderRole !== userRole
+      );
+
+      if (unreadMessages.length > 0) {
+        const messageIds = unreadMessages.map(m => m.id);
+
+        // Update message status to 'read'
+        await db
+          .update(messages)
+          .set({
+            status: 'read',
+            readAt: new Date()
+          })
+          .where(
+            and(
+              sql`${messages.id} IN (${messageIds.join(',')})`,
+              eq(messages.status, 'sent')
+            )
+          );
+
+        // Update unread count cache
+        const [currentCount] = await db
+          .select()
+          .from(unreadCounts)
+          .where(eq(unreadCounts.userId, userId))
+          .limit(1);
+
+        const newCount = Math.max(0, (currentCount?.totalCount || 0) - unreadMessages.length);
+
+        if (currentCount) {
+          await db
+            .update(unreadCounts)
+            .set({
+              totalCount: newCount,
+              lastUpdated: new Date()
+            })
+            .where(eq(unreadCounts.userId, userId));
+        } else {
+          await db.insert(unreadCounts).values({
+            userId,
+            totalCount: 0,
+            lastUpdated: new Date()
+          });
+        }
+      }
     } else {
       // Get from in-memory store
       projectMessages = messagesStore

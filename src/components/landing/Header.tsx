@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -62,6 +63,7 @@ export default function Header() {
 
           {/* CTA Buttons - Desktop */}
           <div className="hidden md:flex items-center space-x-4">
+            <ThemeToggle />
             <Link
               href="/login"
               className="px-6 py-3 text-white hover:text-purple-300 transition-colors font-bold"
@@ -117,6 +119,9 @@ export default function Header() {
                   {link.label}
                 </a>
               ))}
+              <div className="px-4 py-2">
+                <ThemeToggle />
+              </div>
               <Link
                 href="/login"
                 className="text-white hover:text-purple-300 transition-colors font-medium px-4 py-2"

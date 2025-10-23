@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, FolderKanban, Plus, Settings } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -16,10 +17,10 @@ export default function Sidebar() {
 
   return (
     <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-      <div className="flex flex-col flex-grow bg-white border-r border-gray-200 overflow-y-auto">
+      <div className="flex flex-col flex-grow bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 overflow-y-auto">
         {/* Logo */}
-        <div className="flex items-center flex-shrink-0 px-6 py-6 border-b">
-          <h1 className="text-2xl font-bold text-gray-900">Lunaxcode</h1>
+        <div className="flex items-center flex-shrink-0 px-6 py-6 border-b border-gray-200 dark:border-gray-800">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Lunaxcode</h1>
         </div>
 
         {/* Navigation */}
@@ -32,11 +33,11 @@ export default function Sidebar() {
                 key={item.name}
                 href={item.href}
                 className={`
-                  group flex items-center px-4 py-3 text-sm font-medium rounded-lg
+                  group flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors
                   ${
                     isActive
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
                   }
                 `}
               >
@@ -46,6 +47,14 @@ export default function Sidebar() {
             );
           })}
         </nav>
+
+        {/* Theme Toggle */}
+        <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-800">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Theme</span>
+            <ThemeToggle />
+          </div>
+        </div>
       </div>
     </div>
   );

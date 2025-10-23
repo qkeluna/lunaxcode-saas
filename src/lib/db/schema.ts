@@ -140,10 +140,26 @@ export const files = sqliteTable('files', {
 // Messages table
 export const messages = sqliteTable('messages', {
   id: integer('id').primaryKey({ autoIncrement: true }),
-  projectId: integer('project_id').notNull().references(() => projects.id),
+  projectId: integer('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
   senderId: text('sender_id').notNull(),
+  senderRole: text('sender_role').notNull().default('client').$type<'client' | 'admin'>(), // 'client' | 'admin'
   content: text('content').notNull(),
-  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+  status: text('status').notNull().default('sent').$type<'sent' | 'read'>(), // 'sent' | 'read'
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+  readAt: integer('read_at', { mode: 'timestamp' }),
+});
+
+// Unread counts cache (denormalized for performance)
+export const unreadCounts = sqliteTable('unread_counts', {
+  userId: text('user_id').primaryKey(),
+  totalCount: integer('total_count').notNull().default(0),
+  lastUpdated: integer('last_updated', { mode: 'timestamp' }).notNull().$defaultFn(() => new Date()),
+});
+
+// Message settings per project
+export const messageSettings = sqliteTable('message_settings', {
+  projectId: integer('project_id').primaryKey().references(() => projects.id, { onDelete: 'cascade' }),
+  isEnabled: integer('is_enabled', { mode: 'boolean' }).notNull().default(true),
 });
 
 // FAQs table
@@ -260,6 +276,12 @@ export type NewFile = typeof files.$inferInsert;
 
 export type Message = typeof messages.$inferSelect;
 export type NewMessage = typeof messages.$inferInsert;
+
+export type UnreadCount = typeof unreadCounts.$inferSelect;
+export type NewUnreadCount = typeof unreadCounts.$inferInsert;
+
+export type MessageSetting = typeof messageSettings.$inferSelect;
+export type NewMessageSetting = typeof messageSettings.$inferInsert;
 
 export type ServiceType = typeof serviceTypes.$inferSelect;
 export type NewServiceType = typeof serviceTypes.$inferInsert;
