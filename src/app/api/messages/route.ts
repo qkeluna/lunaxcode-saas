@@ -127,8 +127,11 @@ export async function POST(request: NextRequest) {
         id: savedMessage.id,
         projectId: savedMessage.projectId,
         senderId: savedMessage.senderId,
+        senderRole: savedMessage.senderRole,
         content: savedMessage.content,
-        createdAt: savedMessage.createdAt,
+        status: savedMessage.status,
+        createdAt: Math.floor(new Date(savedMessage.createdAt).getTime() / 1000), // Convert to Unix seconds
+        readAt: savedMessage.readAt ? Math.floor(new Date(savedMessage.readAt).getTime() / 1000) : undefined,
         senderName: session.user.name || 'Unknown',
       },
       usingDatabase: db !== null,
@@ -230,8 +233,15 @@ export async function GET(request: NextRequest) {
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }
 
+    // Convert timestamps to Unix seconds for client
+    const formattedMessages = projectMessages.map(msg => ({
+      ...msg,
+      createdAt: Math.floor(new Date(msg.createdAt).getTime() / 1000),
+      readAt: msg.readAt ? Math.floor(new Date(msg.readAt).getTime() / 1000) : undefined,
+    }));
+
     return NextResponse.json({
-      messages: projectMessages,
+      messages: formattedMessages,
       usingDatabase: db !== null,
     });
   } catch (error) {

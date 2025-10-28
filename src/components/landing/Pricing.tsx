@@ -33,10 +33,8 @@ export default async function Pricing() {
   // Map services to plans format - limit to 3 most important
   const plans = services
     .sort((a: any, b: any) => {
-      // Sort: popular first, then by price
-      if (a.popular && !b.popular) return -1;
-      if (!a.popular && b.popular) return 1;
-      return a.basePrice - b.basePrice;
+      // Sort by ID in ascending order (lowest to highest)
+      return a.id - b.id;
     })
     .slice(0, 3) // Limit to 3 plans
     .map((service: any) => ({

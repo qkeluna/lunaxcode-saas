@@ -33,7 +33,7 @@ export default function Hero() {
             {/* Badge */}
             <div className="inline-flex items-center backdrop-blur-md bg-purple-100 dark:bg-white/10 border border-purple-200 dark:border-white/20 rounded-full shadow-lg" style={{ padding: 'var(--sp-space-3) var(--sp-space-5)', gap: 'var(--sp-space-2)' }}>
               <Sparkles className="w-4 h-4" style={{ color: 'var(--sp-colors-accent)' }} aria-hidden="true" />
-              <span className="text-sm font-medium text-gray-900 dark:text-white">AI-Powered Development Platform</span>
+              <span className="text-sm font-medium text-gray-900 dark:text-white">Trusted by 50+ Filipino Businesses</span>
             </div>
 
             {/* Main Heading */}
@@ -41,7 +41,7 @@ export default function Hero() {
               className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-gray-900 dark:text-white leading-tight"
               style={{ letterSpacing: '-0.03em' }}
             >
-              Transform Your Ideas Into
+              Your Customers Are Searching.
               <br />
               <span
                 className="text-transparent bg-clip-text bg-gradient-to-r"
@@ -49,15 +49,16 @@ export default function Hero() {
                   backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)`
                 }}
               >
-                Digital Reality
+                Are You There?
               </span>
             </h1>
 
             {/* Subheading */}
             <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 max-w-2xl leading-relaxed">
-              Professional web development services for Filipino businesses.
-              From landing pages to complex applications—
-              <strong className="text-gray-900 dark:text-white"> powered by cutting-edge AI!</strong>
+              Professional websites starting at <strong className="text-gray-900 dark:text-white">₱8,000</strong>.
+              AI-powered development means faster delivery, transparent pricing,
+              and quality your business deserves. From landing pages to complete
+              web applications—<strong className="text-gray-900 dark:text-white">we make going online easy for Filipino businesses.</strong>
             </p>
 
             {/* CTA Buttons */}
@@ -68,33 +69,33 @@ export default function Hero() {
                 style={{ gap: 'var(--sp-space-2)', minHeight: '48px' }}
                 aria-label="View pricing"
               >
-                Start Your Project
+                See Our Pricing
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
               </Link>
               <Link
                 href="#portfolio"
                 className="group w-full sm:w-auto px-8 py-4 bg-gray-200 dark:bg-white/10 backdrop-blur-sm text-gray-900 dark:text-white border-2 border-gray-300 dark:border-white/30 rounded-lg font-bold text-lg hover:bg-gray-300 dark:hover:bg-white/20 hover:border-gray-400 dark:hover:border-white/50 transition-all duration-300 flex items-center justify-center"
                 style={{ gap: 'var(--sp-space-2)', minHeight: '48px' }}
-                aria-label="View our portfolio"
+                aria-label="View success stories"
               >
                 <Code className="w-5 h-5" aria-hidden="true" />
-                View Portfolio
+                View Success Stories
               </Link>
             </div>
 
             {/* Trust Badges */}
             <div className="flex flex-wrap items-center justify-center lg:justify-start" style={{ gap: 'var(--sp-space-6)', paddingTop: 'var(--sp-space-6)' }}>
               <div className="flex items-center text-gray-600 dark:text-gray-300" style={{ gap: 'var(--sp-space-2)' }}>
-                <Zap className="w-5 h-5" style={{ color: 'var(--sp-colors-accent)' }} aria-hidden="true" />
-                <span className="text-sm">AI-Powered</span>
-              </div>
-              <div className="flex items-center text-gray-600 dark:text-gray-300" style={{ gap: 'var(--sp-space-2)' }}>
                 <Shield className="w-5 h-5" style={{ color: 'var(--sp-colors-accent)' }} aria-hidden="true" />
-                <span className="text-sm">100% Secure</span>
+                <span className="text-sm">Fixed Pricing, No Surprises</span>
               </div>
               <div className="flex items-center text-gray-600 dark:text-gray-300" style={{ gap: 'var(--sp-space-2)' }}>
                 <Clock className="w-5 h-5" style={{ color: 'var(--sp-colors-accent)' }} aria-hidden="true" />
                 <span className="text-sm">24/7 Support</span>
+              </div>
+              <div className="flex items-center text-gray-600 dark:text-gray-300" style={{ gap: 'var(--sp-space-2)' }}>
+                <Zap className="w-5 h-5" style={{ color: 'var(--sp-colors-accent)' }} aria-hidden="true" />
+                <span className="text-sm">Delivery in Weeks</span>
               </div>
             </div>
           </div>
@@ -139,10 +140,11 @@ export default function Hero() {
                   style={{ paddingTop: 'var(--sp-space-6)', marginTop: 'var(--sp-space-6)' }}
                 >
                   <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-                    &quot;Lunaxcode transformed our business presence online.
-                    The AI-powered project management made everything seamless!&quot;
+                    &quot;We went from zero online presence to getting daily inquiries
+                    within a month. Lunaxcode made it affordable and stress-free.
+                    Best investment for our business!&quot;
                   </p>
-                  <p className="text-gray-600 dark:text-gray-400 text-xs mt-3">— Maria Santos, E-commerce Owner</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs mt-3">— Maria Santos, Online Store Owner</p>
                 </div>
               </div>
             </div>

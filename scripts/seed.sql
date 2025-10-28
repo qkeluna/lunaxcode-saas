@@ -239,54 +239,54 @@ VALUES
 INSERT OR IGNORE INTO features (title, description, icon, category, "order", is_active, created_at)
 VALUES
   (
-    'AI-Powered PRD Generation',
-    'Automatically generate comprehensive Project Requirements Documents using Google Gemini AI based on your project description.',
-    '🤖',
+    'Launch in Weeks, Not Months',
+    'AI-powered planning means your website goes from idea to launch in just 2-4 weeks. No lengthy delays or endless meetings.',
+    'Clock',
     'core',
     1,
     1,
     strftime('%s', 'now') * 1000
   ),
   (
-    'Automated Task Breakdown',
-    'AI analyzes your PRD and creates a detailed task list with estimates, dependencies, and priorities.',
-    '📋',
+    'Crystal-Clear Project Timeline',
+    'See exactly what we''re building, when it''ll be done, and how much it costs. No surprises, no hidden fees—just complete transparency.',
+    'FileText',
     'core',
     2,
     1,
     strftime('%s', 'now') * 1000
   ),
   (
-    'Philippine Payment Integration',
-    'Accept payments via GCash, PayMaya, and credit cards through PayMongo - the leading Philippine payment gateway.',
-    '💳',
+    'Flexible Payment Options',
+    'Pay with GCash, Maya, or credit card. Choose milestone payments or installments that fit your budget.',
+    'CreditCard',
     'business',
     3,
     1,
     strftime('%s', 'now') * 1000
   ),
   (
-    'Real-time Project Dashboard',
-    'Track project progress, view tasks, communicate with the team, and monitor payments all in one place.',
-    '📊',
+    '24/7 Project Dashboard',
+    'Watch your website come to life in real-time. Check progress, view updates, and message your team anytime, anywhere.',
+    'BarChart3',
     'core',
     4,
     1,
     strftime('%s', 'now') * 1000
   ),
   (
-    'Modern Tech Stack',
-    'Built with Next.js 15, TypeScript, and deployed on Cloudflare Edge for blazing-fast performance worldwide.',
-    '⚡',
+    'Blazing-Fast Websites',
+    'Your website loads in under 2 seconds on any device. Fast sites mean happy customers and better Google rankings.',
+    'Zap',
     'technical',
     5,
     1,
     strftime('%s', 'now') * 1000
   ),
   (
-    'Secure Authentication',
-    'Google OAuth integration with NextAuth.js ensures secure and convenient login for all users.',
-    '🔒',
+    'Bank-Level Security',
+    'Your data and your customers'' information are protected with enterprise-grade security. Sleep easy knowing everything is safe.',
+    'Shield',
     'technical',
     6,
     1,
