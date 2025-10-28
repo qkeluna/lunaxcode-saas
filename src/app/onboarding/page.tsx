@@ -299,7 +299,7 @@ export default function OnboardingPage() {
             type="text"
             value={value || ''}
             onChange={(e) => handleQuestionAnswer(question.questionKey, e.target.value)}
-            className="w-full border border-gray-300 rounded-xl transition-all duration-200 hover:border-gray-400"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-xl transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             style={{
               padding: 'var(--sp-space-3) var(--sp-space-4)',
               fontSize: 'var(--sp-font-size)',
@@ -314,7 +314,7 @@ export default function OnboardingPage() {
             value={value || ''}
             onChange={(e) => handleQuestionAnswer(question.questionKey, e.target.value)}
             rows={4}
-            className="w-full border border-gray-300 rounded-xl transition-all duration-200 hover:border-gray-400 resize-none"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-xl transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             style={{
               padding: 'var(--sp-space-4)',
               fontSize: 'var(--sp-font-size)',
@@ -329,7 +329,7 @@ export default function OnboardingPage() {
             type="number"
             value={value || ''}
             onChange={(e) => handleQuestionAnswer(question.questionKey, e.target.value)}
-            className="w-full border border-gray-300 rounded-xl transition-all duration-200 hover:border-gray-400"
+            className="w-full border border-gray-300 dark:border-gray-600 rounded-xl transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             style={{
               padding: 'var(--sp-space-3) var(--sp-space-4)',
               fontSize: 'var(--sp-font-size)',
@@ -346,7 +346,7 @@ export default function OnboardingPage() {
             required={question.required}
           >
             <SelectTrigger
-              className="w-full border border-gray-300 rounded-xl transition-all duration-200 hover:border-gray-400 bg-white"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-xl transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
               style={{
                 padding: 'var(--sp-space-3) var(--sp-space-4)',
                 fontSize: 'var(--sp-font-size)',
@@ -354,14 +354,14 @@ export default function OnboardingPage() {
               }}
               aria-label={question.questionText}
             >
-              <SelectValue placeholder="Select an option" />
+              <SelectValue placeholder="Select an option" className="text-gray-900 dark:text-white" />
             </SelectTrigger>
-            <SelectContent className="rounded-xl border border-gray-200 bg-white shadow-lg max-h-[320px]">
+            <SelectContent className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg max-h-[320px]">
               {question.options.map((option) => (
                 <SelectItem
                   key={option}
                   value={option}
-                  className="cursor-pointer hover:bg-gray-50 transition-colors"
+                  className="cursor-pointer text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700 transition-colors"
                 >
                   {option}
                 </SelectItem>
@@ -376,12 +376,12 @@ export default function OnboardingPage() {
             {question.options.map((option) => (
               <label
                 key={option}
-                className="flex items-center border-2 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md"
-                style={{
-                  padding: 'var(--sp-space-3)',
-                  borderColor: value === option ? 'var(--sp-colors-accent)' : '#e5e7eb',
-                  backgroundColor: value === option ? 'var(--sp-colors-bg-active)' : 'transparent',
-                }}
+                className={`flex items-center border-2 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md ${
+                  value === option
+                    ? 'border-purple-300 dark:border-purple-600 bg-purple-50 dark:bg-purple-950/30'
+                    : 'border-gray-200 dark:border-gray-700 bg-transparent dark:bg-transparent'
+                }`}
+                style={{ padding: 'var(--sp-space-3)' }}
               >
                 <input
                   type="radio"
@@ -389,14 +389,11 @@ export default function OnboardingPage() {
                   value={option}
                   checked={value === option}
                   onChange={(e) => handleQuestionAnswer(question.questionKey, e.target.value)}
-                  className="w-4 h-4"
-                  style={{
-                    accentColor: 'var(--sp-colors-accent)',
-                    marginRight: 'var(--sp-space-3)',
-                  }}
+                  className="w-4 h-4 accent-purple-600 dark:accent-purple-500"
+                  style={{ marginRight: 'var(--sp-space-3)' }}
                   required={question.required}
                 />
-                <span className="text-sm font-bold text-gray-900">{option}</span>
+                <span className="text-sm font-bold text-gray-900 dark:text-white">{option}</span>
               </label>
             ))}
           </div>
@@ -412,12 +409,12 @@ export default function OnboardingPage() {
               return (
                 <label
                   key={option}
-                  className="flex items-center border-2 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md"
-                  style={{
-                    padding: 'var(--sp-space-4)',
-                    borderColor: isChecked ? 'var(--sp-colors-accent)' : '#e5e7eb',
-                    backgroundColor: isChecked ? 'var(--sp-colors-bg-active)' : 'transparent',
-                  }}
+                  className={`flex items-center border-2 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md ${
+                    isChecked
+                      ? 'border-purple-300 dark:border-purple-600 bg-purple-50 dark:bg-purple-950/30'
+                      : 'border-gray-200 dark:border-gray-700 bg-transparent dark:bg-transparent'
+                  }`}
+                  style={{ padding: 'var(--sp-space-4)' }}
                 >
                   <input
                     type="checkbox"
@@ -433,13 +430,10 @@ export default function OnboardingPage() {
                         );
                       }
                     }}
-                    className="w-5 h-5 rounded"
-                    style={{
-                      accentColor: 'var(--sp-colors-accent)',
-                      marginRight: 'var(--sp-space-3)',
-                    }}
+                    className="w-5 h-5 rounded accent-purple-600 dark:accent-purple-500"
+                    style={{ marginRight: 'var(--sp-space-3)' }}
                   />
-                  <span className="text-sm font-bold text-gray-900">{option}</span>
+                  <span className="text-sm font-bold text-gray-900 dark:text-white">{option}</span>
                 </label>
               );
             })}
@@ -466,29 +460,18 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 relative overflow-hidden">
       {/* Background Decoration */}
-      <div className="absolute inset-0 opacity-5" aria-hidden="true">
-        <div
-          className="absolute top-20 left-1/4 w-96 h-96 rounded-full blur-3xl"
-          style={{ backgroundColor: 'var(--sp-colors-accent)' }}
-        />
-        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-blue-500 rounded-full blur-3xl" />
+      <div className="absolute inset-0 opacity-5 dark:opacity-10" aria-hidden="true">
+        <div className="absolute top-20 left-1/4 w-96 h-96 bg-purple-600 dark:bg-purple-500 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-1/4 w-96 h-96 bg-blue-500 dark:bg-blue-600 rounded-full blur-3xl" />
       </div>
 
       {/* Header */}
-      <header className="relative bg-white/80 backdrop-blur-sm border-b border-gray-200">
+      <header className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto" style={{ padding: 'var(--sp-space-4) var(--sp-space-6)' }}>
           <Link href="/" className="flex items-center" style={{ gap: 'var(--sp-space-2)' }}>
-            <span
-              className="text-2xl font-bold"
-              style={{
-                background: `linear-gradient(to right, var(--sp-colors-accent), #6366f1)`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-            >
+            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
               Lunaxcode
             </span>
           </Link>
@@ -497,28 +480,19 @@ export default function OnboardingPage() {
 
       <div className="relative max-w-5xl mx-auto" style={{ padding: 'var(--sp-space-6)' }}>
         <div
-          className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl"
+          className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-3xl shadow-2xl"
           style={{ padding: 'var(--sp-space-8)' }}
         >
           {/* Header */}
           <div className="text-center" style={{ marginBottom: 'var(--sp-space-8)' }}>
-            <div
-              className="inline-flex items-center backdrop-blur-sm rounded-full text-sm font-bold"
-              style={{
-                gap: 'var(--sp-space-2)',
-                padding: 'var(--sp-space-2) var(--sp-space-5)',
-                backgroundColor: 'var(--sp-colors-bg-active)',
-                color: 'var(--sp-colors-accent)',
-                marginBottom: 'var(--sp-space-4)',
-              }}
-            >
+            <div className="inline-flex items-center backdrop-blur-sm rounded-full text-sm font-bold bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400" style={{ gap: 'var(--sp-space-2)', padding: 'var(--sp-space-2) var(--sp-space-5)', marginBottom: 'var(--sp-space-4)' }}>
               <Sparkles className="w-4 h-4" fill="currentColor" />
               <span>AI-Powered Project Planning</span>
             </div>
-            <h1 className="text-3xl md:text-5xl font-bold text-gray-900" style={{ marginBottom: 'var(--sp-space-4)', letterSpacing: '-0.02em' }}>
+            <h1 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white" style={{ marginBottom: 'var(--sp-space-4)', letterSpacing: '-0.02em' }}>
               Start Your Project
             </h1>
-            <p className="text-gray-600 text-lg md:text-xl max-w-2xl mx-auto">
+            <p className="text-gray-600 dark:text-gray-300 text-lg md:text-xl max-w-2xl mx-auto">
               Tell us about your vision and we&apos;ll generate a comprehensive plan in seconds
             </p>
           </div>
@@ -585,15 +559,15 @@ export default function OnboardingPage() {
           {step === 1 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-6)' }}>
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900" style={{ marginBottom: 'var(--sp-space-2)', letterSpacing: '-0.02em' }}>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" style={{ marginBottom: 'var(--sp-space-2)', letterSpacing: '-0.02em' }}>
                   Why do you want to build this?
                 </h2>
-                <p className="text-gray-600">Share your goals and what you&apos;re trying to achieve</p>
+                <p className="text-gray-600 dark:text-gray-300">Share your goals and what you&apos;re trying to achieve</p>
               </div>
 
               {/* Selected Service Display */}
               <div>
-                <label className="block text-sm font-bold text-gray-700" style={{ marginBottom: 'var(--sp-space-2)' }}>
+                <label className="block text-sm font-bold text-gray-700 dark:text-gray-300" style={{ marginBottom: 'var(--sp-space-2)' }}>
                   Selected Service
                 </label>
                 {servicesLoading ? (
@@ -619,25 +593,18 @@ export default function OnboardingPage() {
                     </div>
                   </div>
                 ) : selectedService ? (
-                  <div
-                    className="border-2 rounded-xl"
-                    style={{
-                      padding: 'var(--sp-space-4)',
-                      borderColor: 'var(--sp-colors-accent)',
-                      backgroundColor: 'var(--sp-colors-bg-active)',
-                    }}
-                  >
+                  <div className="border-2 rounded-xl border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/30" style={{ padding: 'var(--sp-space-4)' }}>
                     <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-bold text-gray-900 text-lg">{selectedService.name}</h3>
-                        <p className="text-sm text-gray-600 mt-1">{selectedService.description}</p>
+                        <h3 className="font-bold text-gray-900 dark:text-white text-lg">{selectedService.name}</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">{selectedService.description}</p>
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl font-bold" style={{ color: 'var(--sp-colors-accent)' }}>
+                        <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                           ₱{(selectedService.basePrice / 1000).toFixed(0)}k
                         </p>
                         {selectedService.timeline && (
-                          <p className="text-xs text-gray-600 mt-1">{selectedService.timeline}</p>
+                          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">{selectedService.timeline}</p>
                         )}
                       </div>
                     </div>
@@ -649,9 +616,9 @@ export default function OnboardingPage() {
                 <div className="flex items-center justify-between" style={{ marginBottom: 'var(--sp-space-2)' }}>
                   <label
                     htmlFor="project-description"
-                    className="block text-sm font-bold text-gray-700"
+                    className="block text-sm font-bold text-gray-700 dark:text-gray-300"
                   >
-                    Project Description <span style={{ color: 'var(--sp-colors-accent)' }}>*</span>
+                    Project Description <span className="text-purple-600 dark:text-purple-400">*</span>
                   </label>
 
                   {/* AI Action Buttons */}
@@ -661,13 +628,8 @@ export default function OnboardingPage() {
                         type="button"
                         onClick={handleGenerateSuggestions}
                         disabled={suggestionsLoading}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 border-2"
-                        style={{
-                          borderColor: suggestionsLoading ? '#e5e7eb' : 'var(--sp-colors-accent)',
-                          color: suggestionsLoading ? '#9ca3af' : 'var(--sp-colors-accent)',
-                          backgroundColor: suggestionsLoading ? '#f9fafb' : 'var(--sp-colors-bg-active)',
-                          minHeight: '32px'
-                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 disabled:opacity-50"
+                        style={{ minHeight: '32px' }}
                       >
                         {suggestionsLoading ? (
                           <>
@@ -686,13 +648,8 @@ export default function OnboardingPage() {
                         type="button"
                         onClick={handleEnhanceDescription}
                         disabled={suggestionsLoading}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 border-2"
-                        style={{
-                          borderColor: suggestionsLoading ? '#e5e7eb' : 'var(--sp-colors-accent)',
-                          color: suggestionsLoading ? '#9ca3af' : 'var(--sp-colors-accent)',
-                          backgroundColor: suggestionsLoading ? '#f9fafb' : 'var(--sp-colors-bg-active)',
-                          minHeight: '32px'
-                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 disabled:opacity-50"
+                        style={{ minHeight: '32px' }}
                       >
                         {suggestionsLoading ? (
                           <>
@@ -714,8 +671,8 @@ export default function OnboardingPage() {
                 {aiSuggestions.length > 0 && (
                   <div className="mb-3">
                     <div className="flex items-center gap-2 mb-2">
-                      <Sparkles className="w-4 h-4" style={{ color: 'var(--sp-colors-accent)' }} />
-                      <span className="text-xs font-bold" style={{ color: 'var(--sp-colors-accent)' }}>
+                      <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                      <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
                         Example intentions - Click to use or get inspired
                       </span>
                     </div>
@@ -725,23 +682,11 @@ export default function OnboardingPage() {
                           key={index}
                           type="button"
                           onClick={() => handleUseSuggestion(suggestion)}
-                          className="text-left p-3 text-sm border-2 rounded-xl transition-all duration-200 hover:shadow-md group"
-                          style={{
-                            borderColor: '#e5e7eb',
-                            backgroundColor: '#fafafa',
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.borderColor = 'var(--sp-colors-accent)';
-                            e.currentTarget.style.backgroundColor = 'var(--sp-colors-bg-active)';
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.borderColor = '#e5e7eb';
-                            e.currentTarget.style.backgroundColor = '#fafafa';
-                          }}
+                          className="text-left p-3 text-sm border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-xl transition-all duration-200 hover:shadow-md hover:border-purple-300 dark:hover:border-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/30 group"
                         >
                           <div className="flex items-start gap-2">
-                            <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0 text-gray-400 group-hover:text-purple-500 transition-colors" />
-                            <span className="text-gray-700 leading-relaxed">{suggestion}</span>
+                            <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0 text-gray-400 dark:text-gray-500 group-hover:text-purple-500 dark:group-hover:text-purple-400 transition-colors" />
+                            <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{suggestion}</span>
                           </div>
                         </button>
                       ))}
@@ -754,12 +699,12 @@ export default function OnboardingPage() {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={6}
-                  className={`w-full border rounded-xl transition-all duration-200 resize-none ${
+                  className={`w-full border rounded-xl transition-all duration-200 resize-none bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400 ${
                     formData.description.length > 0 && formData.description.length < 20
-                      ? 'border-red-300 focus:border-red-500'
+                      ? 'border-red-300 dark:border-red-700 focus:border-red-500 dark:focus:border-red-500'
                       : formData.description.length >= 20
-                      ? 'border-green-300 focus:border-green-500'
-                      : 'border-gray-300 hover:border-gray-400'
+                      ? 'border-green-300 dark:border-green-700 focus:border-green-500 dark:focus:border-green-500'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                   }`}
                   style={{
                     padding: 'var(--sp-space-4)',
@@ -771,7 +716,7 @@ export default function OnboardingPage() {
                   aria-invalid={formData.description.length > 0 && formData.description.length < 20}
                 />
                 <div className="flex items-center justify-between mt-2">
-                  <p id="description-hint" className="text-xs text-gray-600">
+                  <p id="description-hint" className="text-xs text-gray-600 dark:text-gray-400">
                     {formData.description.length === 0
                       ? 'Minimum 20 characters required'
                       : formData.description.length < 20
@@ -782,21 +727,12 @@ export default function OnboardingPage() {
                   <p
                     id="description-counter"
                     className={`text-xs font-bold ${
-                      formData.description.length >= 20 ? 'text-green-600' : 'text-gray-500'
+                      formData.description.length >= 20 ? 'text-green-600 dark:text-green-400' : 'text-gray-500 dark:text-gray-400'
                     }`}
                   >
                     {formData.description.length} characters
                   </p>
                 </div>
-                <p
-                  className="text-xs mt-1"
-                  style={{
-                    color: formData.description.length >= 20 ? '#10b981' : '#9ca3af',
-                    marginTop: 'var(--sp-space-2)',
-                  }}
-                >
-                  {formData.description.length} / 500 characters {formData.description.length >= 20 && '✓'}
-                </p>
               </div>
             </div>
           )}
@@ -805,10 +741,10 @@ export default function OnboardingPage() {
           {step === 2 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-6)' }}>
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900" style={{ marginBottom: 'var(--sp-space-2)', letterSpacing: '-0.02em' }}>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" style={{ marginBottom: 'var(--sp-space-2)', letterSpacing: '-0.02em' }}>
                   Project Requirements
                 </h2>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-300">
                   {questionsLoading
                     ? 'Loading questions...'
                     : questions.length > 0
@@ -819,15 +755,15 @@ export default function OnboardingPage() {
 
               {questionsLoading ? (
                 <div className="flex items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 animate-spin" style={{ color: 'var(--sp-colors-accent)' }} />
+                  <Loader2 className="w-8 h-8 animate-spin text-purple-600 dark:text-purple-400" />
                 </div>
               ) : questions.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-5)' }}>
                   {questions.map((question) => (
                     <div key={question.id}>
-                      <label className="block text-sm font-bold text-gray-700" style={{ marginBottom: 'var(--sp-space-2)' }}>
+                      <label className="block text-sm font-bold text-gray-700 dark:text-gray-300" style={{ marginBottom: 'var(--sp-space-2)' }}>
                         {question.questionText}
-                        {question.required && <span style={{ color: 'var(--sp-colors-accent)' }}> *</span>}
+                        {question.required && <span className="text-purple-600 dark:text-purple-400"> *</span>}
                       </label>
                       {renderQuestion(question)}
                     </div>
@@ -875,29 +811,29 @@ export default function OnboardingPage() {
           {step === 3 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-6)' }}>
               <div>
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900" style={{ marginBottom: 'var(--sp-space-2)', letterSpacing: '-0.02em' }}>
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white" style={{ marginBottom: 'var(--sp-space-2)', letterSpacing: '-0.02em' }}>
                   Your Information
                 </h2>
-                <p className="text-gray-600">How should we contact you about this project?</p>
+                <p className="text-gray-600 dark:text-gray-300">How should we contact you about this project?</p>
               </div>
 
               <div>
                 <label
                   htmlFor="client-name"
-                  className="block text-sm font-bold text-gray-700"
+                  className="block text-sm font-bold text-gray-700 dark:text-gray-300"
                   style={{ marginBottom: 'var(--sp-space-2)' }}
                 >
-                  Your Name <span style={{ color: 'var(--sp-colors-accent)' }}>*</span>
+                  Your Name <span className="text-purple-600 dark:text-purple-400">*</span>
                 </label>
                 <input
                   id="client-name"
                   type="text"
                   value={formData.clientName}
                   onChange={(e) => setFormData({ ...formData, clientName: e.target.value })}
-                  className={`w-full border rounded-xl transition-all duration-200 ${
+                  className={`w-full border rounded-xl transition-all duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
                     formData.clientName.length > 0
-                      ? 'border-green-300 focus:border-green-500'
-                      : 'border-gray-300 hover:border-gray-400'
+                      ? 'border-green-300 dark:border-green-700 focus:border-green-500 dark:focus:border-green-500'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                   }`}
                   style={{
                     padding: 'var(--sp-space-3) var(--sp-space-4)',
@@ -912,22 +848,22 @@ export default function OnboardingPage() {
               <div>
                 <label
                   htmlFor="client-email"
-                  className="block text-sm font-bold text-gray-700"
+                  className="block text-sm font-bold text-gray-700 dark:text-gray-300"
                   style={{ marginBottom: 'var(--sp-space-2)' }}
                 >
-                  Your Email <span style={{ color: 'var(--sp-colors-accent)' }}>*</span>
+                  Your Email <span className="text-purple-600 dark:text-purple-400">*</span>
                 </label>
                 <input
                   id="client-email"
                   type="email"
                   value={formData.clientEmail}
                   onChange={(e) => setFormData({ ...formData, clientEmail: e.target.value })}
-                  className={`w-full border rounded-xl transition-all duration-200 ${
+                  className={`w-full border rounded-xl transition-all duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-white ${
                     formData.clientEmail.length > 0 && !formData.clientEmail.includes('@')
-                      ? 'border-red-300 focus:border-red-500'
+                      ? 'border-red-300 dark:border-red-700 focus:border-red-500 dark:focus:border-red-500'
                       : formData.clientEmail.includes('@') && formData.clientEmail.includes('.')
-                      ? 'border-green-300 focus:border-green-500'
-                      : 'border-gray-300 hover:border-gray-400'
+                      ? 'border-green-300 dark:border-green-700 focus:border-green-500 dark:focus:border-green-500'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
                   }`}
                   style={{
                     padding: 'var(--sp-space-3) var(--sp-space-4)',
@@ -940,12 +876,12 @@ export default function OnboardingPage() {
                   aria-invalid={formData.clientEmail.length > 0 && !formData.clientEmail.includes('@')}
                 />
                 {formData.clientEmail.length > 0 && !formData.clientEmail.includes('@') && (
-                  <p id="email-hint" className="text-xs text-red-600 mt-1">
+                  <p id="email-hint" className="text-xs text-red-600 dark:text-red-400 mt-1">
                     Please enter a valid email address
                   </p>
                 )}
                 {formData.clientEmail.includes('@') && formData.clientEmail.includes('.') && (
-                  <p id="email-hint" className="text-xs text-green-600 mt-1">
+                  <p id="email-hint" className="text-xs text-green-600 dark:text-green-400 mt-1">
                     ✓ Email looks good!
                   </p>
                 )}
@@ -954,17 +890,17 @@ export default function OnboardingPage() {
               <div>
                 <label
                   htmlFor="client-phone"
-                  className="block text-sm font-bold text-gray-700"
+                  className="block text-sm font-bold text-gray-700 dark:text-gray-300"
                   style={{ marginBottom: 'var(--sp-space-2)' }}
                 >
-                  Phone Number <span className="text-gray-400 font-normal">(Optional)</span>
+                  Phone Number <span className="text-gray-400 dark:text-gray-500 font-normal">(Optional)</span>
                 </label>
                 <input
                   id="client-phone"
                   type="tel"
                   value={formData.clientPhone}
                   onChange={(e) => setFormData({ ...formData, clientPhone: e.target.value })}
-                  className="w-full border border-gray-300 rounded-xl transition-all duration-200 hover:border-gray-400 focus:border-gray-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded-xl transition-all duration-200 hover:border-gray-400 dark:hover:border-gray-500 focus:border-gray-500 dark:focus:border-gray-400 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                   style={{
                     padding: 'var(--sp-space-3) var(--sp-space-4)',
                     fontSize: 'var(--sp-font-size)',
@@ -972,55 +908,44 @@ export default function OnboardingPage() {
                   placeholder="+63 912 345 6789"
                   aria-describedby="phone-hint"
                 />
-                <p id="phone-hint" className="text-xs text-gray-600 mt-1">
+                <p id="phone-hint" className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                   For faster communication. We&apos;ll use this for urgent project updates.
                 </p>
               </div>
 
               {/* Summary */}
-              <div
-                className="border-2 rounded-2xl overflow-hidden"
-                style={{
-                  marginTop: 'var(--sp-space-4)',
-                  borderColor: 'var(--sp-colors-accent)',
-                }}
-              >
-                <div
-                  className="p-5"
-                  style={{
-                    background: `linear-gradient(135deg, var(--sp-colors-bg-active) 0%, rgba(120, 40, 200, 0.05) 100%)`,
-                  }}
-                >
-                  <h3 className="font-bold text-gray-900 flex items-center" style={{ gap: 'var(--sp-space-2)', marginBottom: 'var(--sp-space-4)' }}>
-                    <Sparkles className="w-5 h-5" style={{ color: 'var(--sp-colors-accent)' }} fill="currentColor" />
+              <div className="border-2 rounded-2xl overflow-hidden border-purple-200 dark:border-purple-800" style={{ marginTop: 'var(--sp-space-4)' }}>
+                <div className="p-5 bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-950/30 dark:to-purple-900/20">
+                  <h3 className="font-bold text-gray-900 dark:text-white flex items-center" style={{ gap: 'var(--sp-space-2)', marginBottom: 'var(--sp-space-4)' }}>
+                    <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="currentColor" />
                     Project Summary
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--sp-space-4)' }}>
                     <div>
-                      <p className="text-xs text-gray-600 font-bold mb-1">Service</p>
-                      <p className="text-sm font-bold text-gray-900">{formData.serviceName}</p>
+                      <p className="text-xs text-gray-600 dark:text-gray-400 font-bold mb-1">Service</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">{formData.serviceName}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-600 font-bold mb-1">Base Price</p>
-                      <p className="text-sm font-bold text-gray-900">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 font-bold mb-1">Base Price</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">
                         ₱{selectedService ? (selectedService.basePrice / 1000).toFixed(0) + 'k' : 'N/A'}
                       </p>
                     </div>
                     {selectedService?.timeline && (
                       <div>
-                        <p className="text-xs text-gray-600 font-bold mb-1">Estimated Timeline</p>
-                        <p className="text-sm font-bold text-gray-900">{selectedService.timeline}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 font-bold mb-1">Estimated Timeline</p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-white">{selectedService.timeline}</p>
                       </div>
                     )}
                     <div>
-                      <p className="text-xs text-gray-600 font-bold mb-1">Requirements Answered</p>
-                      <p className="text-sm font-bold text-gray-900">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 font-bold mb-1">Requirements Answered</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">
                         {Object.keys(formData.questionAnswers).length} of {questions.length}
                       </p>
                     </div>
                     <div className="md:col-span-2">
-                      <p className="text-xs text-gray-600 font-bold mb-1">Contact Information</p>
-                      <p className="text-sm font-bold text-gray-900">
+                      <p className="text-xs text-gray-600 dark:text-gray-400 font-bold mb-1">Contact Information</p>
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">
                         {formData.clientName} • {formData.clientEmail}
                         {formData.clientPhone && ` • ${formData.clientPhone}`}
                       </p>
@@ -1029,8 +954,8 @@ export default function OnboardingPage() {
                 </div>
               </div>
 
-              <div className="p-5 bg-blue-50 border border-blue-200 rounded-xl">
-                <p className="text-sm text-blue-900">
+              <div className="p-5 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-xl">
+                <p className="text-sm text-blue-900 dark:text-blue-100">
                   <strong>Next Step:</strong> After submitting, you&apos;ll create an account to access your personalized project plan and dashboard.
                 </p>
               </div>
@@ -1039,13 +964,13 @@ export default function OnboardingPage() {
 
           {/* Navigation buttons */}
           <div
-            className="flex items-center justify-between border-t border-gray-200"
+            className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700"
             style={{ marginTop: 'var(--sp-space-8)', paddingTop: 'var(--sp-space-6)' }}
           >
             {step > 1 ? (
               <button
                 onClick={handleBack}
-                className="flex items-center border-2 border-gray-300 rounded-xl hover:bg-gray-50 transition-all duration-200 font-bold hover:shadow-md py-3 px-6"
+                className="flex items-center border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 font-bold hover:shadow-md py-3 px-6"
                 style={{
                   gap: 'var(--sp-space-2)',
                   minHeight: '48px',
@@ -1057,7 +982,7 @@ export default function OnboardingPage() {
             ) : (
               <Link
                 href="/"
-                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors font-bold"
+                className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors font-bold"
                 style={{ gap: 'var(--sp-space-2)', padding: 'var(--sp-space-3)' }}
               >
                 <ArrowLeft className="w-4 h-4" />

@@ -291,9 +291,39 @@ PAYMONGO_WEBHOOK_SECRET=whsec_<your-secret>
 # Resend (Email service for contact form)
 RESEND_API_KEY=<from-resend.com>
 
+# Cloudflare Turnstile (Bot Protection)
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=<from-cloudflare-dashboard>
+TURNSTILE_SECRET_KEY=<from-cloudflare-dashboard>
+
 # App URL
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
+
+### Getting Cloudflare Turnstile Keys
+
+Cloudflare Turnstile is a privacy-first CAPTCHA alternative that protects the login form from bots.
+
+**Setup Steps:**
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Navigate to **Turnstile** in the left sidebar
+3. Click **Add Site**
+4. Configure:
+   - **Site name**: Lunaxcode (or your project name)
+   - **Domain**: Your domain (e.g., `lunaxcode-saas.pages.dev` or `localhost` for development)
+   - **Widget Mode**: Managed (recommended) - automatically determines challenge difficulty
+5. Click **Create**
+6. Copy the **Site Key** → `NEXT_PUBLIC_TURNSTILE_SITE_KEY`
+7. Copy the **Secret Key** → `TURNSTILE_SECRET_KEY`
+
+**For Development:**
+- Use Cloudflare's test keys that always pass:
+  - Site Key: `1x00000000000000000000AA`
+  - Secret Key: `1x0000000000000000000000000000000AA`
+- Or create a Turnstile site with domain `localhost`
+
+**For Production:**
+- Create a new Turnstile site with your production domain
+- Add the keys to Cloudflare Pages environment variables (see Deployment section)
 
 ## Cloudflare-Specific Considerations
 
@@ -553,6 +583,9 @@ PAYMONGO_WEBHOOK_SECRET=<your-webhook-secret>
 
 RESEND_API_KEY=<your-resend-api-key>
 
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=<your-turnstile-site-key>
+TURNSTILE_SECRET_KEY=<your-turnstile-secret-key>
+
 NEXT_PUBLIC_APP_URL=https://lunaxcode-saas.pages.dev (or your custom domain)
 ```
 
@@ -590,6 +623,7 @@ npx wrangler pages deployment list --project-name=lunaxcode-saas
 - **Cloudflare Pages**: https://developers.cloudflare.com/pages
 - **Cloudflare D1**: https://developers.cloudflare.com/d1
 - **Cloudflare R2**: https://developers.cloudflare.com/r2
+- **Cloudflare Turnstile**: https://developers.cloudflare.com/turnstile
 - **Drizzle ORM**: https://orm.drizzle.team
 - **Google Gemini**: https://ai.google.dev
 - **PayMongo**: https://developers.paymongo.com
@@ -601,6 +635,7 @@ npx wrangler pages deployment list --project-name=lunaxcode-saas
 
 **✅ Completed Features:**
 - Authentication system with Google OAuth (NextAuth.js)
+- Bot protection with Cloudflare Turnstile (CAPTCHA alternative)
 - Complete admin dashboard with 10+ pages
 - CMS system (FAQs, Portfolio, Services, Process Steps, Features)
 - Database schema with 11 tables
@@ -609,6 +644,7 @@ npx wrangler pages deployment list --project-name=lunaxcode-saas
 - shadcn/ui component library installed
 - Error pages for App Router
 - Production deployment on Cloudflare Pages
+- Light/Dark mode support throughout the application
 
 **🚧 In Progress / To Be Implemented:**
 - AI-powered PRD generation (Google Gemini integration)
