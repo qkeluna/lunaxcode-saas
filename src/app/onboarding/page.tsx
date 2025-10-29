@@ -164,8 +164,10 @@ export default function OnboardingPage() {
             const sortedQuestions = data.questions.sort((a: Question, b: Question) => a.sortOrder - b.sortOrder);
             setQuestions(sortedQuestions);
 
-            // Pre-select essential sections for "required_sections" checkbox question (Landing Page)
-            const requiredSectionsQuestion = sortedQuestions.find((q: Question) => q.questionKey === 'required_sections');
+            // Pre-select essential sections for Landing Page (supports both 'required_sections' and 'sections' keys)
+            const requiredSectionsQuestion = sortedQuestions.find(
+              (q: Question) => q.questionKey === 'required_sections' || q.questionKey === 'sections'
+            );
             if (requiredSectionsQuestion) {
               const existingAnswer = formData.questionAnswers[requiredSectionsQuestion.questionKey];
               // Only pre-select if there's no existing answer OR if the answer is empty
@@ -510,7 +512,7 @@ export default function OnboardingPage() {
       case 'checkbox':
         return (
           <div>
-            {question.questionKey === 'required_sections' && (
+            {(question.questionKey === 'required_sections' || question.questionKey === 'sections') && (
               <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
                 <p className="text-xs text-blue-900 dark:text-blue-100">
                   💡 <strong>5 essential sections are pre-selected</strong> (Header, Hero, Features, Contact Form, Footer). You can uncheck them if not needed or add more sections.
