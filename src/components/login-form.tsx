@@ -168,7 +168,7 @@ export function LoginForm({
                 <span className="text-gray-600 dark:text-gray-300">
                   New to Lunaxcode?{' '}
                   <Link
-                    href="/onboarding"
+                    href="/#pricing"
                     className="font-bold text-purple-600 dark:text-purple-400 underline-offset-4 hover:underline"
                   >
                     Start your project

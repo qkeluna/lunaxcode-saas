@@ -213,6 +213,29 @@ export const features = sqliteTable('features', {
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
+// Add-ons table (optional services/integrations that can be added to base service)
+export const addOns = sqliteTable('add_ons', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  serviceTypeId: integer('service_type_id').references(() => serviceTypes.id, { onDelete: 'cascade' }), // If null, applies to all services
+  name: text('name').notNull(), // e.g., "Google Analytics", "CRM Integration"
+  description: text('description').notNull(),
+  category: text('category').notNull(), // 'analytics' | 'marketing' | 'communication' | 'payment' | 'social' | 'other'
+  price: integer('price').notNull(), // Additional price in pesos
+  isFree: integer('is_free', { mode: 'boolean' }).default(false),
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  sortOrder: integer('sort_order').default(0),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+// Project Add-ons table (junction table for selected add-ons per project)
+export const projectAddOns = sqliteTable('project_add_ons', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  projectId: integer('project_id').notNull().references(() => projects.id, { onDelete: 'cascade' }),
+  addOnId: integer('add_on_id').notNull().references(() => addOns.id, { onDelete: 'cascade' }),
+  price: integer('price').notNull(), // Price at time of selection (for historical accuracy)
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
 // Payment Accounts table (admin-managed bank accounts for receiving payments)
 export const paymentAccounts = sqliteTable('payment_accounts', {
   id: integer('id').primaryKey({ autoIncrement: true }),
@@ -303,3 +326,9 @@ export type NewQuestion = typeof questions.$inferInsert;
 
 export type QuestionOption = typeof questionOptions.$inferSelect;
 export type NewQuestionOption = typeof questionOptions.$inferInsert;
+
+export type AddOn = typeof addOns.$inferSelect;
+export type NewAddOn = typeof addOns.$inferInsert;
+
+export type ProjectAddOn = typeof projectAddOns.$inferSelect;
+export type NewProjectAddOn = typeof projectAddOns.$inferInsert;

@@ -1,5 +1,15 @@
 'use client';
 
+/**
+ * Onboarding Page - Multi-step form for project creation
+ * 
+ * SessionStorage Strategy:
+ * - Service-scoped caching: Data is stored per service type (e.g., onboardingFormData_1, onboardingFormData_3)
+ * - This prevents data mixing when users switch between different service types
+ * - Allows users to preserve progress if they go back and select a different service
+ * - Cache is cleared after successful submission
+ */
+
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, ArrowLeft, Loader2, Sparkles, Check, Rocket, Target, Users } from 'lucide-react';
@@ -13,6 +23,8 @@ import {
 } from '@/components/ui/select';
 import { loadAIConfig, getDefaultProviderConfig } from '@/lib/ai/storage';
 import { useAlertDialog } from '@/hooks/use-alert-dialog';
+import { AddOnsSelection } from '@/components/onboarding/AddOnsSelection';
+import { formatPrice } from '@/lib/utils/pricing';
 
 interface ServiceType {
   id: number;
@@ -50,35 +62,48 @@ export default function OnboardingPage() {
     clientEmail: '',
     clientPhone: '',
     questionAnswers: {} as Record<string, any>,
+    selectedAddOnIds: [] as number[],
   });
+  const [addOnsTotal, setAddOnsTotal] = useState(0);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 
-  // Restore form data from sessionStorage on mount
+  // Restore form data from sessionStorage on mount (scoped by serviceId)
   useEffect(() => {
-    const savedFormData = sessionStorage.getItem('onboardingFormData');
-    const savedStep = sessionStorage.getItem('onboardingStep');
+    // Get serviceId from URL first
+    const urlParams = new URLSearchParams(window.location.search);
+    const serviceIdFromUrl = urlParams.get('serviceId');
+    
+    if (serviceIdFromUrl) {
+      // Use service-scoped keys
+      const savedFormData = sessionStorage.getItem(`onboardingFormData_${serviceIdFromUrl}`);
+      const savedStep = sessionStorage.getItem(`onboardingStep_${serviceIdFromUrl}`);
 
-    if (savedFormData) {
-      try {
-        const parsedData = JSON.parse(savedFormData);
-        setFormData(parsedData);
-      } catch (error) {
-        console.error('Error restoring form data:', error);
+      if (savedFormData) {
+        try {
+          const parsedData = JSON.parse(savedFormData);
+          // Only restore if serviceId matches
+          if (parsedData.serviceId === serviceIdFromUrl) {
+            setFormData(parsedData);
+          }
+        } catch (error) {
+          console.error('Error restoring form data:', error);
+        }
       }
-    }
 
-    if (savedStep) {
-      setStep(parseInt(savedStep));
+      if (savedStep) {
+        setStep(parseInt(savedStep));
+      }
     }
   }, []);
 
-  // Auto-save form data to sessionStorage whenever it changes
+  // Auto-save form data to sessionStorage whenever it changes (scoped by serviceId)
   useEffect(() => {
     if (formData.serviceId) {
-      sessionStorage.setItem('onboardingFormData', JSON.stringify(formData));
-      sessionStorage.setItem('onboardingStep', step.toString());
+      // Use service-scoped keys to prevent data mixing between different services
+      sessionStorage.setItem(`onboardingFormData_${formData.serviceId}`, JSON.stringify(formData));
+      sessionStorage.setItem(`onboardingStep_${formData.serviceId}`, step.toString());
     }
   }, [formData, step]);
 
@@ -136,7 +161,85 @@ export default function OnboardingPage() {
           const response = await fetch(`/api/questions/${formData.serviceId}`);
           if (response.ok) {
             const data = await response.json();
-            setQuestions(data.questions.sort((a: Question, b: Question) => a.sortOrder - b.sortOrder));
+            const sortedQuestions = data.questions.sort((a: Question, b: Question) => a.sortOrder - b.sortOrder);
+            setQuestions(sortedQuestions);
+
+            // Pre-select essential sections for "required_sections" checkbox question (Landing Page)
+            const requiredSectionsQuestion = sortedQuestions.find((q: Question) => q.questionKey === 'required_sections');
+            if (requiredSectionsQuestion) {
+              const existingAnswer = formData.questionAnswers[requiredSectionsQuestion.questionKey];
+              // Only pre-select if there's no existing answer OR if the answer is empty
+              const hasNoAnswer = !existingAnswer || (Array.isArray(existingAnswer) && existingAnswer.length === 0);
+
+              if (hasNoAnswer) {
+                // Pre-check must-have sections for landing pages
+                const mustHaveSections = [
+                  'Header (Logo, Navigation)',
+                  'Hero Section',
+                  'Features/Benefits',
+                  'Contact Form',
+                  'Footer (Copyright, Links)'
+                ];
+
+                setFormData(prev => ({
+                  ...prev,
+                  questionAnswers: {
+                    ...prev.questionAnswers,
+                    [requiredSectionsQuestion.questionKey]: mustHaveSections
+                  }
+                }));
+              }
+            }
+
+            // Pre-select essential pages for "pages" checkbox question (Business Website)
+            const pagesQuestion = sortedQuestions.find((q: Question) => q.questionKey === 'pages');
+            if (pagesQuestion) {
+              const existingAnswer = formData.questionAnswers[pagesQuestion.questionKey];
+              const hasNoAnswer = !existingAnswer || (Array.isArray(existingAnswer) && existingAnswer.length === 0);
+
+              if (hasNoAnswer) {
+                // Pre-check essential pages for business websites
+                const essentialPages = [
+                  'Header (Logo, Navigation)',
+                  'Home',
+                  'About Us',
+                  'Services',
+                  'Contact',
+                  'Footer (Copyright, Links, Social)'
+                ];
+
+                setFormData(prev => ({
+                  ...prev,
+                  questionAnswers: {
+                    ...prev.questionAnswers,
+                    [pagesQuestion.questionKey]: essentialPages
+                  }
+                }));
+              }
+            }
+
+            // Pre-select essential features for "features" checkbox question (Business Website)
+            const featuresQuestion = sortedQuestions.find((q: Question) => q.questionKey === 'features');
+            if (featuresQuestion) {
+              const existingAnswer = formData.questionAnswers[featuresQuestion.questionKey];
+              const hasNoAnswer = !existingAnswer || (Array.isArray(existingAnswer) && existingAnswer.length === 0);
+
+              if (hasNoAnswer) {
+                // Pre-check essential features for business websites
+                const essentialFeatures = [
+                  'Contact Form',
+                  'Google Maps'
+                ];
+
+                setFormData(prev => ({
+                  ...prev,
+                  questionAnswers: {
+                    ...prev.questionAnswers,
+                    [featuresQuestion.questionKey]: essentialFeatures
+                  }
+                }));
+              }
+            }
           }
         } catch (error) {
           console.error('Error fetching questions:', error);
@@ -271,6 +374,11 @@ export default function OnboardingPage() {
     setAiSuggestions([]); // Clear suggestions after use
   };
 
+  const handleAddOnsChange = (addOnIds: number[], total: number) => {
+    setFormData({ ...formData, selectedAddOnIds: addOnIds });
+    setAddOnsTotal(total);
+  };
+
   const canProceedStep1 = formData.serviceId && formData.description.length > 20;
 
   const canProceedStep2 = () => {
@@ -401,42 +509,65 @@ export default function OnboardingPage() {
 
       case 'checkbox':
         return (
-          <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--sp-space-3)' }}>
-            {question.options.map((option) => {
-              const checkedValues = (value as string[]) || [];
-              const isChecked = checkedValues.includes(option);
+          <div>
+            {question.questionKey === 'required_sections' && (
+              <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <p className="text-xs text-blue-900 dark:text-blue-100">
+                  💡 <strong>5 essential sections are pre-selected</strong> (Header, Hero, Features, Contact Form, Footer). You can uncheck them if not needed or add more sections.
+                </p>
+              </div>
+            )}
+            {question.questionKey === 'pages' && (
+              <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <p className="text-xs text-blue-900 dark:text-blue-100">
+                  💡 <strong>6 essential pages are pre-selected</strong> (Header, Home, About Us, Services, Contact, Footer). You can uncheck them if not needed or add more pages.
+                </p>
+              </div>
+            )}
+            {question.questionKey === 'features' && (
+              <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <p className="text-xs text-blue-900 dark:text-blue-100">
+                  💡 <strong>2 essential features are pre-selected</strong> (Contact Form, Google Maps). You can uncheck them if not needed or add more features.
+                </p>
+              </div>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--sp-space-3)' }}>
+              {question.options.map((option) => {
+                const checkedValues = (value as string[]) || [];
+                const isChecked = checkedValues.includes(option);
 
-              return (
-                <label
-                  key={option}
-                  className={`flex items-center border-2 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md ${
-                    isChecked
-                      ? 'border-purple-300 dark:border-purple-600 bg-purple-50 dark:bg-purple-950/30'
-                      : 'border-gray-200 dark:border-gray-700 bg-transparent dark:bg-transparent'
-                  }`}
-                  style={{ padding: 'var(--sp-space-4)' }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={(e) => {
-                      const currentValues = (value as string[]) || [];
-                      if (e.target.checked) {
-                        handleQuestionAnswer(question.questionKey, [...currentValues, option]);
-                      } else {
-                        handleQuestionAnswer(
-                          question.questionKey,
-                          currentValues.filter((v) => v !== option)
-                        );
-                      }
-                    }}
-                    className="w-5 h-5 rounded accent-purple-600 dark:accent-purple-500"
-                    style={{ marginRight: 'var(--sp-space-3)' }}
-                  />
-                  <span className="text-sm font-bold text-gray-900 dark:text-white">{option}</span>
-                </label>
-              );
-            })}
+                return (
+                  <label
+                    key={option}
+                    className={`flex items-center border-2 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md ${
+                      isChecked
+                        ? 'border-purple-300 dark:border-purple-600 bg-purple-50 dark:bg-purple-950/30'
+                        : 'border-gray-200 dark:border-gray-700 bg-transparent dark:bg-transparent'
+                    }`}
+                    style={{ padding: 'var(--sp-space-4)' }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={(e) => {
+                        const currentValues = (value as string[]) || [];
+                        if (e.target.checked) {
+                          handleQuestionAnswer(question.questionKey, [...currentValues, option]);
+                        } else {
+                          handleQuestionAnswer(
+                            question.questionKey,
+                            currentValues.filter((v) => v !== option)
+                          );
+                        }
+                      }}
+                      className="w-5 h-5 rounded accent-purple-600 dark:accent-purple-500"
+                      style={{ marginRight: 'var(--sp-space-3)' }}
+                    />
+                    <span className="text-sm font-bold text-gray-900 dark:text-white">{option}</span>
+                  </label>
+                );
+              })}
+            </div>
           </div>
         );
 
@@ -448,8 +579,14 @@ export default function OnboardingPage() {
   const handleSubmit = async () => {
     setLoading(true);
 
-    // Store onboarding data in sessionStorage
+    // Store onboarding data in sessionStorage for post-login processing
     sessionStorage.setItem('onboardingData', JSON.stringify(formData));
+    
+    // Clear service-scoped cache since submission is complete
+    if (formData.serviceId) {
+      sessionStorage.removeItem(`onboardingFormData_${formData.serviceId}`);
+      sessionStorage.removeItem(`onboardingStep_${formData.serviceId}`);
+    }
 
     // Small delay for visual feedback
     setTimeout(() => {
@@ -798,10 +935,38 @@ export default function OnboardingPage() {
                   <div className="flex items-center" style={{ gap: 'var(--sp-space-2)' }}>
                     <Check className="w-5 h-5" style={{ color: 'var(--sp-colors-accent)' }} />
                     <p className="text-sm font-bold" style={{ color: 'var(--sp-colors-accent)' }}>
-                      {Object.keys(formData.questionAnswers).length} of {questions.length} question
-                      {questions.length !== 1 && 's'} answered
+                      {(() => {
+                        const requiredQuestions = questions.filter(q => q.required);
+                        const answeredRequired = requiredQuestions.filter(q => {
+                          const answer = formData.questionAnswers[q.questionKey];
+                          if (q.questionType === 'checkbox') {
+                            return Array.isArray(answer) && answer.length > 0;
+                          }
+                          return answer !== undefined && answer !== null && answer !== '';
+                        }).length;
+                        return `${answeredRequired} of ${requiredQuestions.length} required question${requiredQuestions.length !== 1 ? 's' : ''} answered`;
+                      })()}
                     </p>
                   </div>
+                </div>
+              )}
+
+              {/* Add-ons Selection */}
+              {selectedService && (
+                <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
+                  <div style={{ marginBottom: 'var(--sp-space-4)' }}>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white" style={{ marginBottom: 'var(--sp-space-2)' }}>
+                      Optional Add-ons
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm">
+                      Enhance your project with additional integrations and services
+                    </p>
+                  </div>
+                  <AddOnsSelection
+                    selectedAddOnIds={formData.selectedAddOnIds}
+                    onSelectionChange={handleAddOnsChange}
+                    basePrice={selectedService.basePrice}
+                  />
                 </div>
               )}
             </div>
@@ -928,9 +1093,28 @@ export default function OnboardingPage() {
                     <div>
                       <p className="text-xs text-gray-600 dark:text-gray-400 font-bold mb-1">Base Price</p>
                       <p className="text-sm font-bold text-gray-900 dark:text-white">
-                        ₱{selectedService ? (selectedService.basePrice / 1000).toFixed(0) + 'k' : 'N/A'}
+                        {selectedService ? formatPrice(selectedService.basePrice) : 'N/A'}
                       </p>
                     </div>
+                    {addOnsTotal > 0 && (
+                      <div>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 font-bold mb-1">Add-ons ({formData.selectedAddOnIds.length})</p>
+                        <p className="text-sm font-bold text-gray-900 dark:text-white">
+                          {formatPrice(addOnsTotal)}
+                        </p>
+                      </div>
+                    )}
+                    {(selectedService && addOnsTotal > 0) && (
+                      <div className="md:col-span-2 pt-3 border-t border-purple-200 dark:border-purple-700">
+                        <p className="text-xs text-gray-600 dark:text-gray-400 font-bold mb-1">Total Project Cost</p>
+                        <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                          {formatPrice(selectedService.basePrice + addOnsTotal)}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          50% deposit: {formatPrice((selectedService.basePrice + addOnsTotal) / 2)}
+                        </p>
+                      </div>
+                    )}
                     {selectedService?.timeline && (
                       <div>
                         <p className="text-xs text-gray-600 dark:text-gray-400 font-bold mb-1">Estimated Timeline</p>
@@ -940,7 +1124,17 @@ export default function OnboardingPage() {
                     <div>
                       <p className="text-xs text-gray-600 dark:text-gray-400 font-bold mb-1">Requirements Answered</p>
                       <p className="text-sm font-bold text-gray-900 dark:text-white">
-                        {Object.keys(formData.questionAnswers).length} of {questions.length}
+                        {(() => {
+                          const requiredQuestions = questions.filter(q => q.required);
+                          const answeredRequired = requiredQuestions.filter(q => {
+                            const answer = formData.questionAnswers[q.questionKey];
+                            if (q.questionType === 'checkbox') {
+                              return Array.isArray(answer) && answer.length > 0;
+                            }
+                            return answer !== undefined && answer !== null && answer !== '';
+                          }).length;
+                          return `${answeredRequired} of ${requiredQuestions.length} required`;
+                        })()}
                       </p>
                     </div>
                     <div className="md:col-span-2">

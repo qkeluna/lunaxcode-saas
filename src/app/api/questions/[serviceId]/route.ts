@@ -8,7 +8,7 @@ export const runtime = 'edge';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { serviceId: string } }
+  { params }: { params: Promise<{ serviceId: string }> }
 ) {
   try {
     const context = getCloudflareContext();
@@ -20,7 +20,9 @@ export async function GET(
       );
     }
 
-    const serviceId = parseInt(params.serviceId);
+    // Await params in Next.js 15
+    const resolvedParams = await params;
+    const serviceId = parseInt(resolvedParams.serviceId);
 
     if (isNaN(serviceId)) {
       return NextResponse.json(
