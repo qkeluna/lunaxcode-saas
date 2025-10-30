@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import {
   Dialog,
   DialogContent,
@@ -23,17 +22,8 @@ import {
   InputGroupTextarea,
 } from '@/components/ui/input-group';
 import { User, Building2, Mail, Phone, MessageSquare } from 'lucide-react';
-
-// Form validation schema
-const contactFormSchema = z.object({
-  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
-  companyName: z.string().min(2, 'Company name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-  contactNumber: z.string().optional(),
-  message: z.string().min(10, 'Message must be at least 10 characters'),
-});
-
-type ContactFormData = z.infer<typeof contactFormSchema>;
+import { contactModalSchema, type ContactModalInput } from '@/lib/validations/schemas';
+import { useEmailValidator } from '@/hooks/useEmailValidation';
 
 interface ContactModalProps {
   open: boolean;
@@ -42,17 +32,18 @@ interface ContactModalProps {
 
 export default function ContactModal({ open, onOpenChange }: ContactModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const validateEmailField = useEmailValidator({ normalize: true });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<ContactFormData>({
-    resolver: zodResolver(contactFormSchema),
+  } = useForm<ContactModalInput>({
+    resolver: zodResolver(contactModalSchema),
   });
 
-  const onSubmit = async (data: ContactFormData) => {
+  const onSubmit = async (data: ContactModalInput) => {
     setIsSubmitting(true);
 
     try {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { z } from 'zod';
+import { contactFormSchema } from '@/lib/validations/schemas';
 
 // Edge Runtime required for Cloudflare Pages
 export const runtime = 'edge';
@@ -8,24 +9,21 @@ export const runtime = 'edge';
 // Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Request validation schema
-const contactRequestSchema = z.object({
-  fullName: z.string().min(2),
-  companyName: z.string().min(2),
-  email: z.string().email(),
-  contactNumber: z.string().optional(),
-  message: z.string().min(10),
-});
-
 export async function POST(request: NextRequest) {
   try {
     console.log('Contact API called');
 
     // Parse and validate request body
     const body = await request.json();
-    console.log('Request body:', { ...body, email: '***' }); // Log without exposing email
+    console.log('Request body received:', {
+      hasFullName: !!body.fullName,
+      hasCompanyName: !!body.companyName,
+      hasEmail: !!body.email,
+      hasMessage: !!body.message,
+      emailValue: body.email // Show actual email for debugging
+    });
 
-    const validatedData = contactRequestSchema.parse(body);
+    const validatedData = contactFormSchema.parse(body);
     console.log('Data validated successfully');
 
     // Check if Resend API key is configured
@@ -171,13 +169,17 @@ Received at: ${new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' })} 
     `.trim();
 
     // Send email using Resend
+    // NOTE: In test mode, Resend can only send to your verified email address
+    // For production, verify a domain at resend.com/domains
+    const recipientEmail = process.env.CONTACT_EMAIL || 'lunaxcode2030@gmail.com';
+
     console.log('Attempting to send email via Resend...');
-    console.log('Recipient:', 'lunaxcode2030@gmail.com');
+    console.log('Recipient:', recipientEmail);
     console.log('Reply-to:', validatedData.email);
 
     const { data, error } = await resend.emails.send({
       from: 'Lunaxcode Contact Form <onboarding@resend.dev>', // Default Resend sender
-      to: ['lunaxcode2030@gmail.com'],
+      to: [recipientEmail],
       replyTo: validatedData.email,
       subject: `New Quote Request from ${validatedData.fullName} - ${validatedData.companyName}`,
       html: emailHtml,
@@ -206,23 +208,29 @@ Received at: ${new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' })} 
     );
   } catch (error) {
     console.error('Error processing contact request:', error);
+    console.error('Error type:', error instanceof z.ZodError ? 'ZodError' : error instanceof Error ? 'Error' : typeof error);
 
     if (error instanceof z.ZodError) {
+      console.error('Zod validation errors:', JSON.stringify(error.errors, null, 2));
       return NextResponse.json(
         {
           success: false,
           message: 'Invalid request data',
           errors: error.errors,
+          details: error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
         },
         { status: 400 }
       );
     }
 
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Error message:', errorMessage);
+
     return NextResponse.json(
       {
         success: false,
         message: 'Internal server error',
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: errorMessage,
       },
       { status: 500 }
     );

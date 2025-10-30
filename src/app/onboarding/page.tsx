@@ -624,10 +624,10 @@ export default function OnboardingPage() {
         >
           {/* Header */}
           <div className="text-center" style={{ marginBottom: 'var(--sp-space-8)' }}>
-            <div className="inline-flex items-center backdrop-blur-sm rounded-full text-sm font-bold bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400" style={{ gap: 'var(--sp-space-2)', padding: 'var(--sp-space-2) var(--sp-space-5)', marginBottom: 'var(--sp-space-4)' }}>
+            {/* <div className="inline-flex items-center backdrop-blur-sm rounded-full text-sm font-bold bg-purple-50 dark:bg-purple-950/30 text-purple-600 dark:text-purple-400" style={{ gap: 'var(--sp-space-2)', padding: 'var(--sp-space-2) var(--sp-space-5)', marginBottom: 'var(--sp-space-4)' }}>
               <Sparkles className="w-4 h-4" fill="currentColor" />
               <span>AI-Powered Project Planning</span>
-            </div>
+            </div> */}
             <h1 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white" style={{ marginBottom: 'var(--sp-space-4)', letterSpacing: '-0.02em' }}>
               Start Your Project
             </h1>
