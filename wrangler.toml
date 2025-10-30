@@ -32,4 +32,4 @@ bucket_name = "lunaxcode-files-prod"
 
 [env.production.vars]
 ENVIRONMENT = "production"
-NEXTAUTH_URL = "https://lunaxcode-saas.pages.dev"
+NEXTAUTH_URL = "https://app.lunaxcode.site"
