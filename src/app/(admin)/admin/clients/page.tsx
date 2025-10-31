@@ -69,7 +69,7 @@ interface ClientDetails {
 }
 
 export default function AdminClientsPage() {
-  const { showError, showSuccess, AlertDialog } = useAlertDialog();
+  const { showError, showSuccess, showConfirm, AlertDialog } = useAlertDialog();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -160,26 +160,28 @@ export default function AdminClientsPage() {
     }
   };
 
-  const handleDeleteClient = async (clientId: string) => {
-    if (!confirm('Are you sure you want to delete this client? This action cannot be undone.')) {
-      return;
-    }
+  const handleDeleteClient = (clientId: string) => {
+    showConfirm(
+      'Are you sure you want to delete this client? This action cannot be undone.',
+      async () => {
+        try {
+          const response = await fetch(`/api/admin/clients/${clientId}`, {
+            method: 'DELETE',
+          });
 
-    try {
-      const response = await fetch(`/api/admin/clients/${clientId}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        fetchClients();
-      } else {
-        const data = await response.json();
-        showError(data.error || 'Failed to delete client');
-      }
-    } catch (error) {
-      console.error('Error deleting client:', error);
-      showError('Failed to delete client');
-    }
+          if (response.ok) {
+            fetchClients();
+          } else {
+            const data = await response.json();
+            showError(data.error || 'Failed to delete client');
+          }
+        } catch (error) {
+          console.error('Error deleting client:', error);
+          showError('Failed to delete client');
+        }
+      },
+      'Delete Client'
+    );
   };
 
   const formatCurrency = (amount: number) => {

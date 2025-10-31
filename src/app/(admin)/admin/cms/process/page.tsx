@@ -1,15 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { useAlertDialog } from '@/hooks/use-alert-dialog';
 
 interface ProcessStep {
   id: number;
@@ -22,10 +24,12 @@ interface ProcessStep {
 }
 
 export default function AdminProcessPage() {
+  const { showError, showSuccess, showConfirm, AlertDialog } = useAlertDialog();
   const [steps, setSteps] = useState<ProcessStep[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selected, setSelected] = useState<ProcessStep | null>(null);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -89,15 +93,69 @@ export default function AdminProcessPage() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Delete this step?')) return;
+  const handleDelete = (id: number) => {
+    showConfirm(
+      'Are you sure you want to delete this process step? This action cannot be undone.',
+      async () => {
+        try {
+          const response = await fetch(`/api/admin/cms/process/${id}`, { method: 'DELETE' });
+          if (response.ok) {
+            showSuccess('Process step deleted!');
+            fetchSteps();
+          } else {
+            const data = await response.json();
+            showError(data.error || 'Failed to delete process step');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          showError('Failed to delete process step');
+        }
+      },
+      'Delete Process Step'
+    );
+  };
 
-    try {
-      const response = await fetch(`/api/admin/cms/process/${id}`, { method: 'DELETE' });
-      if (response.ok) fetchSteps();
-    } catch (error) {
-      console.error('Error:', error);
+  const handleBulkDelete = () => {
+    showConfirm(
+      `Are you sure you want to delete ${selectedIds.length} process step(s)? This action cannot be undone.`,
+      async () => {
+        try {
+          const deletePromises = selectedIds.map(id =>
+            fetch(`/api/admin/cms/process/${id}`, { method: 'DELETE' })
+          );
+
+          const results = await Promise.all(deletePromises);
+          const failedCount = results.filter(r => !r.ok).length;
+
+          if (failedCount === 0) {
+            showSuccess(`Successfully deleted ${selectedIds.length} process step(s)!`);
+          } else {
+            showError(`Failed to delete ${failedCount} process step(s)`);
+          }
+
+          setSelectedIds([]);
+          fetchSteps();
+        } catch (error) {
+          console.error('Error bulk deleting process steps:', error);
+          showError('Failed to delete process steps');
+        }
+      },
+      'Delete Process Steps'
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === steps.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(steps.map(s => s.id));
     }
+  };
+
+  const toggleSelectOne = (id: number) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
   };
 
   return (
@@ -107,16 +165,30 @@ export default function AdminProcessPage() {
           <h1 className="text-2xl font-bold text-foreground">Process Steps</h1>
           <p className="mt-1 text-sm text-muted-foreground">Manage how you work process steps</p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Step
-        </Button>
+        <div className="flex gap-2">
+          {selectedIds.length > 0 && (
+            <Button variant="destructive" onClick={handleBulkDelete}>
+              <Trash className="h-4 w-4 mr-2" />
+              Delete ({selectedIds.length})
+            </Button>
+          )}
+          <Button onClick={handleCreate}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Step
+          </Button>
+        </div>
       </div>
 
       <div className="bg-card border shadow rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">
+                <Checkbox
+                  checked={selectedIds.length === steps.length && steps.length > 0}
+                  onCheckedChange={toggleSelectAll}
+                />
+              </TableHead>
               <TableHead>Title</TableHead>
               <TableHead>Icon</TableHead>
               <TableHead>Order</TableHead>
@@ -127,15 +199,21 @@ export default function AdminProcessPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">Loading...</TableCell>
+                <TableCell colSpan={6} className="text-center py-8">Loading...</TableCell>
               </TableRow>
             ) : steps.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">No process steps found</TableCell>
+                <TableCell colSpan={6} className="text-center py-8">No process steps found</TableCell>
               </TableRow>
             ) : (
               steps.map((step) => (
                 <TableRow key={step.id}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedIds.includes(step.id)}
+                      onCheckedChange={() => toggleSelectOne(step.id)}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">{step.title}</TableCell>
                   <TableCell>
                     {step.icon ? (
@@ -202,6 +280,9 @@ export default function AdminProcessPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Alert Dialog */}
+      <AlertDialog />
     </div>
   );
 }

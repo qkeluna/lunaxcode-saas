@@ -17,6 +17,8 @@ import {
   ImageIcon,
   GripIcon,
   DollarSignIcon,
+  PackageIcon,
+  ClipboardListIcon,
 } from "lucide-react"
 
 import { NavUser } from "@/components/nav-user"
@@ -90,6 +92,16 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
           title: "Features",
           url: "/admin/cms/features",
           icon: GripIcon,
+        },
+        {
+          title: "Questions",
+          url: "/admin/cms/questions",
+          icon: ClipboardListIcon,
+        },
+        {
+          title: "Add-ons",
+          url: "/admin/cms/add-ons",
+          icon: PackageIcon,
         },
         {
           title: "Portfolio",

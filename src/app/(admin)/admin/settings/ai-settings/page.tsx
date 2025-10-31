@@ -53,7 +53,7 @@ interface ProviderState {
 }
 
 export default function AISettingsPage() {
-  const { showError, showSuccess, AlertDialog } = useAlertDialog();
+  const { showError, showSuccess, showConfirm, AlertDialog } = useAlertDialog();
   const [config, setConfig] = useState<AIConfig | null>(null);
   const [providerStates, setProviderStates] = useState<Record<string, ProviderState>>({});
   const [showMigrationNotice, setShowMigrationNotice] = useState(false);
@@ -173,53 +173,58 @@ export default function AISettingsPage() {
 
   // Handle remove provider
   const handleRemoveProvider = (providerId: string) => {
-    if (!confirm(`Remove configuration for ${getProvider(providerId)?.name}?`)) {
-      return;
-    }
+    const providerName = getProvider(providerId)?.name || 'this provider';
+    showConfirm(
+      `Are you sure you want to remove the configuration for ${providerName}?`,
+      () => {
+        const updatedConfig = removeProviderConfig(config, providerId);
+        saveAIConfig(updatedConfig);
+        setConfig(updatedConfig);
 
-    const updatedConfig = removeProviderConfig(config, providerId);
-    saveAIConfig(updatedConfig);
-    setConfig(updatedConfig);
-
-    // Reset state
-    const provider = getProvider(providerId);
-    if (provider) {
-      updateState(providerId, {
-        apiKey: '',
-        model: provider.models[0],
-        showApiKey: false,
-        isTesting: false,
-        isSaving: false,
-        testResult: null,
-        isDirty: false,
-      });
-    }
+        // Reset state
+        const provider = getProvider(providerId);
+        if (provider) {
+          updateState(providerId, {
+            apiKey: '',
+            model: provider.models[0],
+            showApiKey: false,
+            isTesting: false,
+            isSaving: false,
+            testResult: null,
+            isDirty: false,
+          });
+        }
+      },
+      `Remove ${providerName}`
+    );
   };
 
   // Handle clear all settings
   const handleClearAll = () => {
-    if (!confirm('Clear ALL AI settings? This will remove all API keys from this browser.')) {
-      return;
-    }
+    showConfirm(
+      'Are you sure you want to clear ALL AI settings? This will remove all API keys from this browser.',
+      () => {
+        clearAllConfig();
+        const emptyConfig = loadAIConfig();
+        setConfig(emptyConfig);
 
-    clearAllConfig();
-    const emptyConfig = loadAIConfig();
-    setConfig(emptyConfig);
-
-    // Reset all states
-    const resetStates: Record<string, ProviderState> = {};
-    AI_PROVIDERS.forEach((provider) => {
-      resetStates[provider.id] = {
-        apiKey: '',
-        model: provider.models[0],
-        showApiKey: false,
-        isTesting: false,
-        isSaving: false,
-        testResult: null,
-        isDirty: false,
-      };
-    });
-    setProviderStates(resetStates);
+        // Reset all states
+        const resetStates: Record<string, ProviderState> = {};
+        AI_PROVIDERS.forEach((provider) => {
+          resetStates[provider.id] = {
+            apiKey: '',
+            model: provider.models[0],
+            showApiKey: false,
+            isTesting: false,
+            isSaving: false,
+            testResult: null,
+            isDirty: false,
+          };
+        });
+        setProviderStates(resetStates);
+      },
+      'Clear All Settings'
+    );
   };
 
   const configuredCount = Object.keys(config.providers).filter(

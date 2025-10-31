@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, Edit, Trash2, Sparkles, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit, Trash2, Sparkles, Eye, EyeOff, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Table,
   TableBody,
@@ -38,11 +39,12 @@ interface Feature {
 }
 
 export default function AdminFeaturesPage() {
-  const { showError, showSuccess, AlertDialog } = useAlertDialog();
+  const { showError, showSuccess, showConfirm, AlertDialog } = useAlertDialog();
   const [features, setFeatures] = useState<Feature[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -126,26 +128,72 @@ export default function AdminFeaturesPage() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this feature?')) {
-      return;
-    }
+  const handleDelete = (id: number) => {
+    showConfirm(
+      'Are you sure you want to delete this feature? This action cannot be undone.',
+      async () => {
+        try {
+          const response = await fetch(`/api/admin/cms/features/${id}`, {
+            method: 'DELETE',
+          });
 
-    try {
-      const response = await fetch(`/api/admin/cms/features/${id}`, {
-        method: 'DELETE',
-      });
+          if (response.ok) {
+            showSuccess('Feature deleted!');
+            fetchFeatures();
+          } else {
+            const data = await response.json();
+            showError(data.error || 'Failed to delete feature');
+          }
+        } catch (error) {
+          console.error('Error deleting feature:', error);
+          showError('Failed to delete feature');
+        }
+      },
+      'Delete Feature'
+    );
+  };
 
-      if (response.ok) {
-        fetchFeatures();
-      } else {
-        const data = await response.json();
-        showError(data.error || 'Failed to delete feature');
-      }
-    } catch (error) {
-      console.error('Error deleting feature:', error);
-      showError('Failed to delete feature');
+  const handleBulkDelete = () => {
+    showConfirm(
+      `Are you sure you want to delete ${selectedIds.length} feature(s)? This action cannot be undone.`,
+      async () => {
+        try {
+          const deletePromises = selectedIds.map(id =>
+            fetch(`/api/admin/cms/features/${id}`, { method: 'DELETE' })
+          );
+
+          const results = await Promise.all(deletePromises);
+          const failedCount = results.filter(r => !r.ok).length;
+
+          if (failedCount === 0) {
+            showSuccess(`Successfully deleted ${selectedIds.length} feature(s)!`);
+          } else {
+            showError(`Failed to delete ${failedCount} feature(s)`);
+          }
+
+          setSelectedIds([]);
+          fetchFeatures();
+        } catch (error) {
+          console.error('Error bulk deleting features:', error);
+          showError('Failed to delete features');
+        }
+      },
+      'Delete Features'
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === features.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(features.map(f => f.id));
     }
+  };
+
+  const toggleSelectOne = (id: number) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
   };
 
   return (
@@ -158,10 +206,18 @@ export default function AdminFeaturesPage() {
             Manage features displayed on the landing page
           </p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Feature
-        </Button>
+        <div className="flex gap-2">
+          {selectedIds.length > 0 && (
+            <Button variant="destructive" onClick={handleBulkDelete}>
+              <Trash className="h-4 w-4 mr-2" />
+              Delete ({selectedIds.length})
+            </Button>
+          )}
+          <Button onClick={handleCreate}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Feature
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
@@ -228,6 +284,12 @@ export default function AdminFeaturesPage() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">
+                <Checkbox
+                  checked={selectedIds.length === features.length && features.length > 0}
+                  onCheckedChange={toggleSelectAll}
+                />
+              </TableHead>
               <TableHead>Title</TableHead>
               <TableHead>Description</TableHead>
               <TableHead>Icon</TableHead>
@@ -240,19 +302,25 @@ export default function AdminFeaturesPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                   Loading features...
                 </TableCell>
               </TableRow>
             ) : features.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                   No features found. Create your first feature to get started.
                 </TableCell>
               </TableRow>
             ) : (
               features.map((feature) => (
                 <TableRow key={feature.id}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedIds.includes(feature.id)}
+                      onCheckedChange={() => toggleSelectOne(feature.id)}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium">{feature.title}</TableCell>
                   <TableCell className="max-w-xs truncate">
                     {feature.description}

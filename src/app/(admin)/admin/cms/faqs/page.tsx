@@ -1,15 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, Edit, Trash2, HelpCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, HelpCircle, Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { useAlertDialog } from '@/hooks/use-alert-dialog';
 
 interface FAQ {
   id: number;
@@ -22,10 +24,12 @@ interface FAQ {
 }
 
 export default function AdminFaqsPage() {
+  const { showError, showSuccess, showConfirm, AlertDialog } = useAlertDialog();
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedFaq, setSelectedFaq] = useState<FAQ | null>(null);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [formData, setFormData] = useState({
     question: '',
     answer: '',
@@ -91,15 +95,69 @@ export default function AdminFaqsPage() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Delete this FAQ?')) return;
+  const handleDelete = (id: number) => {
+    showConfirm(
+      'Are you sure you want to delete this FAQ? This action cannot be undone.',
+      async () => {
+        try {
+          const response = await fetch(`/api/admin/cms/faqs/${id}`, { method: 'DELETE' });
+          if (response.ok) {
+            showSuccess('FAQ deleted!');
+            fetchFaqs();
+          } else {
+            const data = await response.json();
+            showError(data.error || 'Failed to delete FAQ');
+          }
+        } catch (error) {
+          console.error('Error deleting FAQ:', error);
+          showError('Failed to delete FAQ');
+        }
+      },
+      'Delete FAQ'
+    );
+  };
 
-    try {
-      const response = await fetch(`/api/admin/cms/faqs/${id}`, { method: 'DELETE' });
-      if (response.ok) fetchFaqs();
-    } catch (error) {
-      console.error('Error deleting FAQ:', error);
+  const handleBulkDelete = () => {
+    showConfirm(
+      `Are you sure you want to delete ${selectedIds.length} FAQ(s)? This action cannot be undone.`,
+      async () => {
+        try {
+          const deletePromises = selectedIds.map(id =>
+            fetch(`/api/admin/cms/faqs/${id}`, { method: 'DELETE' })
+          );
+
+          const results = await Promise.all(deletePromises);
+          const failedCount = results.filter(r => !r.ok).length;
+
+          if (failedCount === 0) {
+            showSuccess(`Successfully deleted ${selectedIds.length} FAQ(s)!`);
+          } else {
+            showError(`Failed to delete ${failedCount} FAQ(s)`);
+          }
+
+          setSelectedIds([]);
+          fetchFaqs();
+        } catch (error) {
+          console.error('Error bulk deleting FAQs:', error);
+          showError('Failed to delete FAQs');
+        }
+      },
+      'Delete FAQs'
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === faqs.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(faqs.map(f => f.id));
     }
+  };
+
+  const toggleSelectOne = (id: number) => {
+    setSelectedIds(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
   };
 
   return (
@@ -109,16 +167,30 @@ export default function AdminFaqsPage() {
           <h1 className="text-2xl font-bold text-foreground">FAQs</h1>
           <p className="mt-1 text-sm text-muted-foreground">Manage frequently asked questions</p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add FAQ
-        </Button>
+        <div className="flex gap-2">
+          {selectedIds.length > 0 && (
+            <Button variant="destructive" onClick={handleBulkDelete}>
+              <Trash className="h-4 w-4 mr-2" />
+              Delete ({selectedIds.length})
+            </Button>
+          )}
+          <Button onClick={handleCreate}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add FAQ
+          </Button>
+        </div>
       </div>
 
       <div className="bg-card border shadow rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-12">
+                <Checkbox
+                  checked={selectedIds.length === faqs.length && faqs.length > 0}
+                  onCheckedChange={toggleSelectAll}
+                />
+              </TableHead>
               <TableHead>Question</TableHead>
               <TableHead>Category</TableHead>
               <TableHead>Order</TableHead>
@@ -129,15 +201,21 @@ export default function AdminFaqsPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">Loading...</TableCell>
+                <TableCell colSpan={6} className="text-center py-8">Loading...</TableCell>
               </TableRow>
             ) : faqs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8">No FAQs found</TableCell>
+                <TableCell colSpan={6} className="text-center py-8">No FAQs found</TableCell>
               </TableRow>
             ) : (
               faqs.map((faq) => (
                 <TableRow key={faq.id}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedIds.includes(faq.id)}
+                      onCheckedChange={() => toggleSelectOne(faq.id)}
+                    />
+                  </TableCell>
                   <TableCell className="font-medium max-w-md">{faq.question}</TableCell>
                   <TableCell>
                     {faq.category ? (
@@ -226,6 +304,9 @@ export default function AdminFaqsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Alert Dialog */}
+      <AlertDialog />
     </div>
   );
 }

@@ -44,7 +44,7 @@ interface PaymentAccount {
 }
 
 export default function PaymentAccountsPage() {
-  const { showError, showSuccess, AlertDialog } = useAlertDialog();
+  const { showError, showSuccess, showConfirm, AlertDialog } = useAlertDialog();
   const [accounts, setAccounts] = useState<PaymentAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDialog, setShowDialog] = useState(false);
@@ -106,22 +106,26 @@ export default function PaymentAccountsPage() {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this payment account?')) return;
+  const handleDelete = (id: number) => {
+    showConfirm(
+      'Are you sure you want to delete this payment account? This action cannot be undone.',
+      async () => {
+        try {
+          const response = await fetch(`/api/admin/payment-accounts/${id}`, {
+            method: 'DELETE',
+          });
 
-    try {
-      const response = await fetch(`/api/admin/payment-accounts/${id}`, {
-        method: 'DELETE',
-      });
+          if (!response.ok) throw new Error('Failed to delete account');
 
-      if (!response.ok) throw new Error('Failed to delete account');
-
-      showSuccess('Account deleted!');
-      fetchAccounts();
-    } catch (error) {
-      console.error('Error deleting account:', error);
-      showError('Failed to delete account');
-    }
+          showSuccess('Account deleted!');
+          fetchAccounts();
+        } catch (error) {
+          console.error('Error deleting account:', error);
+          showError('Failed to delete account');
+        }
+      },
+      'Delete Payment Account'
+    );
   };
 
   const handleEdit = (account: PaymentAccount) => {

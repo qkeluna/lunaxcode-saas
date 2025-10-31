@@ -4,6 +4,7 @@ import { useState } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -16,6 +17,8 @@ interface AlertDialogState {
   title: string;
   description: string;
   variant?: 'default' | 'destructive';
+  type?: 'alert' | 'confirm';
+  onConfirm?: () => void | Promise<void>;
 }
 
 export function useAlertDialog() {
@@ -24,6 +27,7 @@ export function useAlertDialog() {
     title: '',
     description: '',
     variant: 'default',
+    type: 'alert',
   });
 
   const showAlert = (description: string, title = 'Notification', variant: 'default' | 'destructive' = 'default') => {
@@ -32,6 +36,7 @@ export function useAlertDialog() {
       title,
       description,
       variant,
+      type: 'alert',
     });
   };
 
@@ -43,11 +48,34 @@ export function useAlertDialog() {
     showAlert(description, title, 'default');
   };
 
+  const showConfirm = (
+    description: string,
+    onConfirm: () => void | Promise<void>,
+    title = 'Confirm Action',
+    variant: 'default' | 'destructive' = 'destructive'
+  ) => {
+    setState({
+      isOpen: true,
+      title,
+      description,
+      variant,
+      type: 'confirm',
+      onConfirm,
+    });
+  };
+
+  const handleConfirm = async () => {
+    if (state.onConfirm) {
+      await state.onConfirm();
+    }
+    setState(prev => ({ ...prev, isOpen: false }));
+  };
+
   const AlertDialogComponent = () => (
     <AlertDialog open={state.isOpen} onOpenChange={(open) => setState(prev => ({ ...prev, isOpen: open }))}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className={state.variant === 'destructive' ? 'text-red-600' : ''}>
+          <AlertDialogTitle className={state.variant === 'destructive' ? 'text-red-600 dark:text-red-400' : ''}>
             {state.title}
           </AlertDialogTitle>
           <AlertDialogDescription className="text-base">
@@ -55,7 +83,19 @@ export function useAlertDialog() {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogAction>OK</AlertDialogAction>
+          {state.type === 'confirm' ? (
+            <>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleConfirm}
+                className={state.variant === 'destructive' ? 'bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700' : ''}
+              >
+                Confirm
+              </AlertDialogAction>
+            </>
+          ) : (
+            <AlertDialogAction>OK</AlertDialogAction>
+          )}
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -65,6 +105,7 @@ export function useAlertDialog() {
     showAlert,
     showError,
     showSuccess,
+    showConfirm,
     AlertDialog: AlertDialogComponent,
   };
 }
