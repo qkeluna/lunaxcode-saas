@@ -314,7 +314,7 @@ export const Navbar06 = React.forwardRef<HTMLElement, Navbar06Props>(
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
-                    className="group h-8 w-8 hover:bg-accent hover:text-accent-foreground"
+                    className="group h-8 w-8 text-white hover:bg-white/10 hover:text-white"
                     variant="ghost"
                     size="icon"
                   >

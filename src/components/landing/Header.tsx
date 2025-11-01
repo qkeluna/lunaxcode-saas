@@ -34,16 +34,16 @@ export default function Header() {
   );
 
   const customActions = (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1 md:gap-2">
       <ThemeToggle className="text-white hover:text-purple-300 hover:bg-white/10" />
-      <Link href="/login">
-        <Button variant="ghost" className="text-base font-medium text-white hover:text-purple-300 hover:bg-white/10">
+      <Link href="/login" className="hidden sm:inline-flex">
+        <Button variant="ghost" className="text-sm md:text-base font-medium text-white hover:text-purple-300 hover:bg-white/10">
           Login
         </Button>
       </Link>
       <Button
         onClick={handleGetStartedClick}
-        className="text-base font-medium bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white"
+        className="text-sm md:text-base font-medium bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-3 md:px-4"
       >
         Get Started
       </Button>

@@ -56,9 +56,8 @@ export default function Hero() {
             {/* Subheading */}
             <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 max-w-2xl leading-relaxed">
               Professional websites starting at <strong className="text-gray-900 dark:text-white">₱8,000</strong>.
-              AI-powered development means faster delivery, transparent pricing,
-              and quality your business deserves. From landing pages to complete
-              web applications—<strong className="text-gray-900 dark:text-white">we make going online easy for Filipino businesses.</strong>
+              Get faster delivery, transparent pricing, and the quality your business deserves.
+              From landing pages to complete web applications—<strong className="text-gray-900 dark:text-white">we make going online easy for Filipino businesses.</strong>
             </p>
 
             {/* CTA Buttons */}
