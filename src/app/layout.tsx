@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Onest } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 
-const inter = Inter({ subsets: ['latin'] });
+const onest = Onest({
+  subsets: ['latin'],
+  variable: '--font-onest',
+});
 
 export const metadata: Metadata = {
   title: 'Lunaxcode - AI-Powered Project Management',
@@ -17,7 +20,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${onest.variable} font-sans`}>
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -144,7 +144,7 @@ export default function Hero() {
                     within a month. Lunaxcode made it affordable and stress-free.
                     Best investment for our business!&quot;
                   </p>
-                  <p className="text-gray-600 dark:text-gray-400 text-xs mt-3">— Maria Santos, Online Store Owner</p>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs mt-3">— Rem Luna, K Click Self Photo Studio Owner</p>
                 </div>
               </div>
             </div>
