@@ -11,6 +11,11 @@ const onest = Onest({
 export const metadata: Metadata = {
   title: 'Lunaxcode - AI-Powered Project Management',
   description: 'AI-powered project management system for Filipino web development agencies',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
+  manifest: '/site.webmanifest',
 };
 
 export default function RootLayout({
