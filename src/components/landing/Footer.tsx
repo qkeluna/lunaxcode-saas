@@ -11,12 +11,19 @@ export default function Footer() {
         >
           {/* Company Info */}
           <div>
-            <h3
-              className="text-2xl font-bold mb-4 bg-gradient-to-r text-transparent bg-clip-text"
-              style={{ backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)` }}
-            >
-              Lunaxcode
-            </h3>
+            <div className="flex items-center gap-2 mb-4">
+              <img
+                src="/android-chrome-192x192.png"
+                alt="Lunaxcode Logo"
+                className="w-8 h-8"
+              />
+              <h3
+                className="text-2xl font-bold bg-gradient-to-r text-transparent bg-clip-text"
+                style={{ backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)` }}
+              >
+                Lunaxcode
+              </h3>
+            </div>
             <p
               className="text-gray-600 dark:text-gray-400 leading-relaxed"
               style={{ marginBottom: 'var(--sp-space-6)' }}

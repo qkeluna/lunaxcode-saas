@@ -272,13 +272,13 @@ See `docs/SEEDING_SUMMARY.md` for detailed seed data documentation.
 Required in `.env.local`:
 
 ```env
-# NextAuth
+# NextAuth v5 (Auth.js)
 NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=<generate-with-openssl>
+AUTH_SECRET=<generate-with-openssl>
 
 # Google OAuth
-GOOGLE_CLIENT_ID=<from-google-cloud-console>
-GOOGLE_CLIENT_SECRET=<from-google-cloud-console>
+AUTH_GOOGLE_ID=<from-google-cloud-console>
+AUTH_GOOGLE_SECRET=<from-google-cloud-console>
 
 # Google Gemini API (AI generation)
 GEMINI_API_KEY=<from-google-ai-studio>
@@ -569,11 +569,11 @@ npm run db:seed:prod
 3. Add the following variables for **Production** and **Preview**:
 
 ```
-NEXTAUTH_SECRET=<your-secret>
+AUTH_SECRET=<your-secret>
 NEXTAUTH_URL=https://lunaxcode-saas.pages.dev (or your custom domain)
 
-GOOGLE_CLIENT_ID=<your-google-client-id>
-GOOGLE_CLIENT_SECRET=<your-google-client-secret>
+AUTH_GOOGLE_ID=<your-google-client-id>
+AUTH_GOOGLE_SECRET=<your-google-client-secret>
 
 GEMINI_API_KEY=<your-gemini-api-key>
 

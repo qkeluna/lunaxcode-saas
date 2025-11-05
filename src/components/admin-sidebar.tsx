@@ -19,6 +19,7 @@ import {
   DollarSignIcon,
   PackageIcon,
   ClipboardListIcon,
+  HomeIcon,
 } from "lucide-react"
 
 import { NavUser } from "@/components/nav-user"
@@ -157,13 +158,28 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
               className="data-[slot=sidebar-menu-button]:!p-2"
             >
               <Link href="/admin" className="group">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground transition-all duration-300 group-hover:scale-110 group-hover:rotate-12">
-                  <ShieldIcon className="size-4 transition-transform duration-300" />
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
+                  <img
+                    src="/android-chrome-192x192.png"
+                    alt="Lunaxcode Logo"
+                    className="size-8 rounded-lg"
+                  />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Lunaxcode</span>
-                  <span className="truncate text-xs">Admin Panel</span>
+                  <span className="truncate font-semibold">Admin Panel</span>
                 </div>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              tooltip="Back to Home"
+              className="mt-1"
+            >
+              <Link href="/" className="group">
+                <HomeIcon className="transition-all duration-300 ease-in-out group-hover/menu-item:scale-110" />
+                <span>Back to Home</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

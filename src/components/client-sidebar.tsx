@@ -88,12 +88,15 @@ export function ClientSidebar({ user, ...props }: ClientSidebarProps) {
               className="data-[slot=sidebar-menu-button]:!p-2"
             >
               <Link href="/dashboard" className="group">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
-                  <LayoutDashboardIcon className="size-4 transition-transform duration-300" />
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-6">
+                  <img
+                    src="/android-chrome-192x192.png"
+                    alt="Lunaxcode Logo"
+                    className="size-8 rounded-lg"
+                  />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Lunaxcode</span>
-                  <span className="truncate text-xs">Client Portal</span>
+                  <span className="truncate font-semibold">Client Portal</span>
                 </div>
               </Link>
             </SidebarMenuButton>

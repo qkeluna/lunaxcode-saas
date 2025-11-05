@@ -1,3 +1,4 @@
+import { auth } from '@/auth';
 import Header from '@/components/landing/Header';
 import Hero from '@/components/landing/Hero';
 import TrustBadges from '@/components/landing/TrustBadges';
@@ -15,10 +16,12 @@ import FloatingButtons from '@/components/landing/FloatingButtons';
 export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const session = await auth();
+
   return (
     <>
-      <Header />
+      <Header session={session} />
       <main className="min-h-screen">
         <Hero />
         <TrustBadges />
