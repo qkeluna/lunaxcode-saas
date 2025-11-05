@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { getDatabase } from '@/lib/db/client';
 import { messages, unreadCounts, projects, users } from '@/lib/db/schema';
 import { eq, desc, and, sql } from 'drizzle-orm';
+import { notifyNewMessage } from '@/lib/email';
 
 // In-memory fallback for when D1 is not available
 let messagesStore: any[] = [];
@@ -119,6 +120,29 @@ export async function POST(request: NextRequest) {
         createdAt: Date.now(),
       };
       messagesStore.push(savedMessage);
+    }
+
+    // Send email notification to recipient (async, don't wait)
+    // Only send if admin is messaging client (skip client -> admin notifications to reduce noise)
+    if (db && project && isAdmin) {
+      const projectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.lunaxcode.site'}/projects/${project.id}`;
+
+      // Admin sent to client - notify client
+      notifyNewMessage(project.clientEmail, {
+        clientName: project.clientName,
+        projectName: project.name,
+        senderName: session.user.name || 'Admin',
+        messagePreview: content.trim().substring(0, 150),
+        projectUrl,
+      }).then((result) => {
+        if (result.success) {
+          console.log('✅ New message email sent:', result.emailId);
+        } else {
+          console.error('❌ Failed to send new message email:', result.error);
+        }
+      }).catch((error) => {
+        console.error('❌ Error sending new message email:', error);
+      });
     }
 
     return NextResponse.json({

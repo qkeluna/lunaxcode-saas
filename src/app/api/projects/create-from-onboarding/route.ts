@@ -4,6 +4,7 @@ import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
 import { projects, projectAnswers, questions, serviceTypes, tasks, users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { notifyProjectCreated } from '@/lib/email';
 
 export const runtime = 'edge';
 
@@ -187,7 +188,26 @@ If you need to update your project requirements or have questions, please contac
 
     console.log('✅ Project created with pending PRD (Admin will generate)');
 
-    // 9. Return success immediately
+    // 9. Send email notification to client (async, don't wait)
+    const projectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.lunaxcode.site'}/projects/${project.id}`;
+
+    notifyProjectCreated(clientEmail, {
+      clientName,
+      projectName: project.name,
+      serviceName,
+      price: service.basePrice,
+      projectUrl,
+    }).then((result) => {
+      if (result.success) {
+        console.log('✅ Project creation email sent:', result.emailId);
+      } else {
+        console.error('❌ Failed to send project creation email:', result.error);
+      }
+    }).catch((error) => {
+      console.error('❌ Error sending project creation email:', error);
+    });
+
+    // 10. Return success immediately
     return NextResponse.json({
       success: true,
       projectId: project.id,

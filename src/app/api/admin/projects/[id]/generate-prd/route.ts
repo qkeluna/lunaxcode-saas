@@ -5,6 +5,7 @@ import { projects, tasks, projectAnswers, serviceTypes } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { generatePRDUniversal, generateTasksUniversal } from '@/lib/ai/universal-ai';
 import { checkIsAdmin } from '@/lib/auth/check-admin';
+import { notifyPRDGenerated } from '@/lib/email';
 
 export const runtime = 'edge';
 
@@ -156,6 +157,23 @@ export async function POST(
       }
 
       console.log(`✅ All tasks saved to database for project ${projectId}`);
+
+      // 12. Send email notification to client (async, don't wait)
+      const projectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.lunaxcode.site'}/projects/${projectId}`;
+
+      notifyPRDGenerated(project.clientEmail, {
+        clientName: project.clientName,
+        projectName: project.name,
+        projectUrl,
+      }).then((result) => {
+        if (result.success) {
+          console.log('✅ PRD notification email sent:', result.emailId);
+        } else {
+          console.error('❌ Failed to send PRD notification email:', result.error);
+        }
+      }).catch((error) => {
+        console.error('❌ Error sending PRD notification email:', error);
+      });
 
       return NextResponse.json({
         success: true,

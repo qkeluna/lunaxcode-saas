@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { getDb } from '@/lib/db/client';
 import { payments, projects } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { notifyPaymentStatus } from '@/lib/email';
 
 export const runtime = 'edge';
 
@@ -102,6 +103,35 @@ export async function PATCH(
           })
           .where(eq(projects.id, payment.projectId));
       }
+    }
+
+    // Send email notification to client (async, don't wait)
+    const project = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.id, payment.projectId))
+      .get();
+
+    if (project) {
+      const projectUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://app.lunaxcode.site'}/projects/${project.id}`;
+
+      notifyPaymentStatus(project.clientEmail, {
+        clientName: project.clientName,
+        projectName: project.name,
+        paymentType: payment.paymentType,
+        amount: payment.amount,
+        status: status as 'verified' | 'rejected',
+        rejectionReason: status === 'rejected' ? rejectionReason : undefined,
+        projectUrl,
+      }).then((result) => {
+        if (result.success) {
+          console.log('✅ Payment status email sent:', result.emailId);
+        } else {
+          console.error('❌ Failed to send payment status email:', result.error);
+        }
+      }).catch((error) => {
+        console.error('❌ Error sending payment status email:', error);
+      });
     }
 
     return NextResponse.json({
