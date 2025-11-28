@@ -251,6 +251,35 @@ export const paymentAccounts = sqliteTable('payment_accounts', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
+// AI Usage Log table (tracks all AI generations per user with limits)
+export const aiUsageLog = sqliteTable('ai_usage_log', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  projectId: integer('project_id').references(() => projects.id, { onDelete: 'set null' }),
+  generationType: text('generation_type').notNull(), // 'prd' | 'tasks' | 'description_suggestion' | 'description_enhance'
+  provider: text('provider').notNull(), // 'google' | 'openai' | 'anthropic' | etc.
+  model: text('model').notNull(), // 'gemini-2.5-flash' | 'gpt-4o' | etc.
+  promptTokens: integer('prompt_tokens'),
+  completionTokens: integer('completion_tokens'),
+  totalTokens: integer('total_tokens'),
+  status: text('status').notNull().default('success'), // 'success' | 'error' | 'rate_limited'
+  errorMessage: text('error_message'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+// AI Settings table (admin-configured API keys stored server-side)
+export const aiSettings = sqliteTable('ai_settings', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  provider: text('provider').notNull().unique(), // 'google' | 'openai' | 'anthropic' | 'deepseek' | 'groq'
+  apiKey: text('api_key').notNull(), // Encrypted API key
+  model: text('model').notNull(), // Default model for this provider
+  isActive: integer('is_active', { mode: 'boolean' }).default(true),
+  maxGenerationsPerUser: integer('max_generations_per_user').default(3), // Hard limit per user
+  createdBy: text('created_by').references(() => users.id),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
 // NextAuth Session table
 export const sessions = sqliteTable('sessions', {
   sessionToken: text('session_token').primaryKey(),
@@ -332,3 +361,9 @@ export type NewAddOn = typeof addOns.$inferInsert;
 
 export type ProjectAddOn = typeof projectAddOns.$inferSelect;
 export type NewProjectAddOn = typeof projectAddOns.$inferInsert;
+
+export type AIUsageLog = typeof aiUsageLog.$inferSelect;
+export type NewAIUsageLog = typeof aiUsageLog.$inferInsert;
+
+export type AISetting = typeof aiSettings.$inferSelect;
+export type NewAISetting = typeof aiSettings.$inferInsert;

@@ -126,8 +126,8 @@ export default function OnboardingPage() {
         // Fetch the specific service details from public API
         const response = await fetch('/api/public/services');
         if (response.ok) {
-          const services = await response.json();
-          const service = services.find((s: any) => s.id === parseInt(serviceId));
+          const services: ServiceType[] = await response.json();
+          const service = services.find((s) => s.id === parseInt(serviceId));
 
           if (service) {
             setSelectedService(service);
@@ -160,8 +160,8 @@ export default function OnboardingPage() {
         try {
           const response = await fetch(`/api/questions/${formData.serviceId}`);
           if (response.ok) {
-            const data = await response.json();
-            const sortedQuestions = data.questions.sort((a: Question, b: Question) => a.sortOrder - b.sortOrder);
+            const data: { questions: Question[] } = await response.json();
+            const sortedQuestions = data.questions.sort((a, b) => a.sortOrder - b.sortOrder);
             setQuestions(sortedQuestions);
 
             // Pre-select essential sections for Landing Page (supports both 'required_sections' and 'sections' keys)
@@ -169,11 +169,11 @@ export default function OnboardingPage() {
               (q: Question) => q.questionKey === 'required_sections' || q.questionKey === 'sections'
             );
             if (requiredSectionsQuestion) {
-              const existingAnswer = formData.questionAnswers[requiredSectionsQuestion.questionKey];
-              // Only pre-select if there's no existing answer OR if the answer is empty
-              const hasNoAnswer = !existingAnswer || (Array.isArray(existingAnswer) && existingAnswer.length === 0);
-
-              if (hasNoAnswer) {
+              setFormData(prev => {
+                const existingAnswer = prev.questionAnswers[requiredSectionsQuestion.questionKey];
+                const hasNoAnswer = !existingAnswer || (Array.isArray(existingAnswer) && existingAnswer.length === 0);
+                if (!hasNoAnswer) return prev;
+                
                 // Pre-check must-have sections for landing pages
                 const mustHaveSections = [
                   'Header (Logo, Navigation)',
@@ -182,24 +182,24 @@ export default function OnboardingPage() {
                   'Contact Form',
                   'Footer (Copyright, Links)'
                 ];
-
-                setFormData(prev => ({
+                return {
                   ...prev,
                   questionAnswers: {
                     ...prev.questionAnswers,
                     [requiredSectionsQuestion.questionKey]: mustHaveSections
                   }
-                }));
-              }
+                };
+              });
             }
 
             // Pre-select essential pages for "pages" checkbox question (Business Website)
             const pagesQuestion = sortedQuestions.find((q: Question) => q.questionKey === 'pages');
             if (pagesQuestion) {
-              const existingAnswer = formData.questionAnswers[pagesQuestion.questionKey];
-              const hasNoAnswer = !existingAnswer || (Array.isArray(existingAnswer) && existingAnswer.length === 0);
-
-              if (hasNoAnswer) {
+              setFormData(prev => {
+                const existingAnswer = prev.questionAnswers[pagesQuestion.questionKey];
+                const hasNoAnswer = !existingAnswer || (Array.isArray(existingAnswer) && existingAnswer.length === 0);
+                if (!hasNoAnswer) return prev;
+                
                 // Pre-check essential pages for business websites
                 const essentialPages = [
                   'Header (Logo, Navigation)',
@@ -209,38 +209,37 @@ export default function OnboardingPage() {
                   'Contact',
                   'Footer (Copyright, Links, Social)'
                 ];
-
-                setFormData(prev => ({
+                return {
                   ...prev,
                   questionAnswers: {
                     ...prev.questionAnswers,
                     [pagesQuestion.questionKey]: essentialPages
                   }
-                }));
-              }
+                };
+              });
             }
 
             // Pre-select essential features for "features" checkbox question (Business Website)
             const featuresQuestion = sortedQuestions.find((q: Question) => q.questionKey === 'features');
             if (featuresQuestion) {
-              const existingAnswer = formData.questionAnswers[featuresQuestion.questionKey];
-              const hasNoAnswer = !existingAnswer || (Array.isArray(existingAnswer) && existingAnswer.length === 0);
-
-              if (hasNoAnswer) {
+              setFormData(prev => {
+                const existingAnswer = prev.questionAnswers[featuresQuestion.questionKey];
+                const hasNoAnswer = !existingAnswer || (Array.isArray(existingAnswer) && existingAnswer.length === 0);
+                if (!hasNoAnswer) return prev;
+                
                 // Pre-check essential features for business websites
                 const essentialFeatures = [
                   'Contact Form',
                   'Google Maps'
                 ];
-
-                setFormData(prev => ({
+                return {
                   ...prev,
                   questionAnswers: {
                     ...prev.questionAnswers,
                     [featuresQuestion.questionKey]: essentialFeatures
                   }
-                }));
-              }
+                };
+              });
             }
           }
         } catch (error) {
@@ -288,10 +287,10 @@ export default function OnboardingPage() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data: { suggestions?: string[] } = await response.json();
         setAiSuggestions(data.suggestions || []);
       } else {
-        const error = await response.json();
+        const error: { error?: string } = await response.json();
         showError(error.error || 'Failed to generate suggestions');
       }
     } catch (error) {
@@ -337,12 +336,12 @@ export default function OnboardingPage() {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data: { enhanced?: string } = await response.json();
         if (data.enhanced) {
           setFormData({ ...formData, description: data.enhanced });
         }
       } else {
-        const error = await response.json();
+        const error: { error?: string } = await response.json();
         showError(error.error || 'Failed to enhance description');
       }
     } catch (error) {

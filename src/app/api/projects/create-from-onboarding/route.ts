@@ -4,6 +4,7 @@ import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
 import { projects, projectAnswers, questions, serviceTypes, tasks, users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { generatePRD, generateTasks } from '@/lib/ai/gemini';
 
 export const runtime = 'edge';
 
@@ -139,11 +140,31 @@ export async function POST(request: NextRequest) {
       console.log(`✅ ${answers.length} question answers stored`);
     }
 
-    // 8. Set initial PRD message (Admin will generate it later)
-    await db
-      .update(projects)
-      .set({
-        prd: `# Project Requirements Document
+    // 8. Generate PRD with AI
+    console.log('🤖 Generating PRD with AI...');
+    const geminiApiKey = process.env.GEMINI_API_KEY;
+
+    if (!geminiApiKey) {
+      console.error('❌ GEMINI_API_KEY not configured');
+      return NextResponse.json(
+        { error: 'AI service not configured. Please contact support.' },
+        { status: 500 }
+      );
+    }
+
+    let generatedPRD: string;
+    try {
+      generatedPRD = await generatePRD({
+        serviceName: serviceName,
+        description: description,
+        questionAnswers: questionAnswers || {},
+        apiKey: geminiApiKey
+      });
+      console.log('✅ PRD generated successfully');
+    } catch (error: any) {
+      console.error('❌ Error generating PRD:', error);
+      // Fallback to a basic PRD if AI generation fails
+      generatedPRD = `# Project Requirements Document
 
 ## Project Overview
 
@@ -153,46 +174,87 @@ export async function POST(request: NextRequest) {
 
 **Description**: ${description}
 
----
+## Client Requirements
 
-## Status Update
+${Object.entries(questionAnswers || {})
+  .map(([key, value]) => {
+    const formattedValue = Array.isArray(value) ? value.join(', ') : value;
+    return `- ${key.replace(/_/g, ' ')}: ${formattedValue}`;
+  })
+  .join('\n')}
 
-Your project has been successfully submitted! Our team is currently reviewing your requirements.
+## Next Steps
 
-## What Happens Next?
+Our team will review your requirements and reach out with a detailed project plan.`;
+    }
 
-1. **Team Review** - Our experts will analyze your project requirements (24-48 hours)
-2. **PRD Creation** - We'll create a comprehensive requirements document
-3. **Task Planning** - We'll break down the project into detailed tasks
-4. **Your Review** - You'll review and approve the project plan
-5. **Payment** - 50% deposit to begin development
-6. **Project Kickoff** - Development begins once deposit is verified
+    // 9. Generate tasks with AI
+    console.log('🤖 Generating tasks with AI...');
+    let generatedTasks: Array<{
+      title: string;
+      description: string;
+      section: string;
+      priority: string;
+      estimatedHours: number;
+      dependencies: string;
+      order: number;
+    }> = [];
 
-## Expected Timeline
+    try {
+      generatedTasks = await generateTasks({
+        prd: generatedPRD,
+        apiKey: geminiApiKey
+      });
+      console.log(`✅ ${generatedTasks.length} tasks generated successfully`);
+    } catch (error: any) {
+      console.error('❌ Error generating tasks:', error);
+      // Continue without tasks - can be generated later by admin
+    }
 
-- **PRD Completion**: 24-48 hours
-- **Your Review**: 2-3 business days  
-- **Project Start**: After 50% deposit payment is verified
-
-## Need Changes?
-
-If you need to update your project requirements or have questions, please contact our team anytime.
-
----
-
-*Our team will reach out to you shortly with the complete Project Requirements Document and task breakdown.*`,
+    // 10. Update project with generated PRD
+    await db
+      .update(projects)
+      .set({
+        prd: generatedPRD,
         updatedAt: new Date()
       })
       .where(eq(projects.id, project.id));
 
-    console.log('✅ Project created with pending PRD (Admin will generate)');
+    console.log('✅ PRD saved to database');
 
-    // 9. Return success immediately
+    // 11. Store generated tasks
+    if (generatedTasks.length > 0) {
+      for (const task of generatedTasks) {
+        try {
+          await db.insert(tasks).values({
+            projectId: project.id,
+            title: task.title,
+            description: task.description,
+            section: task.section,
+            priority: task.priority as 'low' | 'medium' | 'high',
+            estimatedHours: task.estimatedHours,
+            dependencies: task.dependencies,
+            order: task.order,
+            status: 'pending',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          });
+        } catch (error) {
+          console.error(`Error storing task ${task.title}:`, error);
+          // Continue with other tasks
+        }
+      }
+      console.log(`✅ ${generatedTasks.length} tasks saved to database`);
+    }
+
+    // 12. Return success
     return NextResponse.json({
       success: true,
       projectId: project.id,
-      message: 'Project created successfully. Our team will review and generate the PRD shortly.',
-      redirectUrl: `/projects/${project.id}`
+      message: 'Project created successfully with AI-generated PRD and tasks.',
+      redirectUrl: `/projects/${project.id}`,
+      prdGenerated: true,
+      tasksGenerated: generatedTasks.length
     });
 
   } catch (error: any) {
