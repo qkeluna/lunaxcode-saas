@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Settings, User, Bell, Shield, Database, Palette } from 'lucide-react';
+import { Settings, User, Bell, Shield, Database, Palette, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -92,8 +92,9 @@ export default function AdminSettingsPage() {
       </div>
 
       {saved && (
-        <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
-          ✓ Settings saved successfully
+        <div className="bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-200 px-4 py-3 rounded-xl flex items-center gap-2">
+          <CheckCircle className="h-4 w-4" />
+          Settings saved successfully
         </div>
       )}
 
@@ -453,7 +454,7 @@ export default function AdminSettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-3 p-4 bg-muted/50 dark:bg-muted/30 rounded-xl border border-border/50">
                 <div className="flex-shrink-0">
                   <svg className="h-8 w-8" viewBox="0 0 24 24">
                     <path

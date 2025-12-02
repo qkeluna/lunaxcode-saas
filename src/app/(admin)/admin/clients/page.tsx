@@ -208,90 +208,76 @@ export default function AdminClientsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Client Management</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manage all clients and view their project history
-          </p>
-        </div>
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Client Management</h1>
+        <p className="text-muted-foreground">
+          Manage all clients and view their project history
+        </p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-card border overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Mail className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-muted-foreground truncate">Total Clients</dt>
-                  <dd className="text-lg font-semibold text-foreground">{clients.length}</dd>
-                </dl>
-              </div>
+        <div className="group relative overflow-hidden rounded-xl bg-card border border-border/50 p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-purple-500/10 dark:from-violet-500/5 dark:to-purple-500/5 opacity-50 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative flex items-center gap-4">
+            <div className="flex-shrink-0 rounded-lg bg-violet-500/10 dark:bg-violet-500/20 p-2.5">
+              <Mail className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Total Clients</p>
+              <p className="text-2xl font-bold text-foreground">{clients.length}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-card border overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Clock className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-muted-foreground truncate">Active Clients</dt>
-                  <dd className="text-lg font-semibold text-foreground">
-                    {clients.filter(c => c.stats.activeProjects > 0).length}
-                  </dd>
-                </dl>
-              </div>
+        <div className="group relative overflow-hidden rounded-xl bg-card border border-border/50 p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 dark:from-blue-500/5 dark:to-cyan-500/5 opacity-50 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative flex items-center gap-4">
+            <div className="flex-shrink-0 rounded-lg bg-blue-500/10 dark:bg-blue-500/20 p-2.5">
+              <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Active Clients</p>
+              <p className="text-2xl font-bold text-foreground">
+                {clients.filter(c => c.stats.activeProjects > 0).length}
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-card border overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <FolderKanban className="h-6 w-6 text-green-600 dark:text-green-400" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-muted-foreground truncate">Total Projects</dt>
-                  <dd className="text-lg font-semibold text-foreground">
-                    {clients.reduce((sum, c) => sum + c.stats.totalProjects, 0)}
-                  </dd>
-                </dl>
-              </div>
+        <div className="group relative overflow-hidden rounded-xl bg-card border border-border/50 p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 dark:from-emerald-500/5 dark:to-green-500/5 opacity-50 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative flex items-center gap-4">
+            <div className="flex-shrink-0 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 p-2.5">
+              <FolderKanban className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Total Projects</p>
+              <p className="text-2xl font-bold text-foreground">
+                {clients.reduce((sum, c) => sum + c.stats.totalProjects, 0)}
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-card border overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <DollarSign className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-muted-foreground truncate">Total Revenue</dt>
-                  <dd className="text-lg font-semibold text-foreground">
-                    {formatCurrency(clients.reduce((sum, c) => sum + c.stats.totalSpent, 0))}
-                  </dd>
-                </dl>
-              </div>
+        <div className="group relative overflow-hidden rounded-xl bg-card border border-border/50 p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-yellow-500/10 dark:from-amber-500/5 dark:to-yellow-500/5 opacity-50 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative flex items-center gap-4">
+            <div className="flex-shrink-0 rounded-lg bg-amber-500/10 dark:bg-amber-500/20 p-2.5">
+              <DollarSign className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Total Revenue</p>
+              <p className="text-2xl font-bold text-foreground">
+                {formatCurrency(clients.reduce((sum, c) => sum + c.stats.totalSpent, 0))}
+              </p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Search */}
-      <div className="bg-card border p-4 rounded-lg shadow">
+      <div className="rounded-xl bg-card border border-border/50 p-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -299,67 +285,78 @@ export default function AdminClientsPage() {
             placeholder="Search clients by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="pl-9 bg-background"
           />
         </div>
       </div>
 
       {/* Clients Table */}
-      <div className="bg-card border shadow rounded-lg overflow-hidden">
+      <div className="rounded-xl bg-card border border-border/50 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Client</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Projects</TableHead>
-              <TableHead>Active</TableHead>
-              <TableHead>Completed</TableHead>
-              <TableHead>Total Spent</TableHead>
-              <TableHead>Joined</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+            <TableRow className="bg-muted/30 hover:bg-muted/30">
+              <TableHead className="font-semibold">Client</TableHead>
+              <TableHead className="font-semibold">Email</TableHead>
+              <TableHead className="font-semibold">Projects</TableHead>
+              <TableHead className="font-semibold">Active</TableHead>
+              <TableHead className="font-semibold">Completed</TableHead>
+              <TableHead className="font-semibold">Total Spent</TableHead>
+              <TableHead className="font-semibold">Joined</TableHead>
+              <TableHead className="text-right font-semibold">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                  Loading clients...
+                <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    <span>Loading clients...</span>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : filteredClients.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                  No clients found
+                <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
+                  <div className="flex flex-col items-center gap-2">
+                    <Mail className="h-8 w-8 text-muted-foreground/50" />
+                    <span>No clients found</span>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
               filteredClients.map((client) => (
-                <TableRow key={client.id}>
+                <TableRow key={client.id} className="group transition-colors hover:bg-muted/50">
                   <TableCell className="font-medium">{client.name}</TableCell>
                   <TableCell>
-                    <a href={`mailto:${client.email}`} className="text-blue-600 dark:text-blue-400 hover:underline">
+                    <a href={`mailto:${client.email}`} className="text-primary hover:text-primary/80 hover:underline transition-colors">
                       {client.email}
                     </a>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{client.stats.totalProjects}</Badge>
+                    <Badge variant="secondary" className="bg-muted">{client.stats.totalProjects}</Badge>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm text-blue-600 dark:text-blue-400">{client.stats.activeProjects}</span>
+                    <span className="inline-flex items-center justify-center rounded-md bg-blue-100 dark:bg-blue-500/20 px-2 py-0.5 text-xs font-medium text-blue-700 dark:text-blue-400">
+                      {client.stats.activeProjects}
+                    </span>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm text-green-600 dark:text-green-400">{client.stats.completedProjects}</span>
+                    <span className="inline-flex items-center justify-center rounded-md bg-emerald-100 dark:bg-emerald-500/20 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                      {client.stats.completedProjects}
+                    </span>
                   </TableCell>
-                  <TableCell>{formatCurrency(client.stats.totalSpent)}</TableCell>
+                  <TableCell className="font-medium">{formatCurrency(client.stats.totalSpent)}</TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {formatDate(client.createdAt)}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => handleViewDetails(client.id)}
+                        className="h-8 w-8 p-0"
                       >
                         <Eye className="h-4 w-4" />
                       </Button>
@@ -367,6 +364,7 @@ export default function AdminClientsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEditClick(client)}
+                        className="h-8 w-8 p-0"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -374,7 +372,7 @@ export default function AdminClientsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDeleteClient(client.id)}
-                        className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                        className="h-8 w-8 p-0 text-red-600 dark:text-red-400 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-950"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

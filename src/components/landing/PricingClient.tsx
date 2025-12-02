@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, Sparkles, Star, Zap } from 'lucide-react';
+import { Check, ArrowRight, Clock } from 'lucide-react';
 import Link from 'next/link';
 import ContactModal from '@/components/modals/ContactModal';
 
@@ -27,88 +27,78 @@ export default function PricingClient({ plans }: PricingClientProps) {
     <>
       <section
         id="pricing"
-        className="relative py-24 overflow-hidden bg-gradient-to-br from-white via-gray-50 to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-black"
+        className="relative py-24 lg:py-32 bg-muted/30"
         aria-labelledby="pricing-heading"
       >
-        {/* Background decoration */}
-        <div className="absolute inset-0 opacity-10" aria-hidden="true">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-600 rounded-full blur-3xl"></div>
-        </div>
-
-        <div className="relative max-w-7xl mx-auto px-6">
+        <div className="max-w-7xl mx-auto px-6">
           {/* Section Header */}
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center bg-purple-500/10 border border-purple-500/20 text-purple-700 dark:text-purple-400 rounded-full px-4 py-2 gap-2 mb-6 font-bold text-sm">
-              <Star className="w-4 h-4" fill="currentColor" aria-hidden="true" />
-              <span>Simple & Transparent Pricing</span>
-            </div>
-
+          <div className="max-w-2xl mb-16">
+            <p className="text-sm font-medium tracking-widest uppercase text-violet-600 dark:text-violet-400 mb-4">
+              Pricing
+            </p>
             <h2
               id="pricing-heading"
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6"
-              style={{ letterSpacing: '-0.03em' }}
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6"
             >
-              Choose the plan that works for you and your team.
+              Simple, transparent pricing
             </h2>
-
-            <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto mb-8">
-              No hidden fees. Flexible payment options with 50% deposit to start.
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              No hidden fees. Start with 50% deposit, pay the rest on completion.
             </p>
           </div>
 
           {/* Pricing Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
             {plans.map((plan) => (
               <div
                 key={plan.id}
-                className={`relative rounded-2xl border transition-all duration-300 hover:scale-[1.02] flex flex-col ${
+                className={`relative bg-card border rounded-2xl flex flex-col transition-all duration-300 hover:shadow-lg hover:shadow-violet-500/5 ${
                   plan.popular
-                    ? 'bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-900 dark:to-gray-950 border-purple-500/30 shadow-xl shadow-purple-500/20 scale-[1.02]'
-                    : 'bg-white dark:bg-gray-900/50 border-gray-200 dark:border-gray-800 hover:border-purple-200 dark:hover:border-gray-700'
+                    ? 'border-violet-400 dark:border-violet-600 ring-1 ring-violet-400 dark:ring-violet-600'
+                    : 'border-border hover:border-violet-200 dark:hover:border-violet-800'
                 }`}
               >
                 {/* Popular badge */}
                 {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-1.5 text-xs font-bold rounded-full shadow-lg border border-purple-400/20 flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" fill="currentColor" aria-hidden="true" />
-                    POPULAR
+                  <div className="absolute -top-3 left-6 px-3 py-1 bg-violet-600 text-white text-xs font-medium rounded-full">
+                    Popular
                   </div>
                 )}
 
                 <div className="p-8 flex flex-col flex-grow">
                   {/* Plan header */}
-                  <div className="mb-8">
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2" style={{ letterSpacing: '-0.02em' }}>
+                  <div className="mb-6">
+                    <h3 className="text-xl font-semibold text-foreground mb-2">
                       {plan.name}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{plan.description}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {plan.description}
+                    </p>
                   </div>
 
                   {/* Price */}
-                  <div className="mb-8 text-center">
-                    <div className="flex items-baseline justify-center gap-1 mb-2">
-                      <span className="text-sm font-bold text-gray-600 dark:text-gray-400">₱</span>
-                      <span className="text-5xl font-bold text-gray-900 dark:text-white" style={{ letterSpacing: '-0.04em' }}>
+                  <div className="mb-6">
+                    <div className="flex items-baseline gap-1 mb-2">
+                      <span className="text-sm font-medium text-muted-foreground">₱</span>
+                      <span className="text-4xl font-bold text-foreground tracking-tight">
                         {plan.price}
                       </span>
-                      <span className="text-sm font-normal text-gray-500 dark:text-gray-500">/ project</span>
                     </div>
-                    <p className="text-sm text-gray-500 dark:text-gray-500 mb-3">One-time payment</p>
+                    <p className="text-sm text-muted-foreground">One-time payment</p>
+                  </div>
 
-                    {/* Timeline badge */}
-                    <div className="inline-flex items-center gap-2 bg-purple-500/10 border border-purple-500/20 rounded-full px-3 py-2">
-                      <Zap className="w-4 h-4 text-purple-600 dark:text-purple-400" aria-hidden="true" />
-                      <span className="text-xs font-bold text-purple-600 dark:text-purple-400">{plan.timeline}</span>
-                    </div>
+                  {/* Timeline */}
+                  <div className="flex items-center gap-2 mb-6 text-sm text-muted-foreground">
+                    <Clock className="w-4 h-4" aria-hidden="true" />
+                    <span>{plan.timeline}</span>
                   </div>
 
                   {/* Features */}
-                  <ul className="space-y-4 mb-8 flex-grow">
+                  <ul className="space-y-3 mb-8 flex-grow">
                     {plan.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 flex-shrink-0 text-green-500 dark:text-green-400 mt-0.5" aria-hidden="true" />
-                        <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed font-normal">{feature}</span>
+                        <Check className="w-4 h-4 flex-shrink-0 text-violet-600 dark:text-violet-400 mt-0.5" aria-hidden="true" />
+                        <span className="text-sm text-muted-foreground leading-relaxed">{feature}</span>
                       </li>
                     ))}
                   </ul>
@@ -116,15 +106,15 @@ export default function PricingClient({ plans }: PricingClientProps) {
                   {/* CTA Button */}
                   <Link
                     href={`/onboarding?serviceId=${plan.id}`}
-                    className={`block w-full py-4 px-6 rounded-xl font-bold text-center transition-all duration-300 ${
+                    className={`group flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full font-medium text-center transition-all duration-300 ${
                       plan.popular
-                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-500 hover:to-blue-500 shadow-lg'
-                        : 'bg-transparent border-2 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white hover:border-purple-500 dark:hover:border-gray-600 hover:bg-purple-50 dark:hover:bg-gray-800/50'
+                        ? 'bg-foreground text-background hover:bg-foreground/90'
+                        : 'bg-card border border-border text-foreground hover:border-violet-300 dark:hover:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-950/30'
                     }`}
-                    style={{ minHeight: '48px' }}
                     aria-label={`Get started with ${plan.name} plan`}
                   >
-                    {plan.popular ? 'Get Pro' : `Get ${plan.name}`}
+                    Get Started
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </div>
@@ -132,43 +122,46 @@ export default function PricingClient({ plans }: PricingClientProps) {
           </div>
 
           {/* Custom solution CTA */}
-          <div className="text-center py-12 border-t border-gray-200 dark:border-gray-800">
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4" style={{ letterSpacing: '-0.02em' }}>
-              Need Something Unique?
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
-              We&apos;ll create a custom package tailored specifically for your business needs.
-            </p>
-            <button
-              onClick={() => setIsContactModalOpen(true)}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl hover:from-purple-500 hover:to-blue-500 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105"
-              style={{ minHeight: '48px' }}
-              aria-label="Request a custom quote"
-            >
-              Request Custom Quote
-              <Sparkles className="w-5 h-5" aria-hidden="true" />
-            </button>
+          <div className="bg-card border border-border rounded-2xl p-8 md:p-12">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div className="max-w-xl">
+                <h3 className="text-2xl font-bold text-foreground tracking-tight mb-2">
+                  Need something custom?
+                </h3>
+                <p className="text-muted-foreground">
+                  We&apos;ll create a package tailored specifically for your business needs.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsContactModalOpen(true)}
+                className="group inline-flex items-center justify-center gap-2 px-8 py-4 border border-border text-foreground font-medium rounded-full hover:border-violet-300 dark:hover:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-950/30 transition-all"
+                aria-label="Request a custom quote"
+              >
+                Request Quote
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
           </div>
 
           {/* Trust indicators */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12 border-t border-gray-200 dark:border-gray-800">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-16 pt-16 border-t border-border">
             <div className="text-center">
-              <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2" style={{ letterSpacing: '-0.03em' }}>
+              <p className="text-3xl font-bold text-foreground tracking-tight mb-1">
                 7 Days
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Money-Back Guarantee</p>
+              </p>
+              <p className="text-sm text-muted-foreground">Money-Back Guarantee</p>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2" style={{ letterSpacing: '-0.03em' }}>
+              <p className="text-3xl font-bold text-foreground tracking-tight mb-1">
                 24/7
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Customer Support</p>
+              </p>
+              <p className="text-sm text-muted-foreground">Customer Support</p>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2" style={{ letterSpacing: '-0.03em' }}>
+              <p className="text-3xl font-bold text-foreground tracking-tight mb-1">
                 Unlimited
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Revisions Included</p>
+              </p>
+              <p className="text-sm text-muted-foreground">Revisions Included</p>
             </div>
           </div>
         </div>

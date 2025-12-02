@@ -88,7 +88,12 @@ export default function AISettingsPage() {
   }, []);
 
   if (!config) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        <span className="mt-3">Loading AI settings...</span>
+      </div>
+    );
   }
 
   // Update provider state
@@ -234,19 +239,19 @@ export default function AISettingsPage() {
   return (
     <div className="space-y-6 max-w-7xl">
       {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">AI Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">AI Settings</h1>
+        <p className="text-muted-foreground">
           Configure multiple AI providers with local API key storage. Set one as default for PRD generation.
         </p>
       </div>
 
       {/* Security Notice */}
-      <div className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <Sparkles className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+      <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900 rounded-xl">
+        <Sparkles className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
         <div className="flex-1">
-          <h3 className="text-sm font-semibold text-blue-900">Secure Local Storage</h3>
-          <p className="text-xs text-blue-700 mt-1">
+          <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-100">Secure Local Storage</h3>
+          <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
             Your API keys are stored locally in your browser and never sent to our servers. Only
             you can access them, and they&apos;re used directly to call AI providers from your browser.
           </p>
@@ -255,18 +260,18 @@ export default function AISettingsPage() {
 
       {/* Migration Notice */}
       {showMigrationNotice && legacyInfo && (
-        <div className="flex items-start gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
-          <Info className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+        <div className="flex items-start gap-3 p-4 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-900 rounded-xl">
+          <Info className="h-5 w-5 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
           <div className="flex-1">
-            <h3 className="text-sm font-semibold text-green-900">Configuration Migrated</h3>
-            <p className="text-xs text-green-700 mt-1">
+            <h3 className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">Configuration Migrated</h3>
+            <p className="text-xs text-emerald-700 dark:text-emerald-300 mt-1">
               Your previous {legacyInfo.provider} configuration has been automatically migrated to
               the new multi-provider system. You can now configure additional providers.
             </p>
           </div>
           <button
             onClick={() => setShowMigrationNotice(false)}
-            className="text-green-600 hover:text-green-800"
+            className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-200 transition-colors"
           >
             <span className="sr-only">Dismiss</span>×
           </button>
@@ -274,28 +279,28 @@ export default function AISettingsPage() {
       )}
 
       {/* Stats */}
-      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <div className="flex items-center justify-between p-5 rounded-xl bg-card border border-border/50">
         <div className="flex items-center gap-6">
           <div>
-            <p className="text-xs text-gray-500">Configured Providers</p>
-            <p className="text-2xl font-bold text-gray-900">{configuredCount}</p>
+            <p className="text-xs font-medium text-muted-foreground">Configured Providers</p>
+            <p className="text-2xl font-bold text-foreground">{configuredCount}</p>
           </div>
-          <div className="h-10 w-px bg-gray-300" />
+          <div className="h-10 w-px bg-border" />
           <div>
-            <p className="text-xs text-gray-500">Default Provider</p>
-            <p className="text-sm font-medium text-gray-900">
+            <p className="text-xs font-medium text-muted-foreground">Default Provider</p>
+            <p className="text-sm font-medium text-foreground">
               {config.defaultProvider ? (
-                <span className="flex items-center gap-1">
-                  <Star className="h-4 w-4 text-purple-600" />
+                <span className="flex items-center gap-1.5">
+                  <Star className="h-4 w-4 text-violet-600 dark:text-violet-400" />
                   {getProvider(config.defaultProvider)?.name}
                 </span>
               ) : (
-                <span className="text-gray-400">None set</span>
+                <span className="text-muted-foreground">None set</span>
               )}
             </p>
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={handleClearAll}>
+        <Button variant="outline" size="sm" onClick={handleClearAll} className="text-red-600 dark:text-red-400 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/50 border-red-200 dark:border-red-900">
           <Trash2 className="h-4 w-4 mr-2" />
           Clear All
         </Button>
@@ -309,49 +314,62 @@ export default function AISettingsPage() {
 
           const isConfigured = !!config.providers[provider.id]?.apiKey;
           const isDefault = config.defaultProvider === provider.id;
-          const borderClass = isDefault
-            ? 'border-purple-500 border-2'
-            : isConfigured
-            ? 'border-green-300 border'
-            : 'border-gray-200 border';
 
           return (
-            <Card key={provider.id} className={`${borderClass} hover:shadow-md transition-shadow`}>
-              <CardHeader>
+            <Card
+              key={provider.id}
+              className={`group relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20 ${
+                isDefault
+                  ? 'border-2 border-violet-500 dark:border-violet-400'
+                  : isConfigured
+                  ? 'border border-emerald-300 dark:border-emerald-700'
+                  : 'border border-border/50 hover:border-border'
+              }`}
+            >
+              {/* Status gradient overlay */}
+              <div className={`absolute inset-0 opacity-30 transition-opacity duration-300 group-hover:opacity-50 ${
+                isDefault
+                  ? 'bg-gradient-to-br from-violet-500/20 to-purple-500/20 dark:from-violet-500/10 dark:to-purple-500/10'
+                  : isConfigured
+                  ? 'bg-gradient-to-br from-emerald-500/10 to-green-500/10 dark:from-emerald-500/5 dark:to-green-500/5'
+                  : 'bg-gradient-to-br from-slate-500/5 to-gray-500/5'
+              }`} />
+
+              <CardHeader className="relative">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="font-semibold text-base">{provider.name}</h3>
+                      <h3 className="font-semibold text-base text-foreground">{provider.name}</h3>
                       {isDefault && (
-                        <Badge className="bg-purple-600">
+                        <Badge className="bg-violet-600 dark:bg-violet-500 text-white">
                           <Star className="h-3 w-3 mr-1" />
                           Default
                         </Badge>
                       )}
                       {isConfigured && !isDefault && (
-                        <Badge variant="outline" className="border-green-500 text-green-700">
+                        <Badge variant="outline" className="border-emerald-500 dark:border-emerald-400 text-emerald-700 dark:text-emerald-300">
                           <CheckCircle2 className="h-3 w-3 mr-1" />
                           Configured
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">{provider.description}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{provider.description}</p>
                   </div>
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-4">
+              <CardContent className="relative space-y-4">
                 {/* API Key Input */}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor={`${provider.id}-key`} className="text-xs">
+                    <Label htmlFor={`${provider.id}-key`} className="text-xs font-medium">
                       API Key
                     </Label>
                     <a
                       href={provider.docsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+                      className="text-xs text-primary hover:underline flex items-center gap-1 transition-colors"
                     >
                       Get Key <ExternalLink className="h-3 w-3" />
                     </a>
@@ -376,13 +394,13 @@ export default function AISettingsPage() {
                       onClick={() =>
                         updateState(provider.id, { showApiKey: !state.showApiKey })
                       }
-                      className="absolute right-3 top-1/2 -translate-y-1/2"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                       aria-label={state.showApiKey ? 'Hide API key' : 'Show API key'}
                     >
                       {state.showApiKey ? (
-                        <EyeOff className="h-4 w-4 text-gray-400" />
+                        <EyeOff className="h-4 w-4" />
                       ) : (
-                        <Eye className="h-4 w-4 text-gray-400" />
+                        <Eye className="h-4 w-4" />
                       )}
                     </button>
                   </div>
@@ -390,7 +408,7 @@ export default function AISettingsPage() {
 
                 {/* Model Selector */}
                 <div className="space-y-2">
-                  <Label htmlFor={`${provider.id}-model`} className="text-xs">
+                  <Label htmlFor={`${provider.id}-model`} className="text-xs font-medium">
                     Model
                   </Label>
                   <Select
@@ -419,10 +437,10 @@ export default function AISettingsPage() {
                 {/* Test Result */}
                 {state.testResult && (
                   <div
-                    className={`flex items-start gap-2 p-2 rounded-md text-xs ${
+                    className={`flex items-start gap-2 p-3 rounded-lg text-xs ${
                       state.testResult.success
-                        ? 'bg-green-50 text-green-800'
-                        : 'bg-red-50 text-red-800'
+                        ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-900'
+                        : 'bg-red-50 dark:bg-red-950/50 text-red-800 dark:text-red-200 border border-red-200 dark:border-red-900'
                     }`}
                   >
                     {state.testResult.success ? (
@@ -455,7 +473,7 @@ export default function AISettingsPage() {
                     size="sm"
                     onClick={() => handleSaveProvider(provider.id)}
                     disabled={!state.apiKey.trim() || !state.isDirty || state.isSaving}
-                    className="bg-purple-600 hover:bg-purple-700 h-8 text-xs"
+                    className="bg-violet-600 hover:bg-violet-700 dark:bg-violet-600 dark:hover:bg-violet-500 h-8 text-xs text-white"
                   >
                     {state.isSaving ? (
                       <Loader2 className="h-3 w-3 mr-1.5 animate-spin" />
@@ -482,7 +500,7 @@ export default function AISettingsPage() {
                       size="sm"
                       variant="ghost"
                       onClick={() => handleRemoveProvider(provider.id)}
-                      className="h-8 text-xs text-red-600 hover:text-red-700 hover:bg-red-50"
+                      className="h-8 text-xs text-red-600 dark:text-red-400 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/50"
                     >
                       <Trash2 className="h-3 w-3 mr-1.5" />
                       Remove
@@ -497,18 +515,16 @@ export default function AISettingsPage() {
 
       {/* No Configuration Warning */}
       {configuredCount === 0 && (
-        <Card className="p-4 border-orange-200 bg-orange-50">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
-            <div>
-              <h3 className="text-sm font-semibold text-orange-900">No Providers Configured</h3>
-              <p className="text-xs text-orange-700 mt-1">
-                PRD generation will not work until you configure at least one AI provider and API key.
-                Get started by configuring a provider above.
-              </p>
-            </div>
+        <div className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-900 rounded-xl">
+          <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+          <div>
+            <h3 className="text-sm font-semibold text-amber-900 dark:text-amber-100">No Providers Configured</h3>
+            <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+              PRD generation will not work until you configure at least one AI provider and API key.
+              Get started by configuring a provider above.
+            </p>
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Alert Dialog */}

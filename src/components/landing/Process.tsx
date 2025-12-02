@@ -1,4 +1,4 @@
-import { CheckCircle2, Workflow } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
 import { processSteps } from '@/lib/db/schema';
@@ -41,78 +41,59 @@ export default async function Process() {
   return (
     <section
       id="process"
-      className="relative py-24 bg-white dark:bg-gray-900 overflow-hidden"
+      className="relative py-24 lg:py-32 bg-background"
       aria-labelledby="process-heading"
     >
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-5" aria-hidden="true">
-        <div
-          className="absolute top-1/3 right-0 w-96 h-96 rounded-full blur-3xl"
-          style={{ backgroundColor: 'var(--sp-colors-accent)' }}
-        ></div>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto" style={{ padding: '0 var(--sp-space-6)' }}>
+      <div className="max-w-7xl mx-auto px-6">
         {/* Section Header */}
-        <div className="text-center" style={{ marginBottom: 'var(--sp-space-8)' }}>
-          <div
-            className="inline-flex items-center backdrop-blur-sm bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-bold mb-4"
-            style={{ padding: 'var(--sp-space-2) var(--sp-space-4)', gap: 'var(--sp-space-2)' }}
-          >
-            <Workflow className="w-4 h-4" aria-hidden="true" />
-            <span className="text-sm">How It Works</span>
-          </div>
-
+        <div className="max-w-2xl mb-16">
+          <p className="text-sm font-medium tracking-widest uppercase text-violet-600 dark:text-violet-400 mb-4">
+            How It Works
+          </p>
           <h2
             id="process-heading"
-            className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white"
-            style={{ marginBottom: 'var(--sp-space-4)', letterSpacing: '-0.02em' }}
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6"
           >
-            Simple 5-Step Process
+            From idea to launch
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            From idea to launch in weeks, not months
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            A simple, transparent process that gets your project done in weeks, not months.
           </p>
         </div>
 
         {/* Steps */}
         <div className="relative">
-          {/* Connecting line */}
+          {/* Desktop connecting line */}
           <div
-            className="hidden lg:block absolute top-12 left-0 right-0 h-1 bg-gradient-to-r"
-            style={{ backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)` }}
+            className="hidden lg:block absolute top-6 left-6 right-6 h-px bg-border"
             aria-hidden="true"
-          ></div>
+          />
 
           {/* Steps grid */}
-          <div
-            className="grid grid-cols-1 lg:grid-cols-5"
-            style={{ gap: 'var(--sp-space-6)' }}
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-6">
             {steps.map((step, index) => (
               <div key={index} className="relative group">
-                {/* Step number circle */}
-                <div
-                  className="relative z-10 w-24 h-24 mx-auto rounded-full flex items-center justify-center shadow-lg group-hover:shadow-2xl group-hover:scale-110 transition-all duration-300 bg-gradient-to-br"
-                  style={{
-                    backgroundImage: `linear-gradient(to bottom right, var(--sp-colors-accent), #a78bfa)`,
-                    marginBottom: 'var(--sp-space-6)'
-                  }}
-                >
-                  <span className="text-3xl font-bold text-white">
+                {/* Step number */}
+                <div className="relative z-10 w-12 h-12 rounded-full bg-card border-2 border-border flex items-center justify-center mb-6 group-hover:border-violet-400 dark:group-hover:border-violet-500 transition-colors">
+                  <span className="text-sm font-bold text-foreground">
                     {step.number}
                   </span>
                 </div>
 
+                {/* Mobile connecting line */}
+                {index < steps.length - 1 && (
+                  <div
+                    className="lg:hidden absolute left-6 top-12 w-px h-8 bg-border -translate-x-1/2"
+                    aria-hidden="true"
+                  />
+                )}
+
                 {/* Step content */}
-                <div className="text-center">
-                  <h3
-                    className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors"
-                    style={{ marginBottom: 'var(--sp-space-3)' }}
-                  >
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
                     {step.title}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     {step.description}
                   </p>
                 </div>
@@ -122,20 +103,20 @@ export default async function Process() {
         </div>
 
         {/* CTA */}
-        <div className="text-center" style={{ marginTop: 'var(--sp-space-8)' }}>
-          <a
-            href="#pricing"
-            className="inline-flex items-center font-bold text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-gradient-to-r py-3 px-6"
-            style={{
-              minHeight: '48px',
-              gap: 'var(--sp-space-2)',
-              backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)`
-            }}
-            aria-label="View pricing"
-          >
-            View Pricing
-            <CheckCircle2 className="w-5 h-5" aria-hidden="true" />
-          </a>
+        <div className="mt-16 pt-16 border-t border-border">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            <p className="text-lg text-muted-foreground">
+              Ready to start your project?
+            </p>
+            <a
+              href="#pricing"
+              className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-foreground text-background font-medium rounded-full hover:bg-foreground/90 transition-colors"
+              aria-label="View pricing plans"
+            >
+              Get Started
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </a>
+          </div>
         </div>
       </div>
     </section>

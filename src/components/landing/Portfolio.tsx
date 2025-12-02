@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ExternalLink, Briefcase } from 'lucide-react';
+import { ExternalLink, ArrowRight } from 'lucide-react';
 import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
 import { portfolio } from '@/lib/db/schema';
@@ -35,64 +35,46 @@ export default async function Portfolio() {
   return (
     <section
       id="portfolio"
-      className="relative py-24 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800 overflow-hidden"
+      className="relative py-24 lg:py-32 bg-muted/30"
       aria-labelledby="portfolio-heading"
     >
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-5" aria-hidden="true">
-        <div
-          className="absolute bottom-1/4 left-0 w-96 h-96 rounded-full blur-3xl"
-          style={{ backgroundColor: 'var(--sp-colors-accent)' }}
-        ></div>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto" style={{ padding: '0 var(--sp-space-6)' }}>
+      <div className="max-w-7xl mx-auto px-6">
         {/* Section Header */}
-        <div className="text-center" style={{ marginBottom: 'var(--sp-space-8)' }}>
-          <div
-            className="inline-flex items-center backdrop-blur-sm bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-bold mb-4"
-            style={{ padding: 'var(--sp-space-2) var(--sp-space-4)', gap: 'var(--sp-space-2)' }}
-          >
-            <Briefcase className="w-4 h-4" aria-hidden="true" />
-            <span className="text-sm">Our Work</span>
-          </div>
-
+        <div className="max-w-2xl mb-16">
+          <p className="text-sm font-medium tracking-widest uppercase text-violet-600 dark:text-violet-400 mb-4">
+            Our Work
+          </p>
           <h2
             id="portfolio-heading"
-            className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white"
-            style={{ marginBottom: 'var(--sp-space-4)', letterSpacing: '-0.02em' }}
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6"
           >
-            Recent Projects & Success Stories
+            Recent projects
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            See how we&apos;ve helped Filipino businesses achieve their digital goals
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            See how we&apos;ve helped Filipino businesses achieve their digital goals.
           </p>
         </div>
 
         {/* Projects Grid */}
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-          style={{ gap: 'var(--sp-space-6)' }}
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {projects.map((project, index) => (
-            <div
+            <article
               key={project.id || index}
-              className="group relative backdrop-blur-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-2xl dark:hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
+              className="group bg-card border border-border rounded-2xl overflow-hidden transition-all duration-300 hover:border-violet-200 dark:hover:border-violet-800 hover:shadow-lg hover:shadow-violet-500/5"
             >
               {/* Project Image */}
-              <div className="relative h-64 overflow-hidden bg-gradient-to-br" style={{ backgroundImage: `linear-gradient(to bottom right, var(--sp-colors-accent), #a78bfa)` }}>
+              <div className="relative h-56 overflow-hidden bg-violet-100 dark:bg-violet-950/30">
                 {project.imageUrl ? (
                   <Image
                     src={project.imageUrl}
                     alt={project.title}
                     fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center text-white" style={{ padding: 'var(--sp-space-8)' }}>
-                      <div className="text-6xl mb-4">🚀</div>
-                      <p className="text-sm opacity-75">Project Screenshot</p>
+                    <div className="w-16 h-16 rounded-2xl bg-violet-200 dark:bg-violet-900/50 flex items-center justify-center">
+                      <span className="text-3xl">🚀</span>
                     </div>
                   </div>
                 )}
@@ -103,45 +85,38 @@ export default async function Portfolio() {
                     href={project.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="absolute inset-0 bg-gradient-to-br from-black/70 to-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-sm"
+                    className="absolute inset-0 bg-foreground/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center"
                     aria-label={`View ${project.title} project`}
                   >
-                    <div className="text-white flex items-center font-bold text-lg" style={{ gap: 'var(--sp-space-2)' }}>
-                      <ExternalLink className="w-5 h-5" aria-hidden="true" />
+                    <span className="inline-flex items-center gap-2 text-background font-medium">
+                      <ExternalLink className="w-4 h-4" aria-hidden="true" />
                       View Project
-                    </div>
+                    </span>
                   </a>
                 )}
 
                 {/* Category badge */}
-                <div
-                  className="absolute top-4 left-4 backdrop-blur-md bg-white/90 rounded-full font-bold text-xs shadow-md"
-                  style={{ padding: 'var(--sp-space-2) var(--sp-space-3)', color: 'var(--sp-colors-accent)' }}
-                >
+                <div className="absolute top-4 left-4 px-3 py-1.5 bg-background/90 backdrop-blur-sm rounded-full text-xs font-medium text-foreground">
                   {project.category}
                 </div>
               </div>
 
               {/* Project Info */}
-              <div style={{ padding: 'var(--sp-space-6)' }}>
-                <h3
-                  className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors"
-                  style={{ marginBottom: 'var(--sp-space-2)' }}
-                >
+              <div className="p-6">
+                <h3 className="text-lg font-semibold text-foreground mb-2">
                   {project.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed" style={{ marginBottom: 'var(--sp-space-4)' }}>
+                <p className="text-muted-foreground text-sm leading-relaxed mb-4">
                   {project.description}
                 </p>
 
                 {/* Tags */}
                 {project.technologies && (
-                  <div className="flex flex-wrap" style={{ gap: 'var(--sp-space-2)' }}>
+                  <div className="flex flex-wrap gap-2">
                     {JSON.parse(project.technologies).map((tag: string, tagIndex: number) => (
                       <span
                         key={tagIndex}
-                        className="backdrop-blur-sm bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-lg"
-                        style={{ padding: 'var(--sp-space-1) var(--sp-space-3)' }}
+                        className="px-2.5 py-1 bg-violet-100 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300 text-xs font-medium rounded-md"
                       >
                         {tag}
                       </span>
@@ -149,40 +124,30 @@ export default async function Portfolio() {
                   </div>
                 )}
               </div>
-            </div>
+            </article>
           ))}
         </div>
 
         {/* CTA */}
-        <div
-          className="text-center backdrop-blur-sm bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-100 dark:border-purple-800 rounded-2xl shadow-sm"
-          style={{ marginTop: 'var(--sp-space-8)', padding: 'var(--sp-space-8)' }}
-        >
-          <h3
-            className="text-2xl font-bold text-gray-900 dark:text-white"
-            style={{ marginBottom: 'var(--sp-space-3)' }}
-          >
-            Ready to See Your Project Here?
-          </h3>
-          <p
-            className="text-gray-600 dark:text-gray-300 max-w-xl mx-auto"
-            style={{ marginBottom: 'var(--sp-space-4)' }}
-          >
-            Join our growing portfolio of successful projects
-          </p>
-          <a
-            href="#pricing"
-            className="inline-flex items-center font-bold text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-gradient-to-r py-3 px-6"
-            style={{
-              minHeight: '48px',
-              gap: 'var(--sp-space-2)',
-              backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)`
-            }}
-            aria-label="View pricing"
-          >
-            View Pricing
-            <ExternalLink className="w-5 h-5" aria-hidden="true" />
-          </a>
+        <div className="mt-16 pt-16 border-t border-border">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="max-w-xl">
+              <h3 className="text-2xl font-bold text-foreground tracking-tight mb-2">
+                Ready to see your project here?
+              </h3>
+              <p className="text-muted-foreground">
+                Join our growing portfolio of successful projects.
+              </p>
+            </div>
+            <a
+              href="#pricing"
+              className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-foreground text-background font-medium rounded-full hover:bg-foreground/90 transition-colors"
+              aria-label="Start your project"
+            >
+              Start Your Project
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </a>
+          </div>
         </div>
       </div>
     </section>

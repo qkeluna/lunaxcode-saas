@@ -211,90 +211,76 @@ export default function AdminProjectsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Projects Management</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Manage all client projects, update status, and track progress
-          </p>
-        </div>
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Projects Management</h1>
+        <p className="text-muted-foreground">
+          Manage all client projects, update status, and track progress
+        </p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-card border overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Users className="h-6 w-6 text-muted-foreground" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-muted-foreground truncate">Total Projects</dt>
-                  <dd className="text-lg font-semibold text-foreground">{projects.length}</dd>
-                </dl>
-              </div>
+        <div className="group relative overflow-hidden rounded-xl bg-card border border-border/50 p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 dark:from-blue-500/5 dark:to-cyan-500/5 opacity-50 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative flex items-center gap-4">
+            <div className="flex-shrink-0 rounded-lg bg-blue-500/10 dark:bg-blue-500/20 p-2.5">
+              <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Total Projects</p>
+              <p className="text-2xl font-bold text-foreground">{projects.length}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-card border overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Clock className="h-6 w-6 text-blue-400 dark:text-blue-300" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-muted-foreground truncate">In Progress</dt>
-                  <dd className="text-lg font-semibold text-foreground">
-                    {projects.filter(p => p.project.status === 'in-progress').length}
-                  </dd>
-                </dl>
-              </div>
+        <div className="group relative overflow-hidden rounded-xl bg-card border border-border/50 p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-orange-500/10 dark:from-amber-500/5 dark:to-orange-500/5 opacity-50 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative flex items-center gap-4">
+            <div className="flex-shrink-0 rounded-lg bg-amber-500/10 dark:bg-amber-500/20 p-2.5">
+              <Clock className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">In Progress</p>
+              <p className="text-2xl font-bold text-foreground">
+                {projects.filter(p => p.project.status === 'in-progress').length}
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-card border overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <Calendar className="h-6 w-6 text-green-400 dark:text-green-300" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-muted-foreground truncate">Completed</dt>
-                  <dd className="text-lg font-semibold text-foreground">
-                    {projects.filter(p => p.project.status === 'completed').length}
-                  </dd>
-                </dl>
-              </div>
+        <div className="group relative overflow-hidden rounded-xl bg-card border border-border/50 p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 dark:from-emerald-500/5 dark:to-green-500/5 opacity-50 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative flex items-center gap-4">
+            <div className="flex-shrink-0 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 p-2.5">
+              <Calendar className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Completed</p>
+              <p className="text-2xl font-bold text-foreground">
+                {projects.filter(p => p.project.status === 'completed').length}
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-card border overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <DollarSign className="h-6 w-6 text-yellow-400 dark:text-yellow-300" />
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-muted-foreground truncate">Pending Payment</dt>
-                  <dd className="text-lg font-semibold text-foreground">
-                    {projects.filter(p => p.project.paymentStatus !== 'paid').length}
-                  </dd>
-                </dl>
-              </div>
+        <div className="group relative overflow-hidden rounded-xl bg-card border border-border/50 p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 to-red-500/10 dark:from-rose-500/5 dark:to-red-500/5 opacity-50 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative flex items-center gap-4">
+            <div className="flex-shrink-0 rounded-lg bg-rose-500/10 dark:bg-rose-500/20 p-2.5">
+              <DollarSign className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-muted-foreground">Pending Payment</p>
+              <p className="text-2xl font-bold text-foreground">
+                {projects.filter(p => p.project.paymentStatus !== 'paid').length}
+              </p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="bg-card border p-4 rounded-lg shadow">
+      <div className="rounded-xl bg-card border border-border/50 p-4">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -303,12 +289,12 @@ export default function AdminProjectsPage() {
               placeholder="Search projects, clients..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
+              className="pl-9 bg-background"
             />
           </div>
 
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-background">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -321,7 +307,7 @@ export default function AdminProjectsPage() {
           </Select>
 
           <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-            <SelectTrigger>
+            <SelectTrigger className="bg-background">
               <SelectValue placeholder="Filter by payment" />
             </SelectTrigger>
             <SelectContent>
@@ -335,37 +321,43 @@ export default function AdminProjectsPage() {
       </div>
 
       {/* Projects Table */}
-      <div className="bg-card border shadow rounded-lg overflow-hidden">
+      <div className="rounded-xl bg-card border border-border/50 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Project</TableHead>
-              <TableHead>Client</TableHead>
-              <TableHead>Service</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Payment</TableHead>
-              <TableHead>Budget</TableHead>
-              <TableHead>Timeline</TableHead>
-              <TableHead>Created</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+            <TableRow className="bg-muted/30 hover:bg-muted/30">
+              <TableHead className="font-semibold">Project</TableHead>
+              <TableHead className="font-semibold">Client</TableHead>
+              <TableHead className="font-semibold">Service</TableHead>
+              <TableHead className="font-semibold">Status</TableHead>
+              <TableHead className="font-semibold">Payment</TableHead>
+              <TableHead className="font-semibold">Budget</TableHead>
+              <TableHead className="font-semibold">Timeline</TableHead>
+              <TableHead className="font-semibold">Created</TableHead>
+              <TableHead className="text-right font-semibold">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                  Loading projects...
+                <TableCell colSpan={9} className="text-center py-12 text-muted-foreground">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    <span>Loading projects...</span>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : projects.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
-                  No projects found
+                <TableCell colSpan={9} className="text-center py-12 text-muted-foreground">
+                  <div className="flex flex-col items-center gap-2">
+                    <Users className="h-8 w-8 text-muted-foreground/50" />
+                    <span>No projects found</span>
+                  </div>
                 </TableCell>
               </TableRow>
             ) : (
               projects.map((item) => (
-                <TableRow key={item.project.id}>
+                <TableRow key={item.project.id} className="group transition-colors hover:bg-muted/50">
                   <TableCell className="font-medium">{item.project.name}</TableCell>
                   <TableCell>
                     <div>
@@ -374,30 +366,36 @@ export default function AdminProjectsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm text-muted-foreground">{item.project.service}</span>
+                    <Badge variant="outline" className="font-normal">{item.project.service}</Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge className={statusColors[item.project.status] || 'bg-gray-100 text-foreground'}>
+                    <Badge className={statusColors[item.project.status] || 'bg-muted text-foreground'}>
                       {item.project.status}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge className={paymentStatusColors[item.project.paymentStatus] || 'bg-gray-100 text-foreground'}>
+                    <Badge className={paymentStatusColors[item.project.paymentStatus] || 'bg-muted text-foreground'}>
                       {item.project.paymentStatus}
                     </Badge>
                   </TableCell>
-                  <TableCell>{formatCurrency(item.project.price)}</TableCell>
-                  <TableCell>{item.project.timeline} days</TableCell>
+                  <TableCell className="font-medium">{formatCurrency(item.project.price)}</TableCell>
+                  <TableCell>
+                    <span className="inline-flex items-center gap-1 text-muted-foreground">
+                      <Clock className="h-3.5 w-3.5" />
+                      {item.project.timeline}d
+                    </span>
+                  </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {formatDate(item.project.createdAt)}
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
                       <Link href={`/admin/projects/${item.project.id}`}>
                         <Button
                           variant="ghost"
                           size="sm"
                           title="View Project Details"
+                          className="h-8 w-8 p-0"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
@@ -411,6 +409,7 @@ export default function AdminProjectsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEditClick(item)}
+                        className="h-8 w-8 p-0"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -418,7 +417,7 @@ export default function AdminProjectsPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => setDeleteProjectId(item.project.id)}
-                        className="text-red-600 dark:text-red-400 hover:text-red-700 hover:bg-red-50"
+                        className="h-8 w-8 p-0 text-red-600 dark:text-red-400 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-950"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

@@ -191,141 +191,133 @@ export default function AdminPaymentsPage() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold">Payment Management</h1>
-        <p className="text-muted-foreground mt-1">Verify and manage client payment submissions</p>
+      <div className="flex flex-col gap-1">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">Payment Management</h1>
+        <p className="text-muted-foreground">Verify and manage client payment submissions</p>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Pending Review
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-bold">{stats.totalPending}</div>
-              <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400 dark:text-yellow-300" />
+        <div className="group relative overflow-hidden rounded-xl bg-card border border-border/50 p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-yellow-500/10 dark:from-amber-500/5 dark:to-yellow-500/5 opacity-50 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-medium text-muted-foreground">Pending Review</p>
+              <div className="rounded-lg bg-amber-500/10 dark:bg-amber-500/20 p-1.5">
+                <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              </div>
             </div>
+            <p className="text-2xl font-bold text-foreground">{stats.totalPending}</p>
             <p className="text-xs text-muted-foreground mt-1">
               ₱{stats.pendingAmount.toLocaleString()}
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Verified
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-bold">{stats.totalVerified}</div>
-              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 dark:text-green-300" />
+        <div className="group relative overflow-hidden rounded-xl bg-card border border-border/50 p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 dark:from-emerald-500/5 dark:to-green-500/5 opacity-50 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-medium text-muted-foreground">Verified</p>
+              <div className="rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 p-1.5">
+                <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              </div>
             </div>
+            <p className="text-2xl font-bold text-foreground">{stats.totalVerified}</p>
             <p className="text-xs text-muted-foreground mt-1">
               ₱{stats.verifiedAmount.toLocaleString()}
             </p>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Rejected
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-bold">{stats.totalRejected}</div>
-              <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total Received
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-bold">
-                ₱{(stats.verifiedAmount / 1000).toFixed(0)}K
+        <div className="group relative overflow-hidden rounded-xl bg-card border border-border/50 p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 to-red-500/10 dark:from-rose-500/5 dark:to-red-500/5 opacity-50 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-medium text-muted-foreground">Rejected</p>
+              <div className="rounded-lg bg-rose-500/10 dark:bg-rose-500/20 p-1.5">
+                <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
               </div>
-              <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400 dark:text-green-300" />
             </div>
-          </CardContent>
-        </Card>
+            <p className="text-2xl font-bold text-foreground">{stats.totalRejected}</p>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Pending Value
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-baseline justify-between">
-              <div className="text-2xl font-bold">
-                ₱{(stats.pendingAmount / 1000).toFixed(0)}K
+        <div className="group relative overflow-hidden rounded-xl bg-card border border-border/50 p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 to-cyan-500/10 dark:from-teal-500/5 dark:to-cyan-500/5 opacity-50 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-medium text-muted-foreground">Total Received</p>
+              <div className="rounded-lg bg-teal-500/10 dark:bg-teal-500/20 p-1.5">
+                <DollarSign className="w-4 h-4 text-teal-600 dark:text-teal-400" />
               </div>
-              <TrendingUp className="w-5 h-5 text-yellow-600 dark:text-yellow-400 dark:text-yellow-300" />
             </div>
-          </CardContent>
-        </Card>
+            <p className="text-2xl font-bold text-foreground">
+              ₱{(stats.verifiedAmount / 1000).toFixed(0)}K
+            </p>
+          </div>
+        </div>
+
+        <div className="group relative overflow-hidden rounded-xl bg-card border border-border/50 p-5 transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-purple-500/10 dark:from-violet-500/5 dark:to-purple-500/5 opacity-50 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="relative">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-medium text-muted-foreground">Pending Value</p>
+              <div className="rounded-lg bg-violet-500/10 dark:bg-violet-500/20 p-1.5">
+                <TrendingUp className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+              </div>
+            </div>
+            <p className="text-2xl font-bold text-foreground">
+              ₱{(stats.pendingAmount / 1000).toFixed(0)}K
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label>Search</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-                <Input
-                  placeholder="Search by reference, name, or project..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div>
-              <Label>Status Filter</Label>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Payments</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="verified">Verified</SelectItem>
-                  <SelectItem value="rejected">Rejected</SelectItem>
-                </SelectContent>
-              </Select>
+      <div className="rounded-xl bg-card border border-border/50 p-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <Label className="text-sm font-medium">Search</Label>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                placeholder="Search by reference, name, or project..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 bg-background"
+              />
             </div>
           </div>
-        </CardContent>
-      </Card>
+          <div className="space-y-1.5">
+            <Label className="text-sm font-medium">Status Filter</Label>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger className="bg-background">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Payments</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="verified">Verified</SelectItem>
+                <SelectItem value="rejected">Rejected</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
 
       {/* Payments List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Payment Submissions</CardTitle>
-          <CardDescription>
-            {filteredPayments.length} payment(s) found
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="rounded-xl bg-card border border-border/50 overflow-hidden">
+        <div className="border-b border-border/50 bg-muted/30 px-6 py-4">
+          <h3 className="text-base font-semibold text-foreground">Payment Submissions</h3>
+          <p className="text-sm text-muted-foreground mt-0.5">{filteredPayments.length} payment(s) found</p>
+        </div>
+        <div className="p-6">
           {filteredPayments.length === 0 ? (
             <div className="text-center py-12">
+              <DollarSign className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
               <p className="text-muted-foreground">No payments found</p>
             </div>
           ) : (
@@ -333,7 +325,7 @@ export default function AdminPaymentsPage() {
               {filteredPayments.map((payment) => (
                 <div
                   key={payment.id}
-                  className="border rounded-lg p-4 hover:bg-gray-50 transition-colors"
+                  className="group border border-border/50 rounded-xl p-4 transition-all duration-200 hover:border-border hover:bg-muted/30 hover:shadow-sm"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
@@ -406,16 +398,16 @@ export default function AdminPaymentsPage() {
                   </div>
 
                   {payment.rejectionReason && (
-                    <div className="bg-red-50 border border-red-200 rounded p-3 mb-3">
-                      <p className="text-sm text-red-800 font-medium">Rejection Reason:</p>
+                    <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 rounded-lg p-3 mb-3">
+                      <p className="text-sm text-red-800 dark:text-red-200 font-medium">Rejection Reason:</p>
                       <p className="text-sm text-red-600 dark:text-red-400">{payment.rejectionReason}</p>
                     </div>
                   )}
 
                   {payment.adminNotes && (
-                    <div className="bg-blue-50 border border-blue-200 rounded p-3 mb-3">
-                      <p className="text-sm text-blue-800 font-medium">Admin Notes:</p>
-                      <p className="text-sm text-blue-600 dark:text-blue-400 dark:text-blue-300">{payment.adminNotes}</p>
+                    <div className="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-900 rounded-lg p-3 mb-3">
+                      <p className="text-sm text-blue-800 dark:text-blue-200 font-medium">Admin Notes:</p>
+                      <p className="text-sm text-blue-600 dark:text-blue-400">{payment.adminNotes}</p>
                     </div>
                   )}
 
@@ -438,8 +430,8 @@ export default function AdminPaymentsPage() {
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Verification Modal */}
       <Dialog open={showVerifyModal} onOpenChange={setShowVerifyModal}>

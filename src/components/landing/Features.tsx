@@ -9,6 +9,7 @@ import {
   Users,
   Clock,
   Star,
+  ArrowRight,
   type LucideIcon,
 } from 'lucide-react';
 import { getCloudflareContext } from '@/lib/db/context';
@@ -60,125 +61,72 @@ export default async function Features() {
   return (
     <section
       id="features"
-      className="relative py-24 bg-white dark:bg-gray-900 overflow-hidden"
+      className="relative py-24 lg:py-32 bg-background"
       aria-labelledby="features-heading"
     >
-      {/* Background decoration */}
-      <div className="absolute inset-0 opacity-5" aria-hidden="true">
-        <div
-          className="absolute top-1/4 right-0 w-96 h-96 rounded-full blur-3xl"
-          style={{ backgroundColor: 'var(--sp-colors-accent)' }}
-        ></div>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto" style={{ padding: '0 var(--sp-space-6)' }}>
+      <div className="max-w-7xl mx-auto px-6">
         {/* Section Header */}
-        <div className="text-center" style={{ marginBottom: 'var(--sp-space-8)' }}>
-          <div
-            className="inline-flex items-center backdrop-blur-sm bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-full font-bold mb-4"
-            style={{ padding: 'var(--sp-space-2) var(--sp-space-4)', gap: 'var(--sp-space-2)' }}
-          >
-            <Sparkles className="w-4 h-4" fill="currentColor" aria-hidden="true" />
-            <span className="text-sm">Powerful Features</span>
-          </div>
-
+        <div className="max-w-2xl mb-16">
+          <p className="text-sm font-medium tracking-widest uppercase text-violet-600 dark:text-violet-400 mb-4">
+            Platform Features
+          </p>
           <h2
             id="features-heading"
-            className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white"
-            style={{ marginBottom: 'var(--sp-space-4)', letterSpacing: '-0.02em' }}
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6"
           >
-            Everything You Need to Succeed
+            Everything you need to succeed
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Modern project management powered by AI, designed specifically for Filipino businesses
+          <p className="text-lg text-muted-foreground leading-relaxed">
+            Modern project management powered by AI, designed specifically for Filipino businesses.
           </p>
         </div>
 
         {/* Features Grid */}
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-          style={{ gap: 'var(--sp-space-6)' }}
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
           {features.map((feature: any, index: number) => {
             const IconComponent = iconMap[feature.icon] || Star;
             return (
-              <div
+              <article
                 key={feature.id || index}
-                className="group relative backdrop-blur-sm bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-sm hover:shadow-xl dark:hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden"
-                style={{ padding: 'var(--sp-space-8)' }}
+                className="group relative bg-card border border-border rounded-2xl p-8 transition-all duration-300 hover:border-violet-200 dark:hover:border-violet-800 hover:shadow-lg hover:shadow-violet-500/5"
               >
-                {/* Hover gradient effect */}
-                <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300 bg-gradient-to-br"
-                  style={{
-                    backgroundImage: `linear-gradient(to bottom right, var(--sp-colors-accent), transparent)`
-                  }}
-                  aria-hidden="true"
-                ></div>
-
                 {/* Icon */}
-                <div
-                  className="relative w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-md group-hover:shadow-lg group-hover:scale-110 transition-all duration-300 bg-gradient-to-br"
-                  style={{
-                    backgroundImage: `linear-gradient(to bottom right, var(--sp-colors-accent), #a78bfa)`
-                  }}
-                >
-                  <IconComponent className="w-7 h-7 text-white" aria-hidden="true" />
+                <div className="w-12 h-12 rounded-xl bg-violet-100 dark:bg-violet-950/50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <IconComponent className="w-6 h-6 text-violet-600 dark:text-violet-400" aria-hidden="true" />
                 </div>
 
                 {/* Content */}
-                <h3
-                  className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors"
-                  style={{ marginBottom: 'var(--sp-space-3)' }}
-                >
+                <h3 className="text-lg font-semibold text-foreground mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed">
                   {feature.description}
                 </p>
-
-                {/* Decorative corner */}
-                <div
-                  className="absolute bottom-0 right-0 w-20 h-20 opacity-5 group-hover:opacity-10 transition-opacity"
-                  aria-hidden="true"
-                >
-                  <IconComponent className="w-full h-full text-purple-600" />
-                </div>
-              </div>
+              </article>
             );
           })}
         </div>
 
         {/* Bottom CTA */}
-        <div
-          className="text-center backdrop-blur-sm bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-100 dark:border-purple-800 rounded-2xl shadow-sm"
-          style={{ marginTop: 'var(--sp-space-8)', padding: 'var(--sp-space-8)' }}
-        >
-          <h3
-            className="text-2xl font-bold text-gray-900 dark:text-white"
-            style={{ marginBottom: 'var(--sp-space-3)' }}
-          >
-            Ready to Transform Your Business?
-          </h3>
-          <p
-            className="text-gray-600 dark:text-gray-300 max-w-xl mx-auto"
-            style={{ marginBottom: 'var(--sp-space-4)' }}
-          >
-            Join hundreds of Filipino businesses already using Lunaxcode to streamline their projects
-          </p>
-          <a
-            href="#pricing"
-            className="inline-flex items-center font-bold text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-gradient-to-r py-3 px-6"
-            style={{
-              minHeight: '48px',
-              gap: 'var(--sp-space-2)',
-              backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)`
-            }}
-            aria-label="View pricing"
-          >
-            View Pricing
-            <Zap className="w-5 h-5" fill="currentColor" aria-hidden="true" />
-          </a>
+        <div className="mt-16 pt-16 border-t border-border">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="max-w-xl">
+              <h3 className="text-2xl font-bold text-foreground tracking-tight mb-2">
+                Ready to transform your business?
+              </h3>
+              <p className="text-muted-foreground">
+                Join businesses across the Philippines already using Lunaxcode.
+              </p>
+            </div>
+            <a
+              href="#pricing"
+              className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-foreground text-background font-medium rounded-full hover:bg-foreground/90 transition-colors"
+              aria-label="View pricing plans"
+            >
+              View Pricing
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </a>
+          </div>
         </div>
       </div>
     </section>

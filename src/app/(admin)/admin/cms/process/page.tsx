@@ -161,9 +161,9 @@ export default function AdminProcessPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Process Steps</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Manage how you work process steps</p>
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">Process Steps</h1>
+          <p className="text-muted-foreground">Manage how you work process steps</p>
         </div>
         <div className="flex gap-2">
           {selectedIds.length > 0 && (
@@ -179,35 +179,40 @@ export default function AdminProcessPage() {
         </div>
       </div>
 
-      <div className="bg-card border shadow rounded-lg overflow-hidden">
+      <div className="rounded-xl bg-card border border-border/50 overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="bg-muted/30 hover:bg-muted/30">
               <TableHead className="w-12">
                 <Checkbox
                   checked={selectedIds.length === steps.length && steps.length > 0}
                   onCheckedChange={toggleSelectAll}
                 />
               </TableHead>
-              <TableHead>Title</TableHead>
-              <TableHead>Icon</TableHead>
-              <TableHead>Order</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="font-semibold">Title</TableHead>
+              <TableHead className="font-semibold">Icon</TableHead>
+              <TableHead className="font-semibold">Order</TableHead>
+              <TableHead className="font-semibold">Status</TableHead>
+              <TableHead className="text-right font-semibold">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">Loading...</TableCell>
+                <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                    <span>Loading...</span>
+                  </div>
+                </TableCell>
               </TableRow>
             ) : steps.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8">No process steps found</TableCell>
+                <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">No process steps found</TableCell>
               </TableRow>
             ) : (
               steps.map((step) => (
-                <TableRow key={step.id}>
+                <TableRow key={step.id} className="group transition-colors hover:bg-muted/50">
                   <TableCell>
                     <Checkbox
                       checked={selectedIds.includes(step.id)}
@@ -229,11 +234,11 @@ export default function AdminProcessPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => handleEdit(step)}>
+                    <div className="flex justify-end gap-1 opacity-70 group-hover:opacity-100 transition-opacity">
+                      <Button variant="ghost" size="sm" onClick={() => handleEdit(step)} className="h-8 w-8 p-0">
                         <Edit className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(step.id)} className="text-red-600 dark:text-red-400">
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(step.id)} className="h-8 w-8 p-0 text-red-600 dark:text-red-400 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-950">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>

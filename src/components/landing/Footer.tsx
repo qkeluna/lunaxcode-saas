@@ -1,101 +1,84 @@
 import Link from 'next/link';
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, ArrowRight } from 'lucide-react';
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-gray-900 dark:text-white">
-      <div className="max-w-7xl mx-auto" style={{ padding: 'var(--sp-space-8) var(--sp-space-6)' }}>
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
-          style={{ gap: 'var(--sp-space-8)' }}
-        >
+    <footer className="bg-muted/30 border-t border-border">
+      <div className="max-w-7xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
           {/* Company Info */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
+          <div className="lg:col-span-1">
+            <div className="flex items-center gap-3 mb-4">
               <img
                 src="/android-chrome-192x192.png"
                 alt="Lunaxcode Logo"
-                className="w-8 h-8"
+                className="w-8 h-8 rounded-lg"
               />
-              <h3
-                className="text-2xl font-bold bg-gradient-to-r text-transparent bg-clip-text"
-                style={{ backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)` }}
-              >
+              <span className="text-xl font-bold text-foreground">
                 Lunaxcode
-              </h3>
+              </span>
             </div>
-            <p
-              className="text-gray-600 dark:text-gray-400 leading-relaxed"
-              style={{ marginBottom: 'var(--sp-space-6)' }}
-            >
+            <p className="text-sm text-muted-foreground leading-relaxed mb-6">
               AI-powered web development for Filipino businesses. Turning ideas into digital reality since 2024.
             </p>
             {/* Social Links */}
-            <div className="flex" style={{ gap: 'var(--sp-space-4)' }}>
+            <div className="flex gap-3">
               <a
                 href="https://facebook.com/lunaxcode"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300 border border-gray-300 dark:border-gray-700 hover:border-blue-500"
-                style={{ color: 'var(--sp-colors-accent)' }}
+                className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-violet-300 dark:hover:border-violet-700 transition-colors"
                 aria-label="Follow us on Facebook"
               >
-                <Facebook className="w-5 h-5" />
+                <Facebook className="w-4 h-4" />
               </a>
               <a
                 href="https://instagram.com/lunaxcode"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300 border border-gray-300 dark:border-gray-700 hover:border-pink-500"
-                style={{ color: 'var(--sp-colors-accent)' }}
+                className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-violet-300 dark:hover:border-violet-700 transition-colors"
                 aria-label="Follow us on Instagram"
               >
-                <Instagram className="w-5 h-5" />
+                <Instagram className="w-4 h-4" />
               </a>
               <a
                 href="https://linkedin.com/company/lunaxcode"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center hover:scale-110 transition-all duration-300 border border-gray-300 dark:border-gray-700 hover:border-blue-400"
-                style={{ color: 'var(--sp-colors-accent)' }}
+                className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-violet-300 dark:hover:border-violet-700 transition-colors"
                 aria-label="Follow us on LinkedIn"
               >
-                <Linkedin className="w-5 h-5" />
+                <Linkedin className="w-4 h-4" />
               </a>
             </div>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-bold text-lg" style={{ marginBottom: 'var(--sp-space-4)' }}>Quick Links</h4>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-3)' }}>
+            <h4 className="font-semibold text-foreground mb-4">Quick Links</h4>
+            <ul className="space-y-3">
               <li>
-                <a href="#portfolio" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
-                  <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
+                <a href="#portfolio" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Portfolio
                 </a>
               </li>
               <li>
-                <a href="#features" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
-                  <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
+                <a href="#features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Features
                 </a>
               </li>
               <li>
-                <a href="#pricing" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
-                  <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
+                <a href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Pricing
                 </a>
               </li>
               <li>
-                <a href="#testimonials" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
-                  <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
+                <a href="#testimonials" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Testimonials
                 </a>
               </li>
               <li>
-                <Link href="/login" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
-                  <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
+                <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Client Login
                 </Link>
               </li>
@@ -104,35 +87,30 @@ export default function Footer() {
 
           {/* Services */}
           <div>
-            <h4 className="font-bold text-lg" style={{ marginBottom: 'var(--sp-space-4)' }}>Services</h4>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-3)' }}>
+            <h4 className="font-semibold text-foreground mb-4">Services</h4>
+            <ul className="space-y-3">
               <li>
-                <Link href="#pricing" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
-                  <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
+                <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Landing Pages
                 </Link>
               </li>
               <li>
-                <Link href="#pricing" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
-                  <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
+                <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Business Websites
                 </Link>
               </li>
               <li>
-                <Link href="#pricing" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
-                  <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
+                <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   E-Commerce Platforms
                 </Link>
               </li>
               <li>
-                <Link href="#pricing" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
-                  <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
+                <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Web Applications
                 </Link>
               </li>
               <li>
-                <Link href="#pricing" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors inline-flex items-center group" style={{ gap: 'var(--sp-space-2)' }}>
-                  <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 -ml-6 group-hover:ml-0 transition-all" aria-hidden="true" />
+                <Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   Mobile Apps
                 </Link>
               </li>
@@ -141,70 +119,48 @@ export default function Footer() {
 
           {/* Contact Info */}
           <div>
-            <h4 className="font-bold text-lg" style={{ marginBottom: 'var(--sp-space-4)' }}>Contact Us</h4>
-            <ul style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-space-4)' }}>
-              <li className="flex items-start" style={{ gap: 'var(--sp-space-3)' }}>
-                <MapPin className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
-                <span className="text-gray-600 dark:text-gray-400 text-sm">
+            <h4 className="font-semibold text-foreground mb-4">Contact Us</h4>
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3">
+                <MapPin className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <span className="text-sm text-muted-foreground">
                   Metro Manila, Philippines
                 </span>
               </li>
-              <li className="flex items-start" style={{ gap: 'var(--sp-space-3)' }}>
-                <Mail className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
+              <li className="flex items-start gap-3">
+                <Mail className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" aria-hidden="true" />
                 <a
-                  href="mailto:hello@lunaxcode.com"
-                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
+                  href="mailto:lunaxcode2030@gmail.com"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  hello@lunaxcode.com
+                  lunaxcode2030@gmail.com
                 </a>
               </li>
-              <li className="flex items-start" style={{ gap: 'var(--sp-space-3)' }}>
-                <Phone className="w-5 h-5 text-gray-600 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
+              <li className="flex items-start gap-3">
+                <Phone className="w-4 h-4 text-muted-foreground flex-shrink-0 mt-0.5" aria-hidden="true" />
                 <a
-                  href="tel:+639123456789"
-                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm"
+                  href="tel:+639190852974"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  +63 912 345 6789
+                  +63 919 085 2974
                 </a>
               </li>
             </ul>
-
-            <div style={{ marginTop: 'var(--sp-space-6)' }}>
-              <Link
-                href="#pricing"
-                className="inline-flex items-center font-bold text-white rounded-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 bg-gradient-to-r py-3 px-6"
-                style={{
-                  minHeight: '48px',
-                  gap: 'var(--sp-space-2)',
-                  backgroundImage: `linear-gradient(to right, var(--sp-colors-accent), #a78bfa)`
-                }}
-                aria-label="View pricing"
-              >
-                View Pricing
-                <ArrowRight className="w-4 h-4" aria-hidden="true" />
-              </Link>
-            </div>
           </div>
         </div>
 
         {/* Bottom Bar */}
-        <div
-          className="border-t border-gray-300 dark:border-gray-800"
-          style={{ marginTop: 'var(--sp-space-8)', paddingTop: 'var(--sp-space-6)' }}
-        >
-          <div className="flex flex-col md:flex-row justify-between items-center" style={{ gap: 'var(--sp-space-4)' }}>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">
+        <div className="border-t border-border mt-12 pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-muted-foreground">
               © {new Date().getFullYear()} Lunaxcode. All rights reserved.
             </p>
-            <div className="flex text-sm" style={{ gap: 'var(--sp-space-6)' }}>
-              <Link href="/privacy" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+            <div className="flex gap-6 text-sm">
+              <Link href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
+              <Link href="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
                 Terms of Service
-              </Link>
-              <Link href="/cookies" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
-                Cookie Policy
               </Link>
             </div>
           </div>

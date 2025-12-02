@@ -245,8 +245,8 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
                                 asChild
                                 isActive={isActive}
                               >
-                                <Link href={subItem.url}>
-                                  <subItem.icon className="!size-4 transition-all duration-300 ease-in-out group-hover/menu-item:scale-125 group-hover/menu-item:-rotate-12" />
+                                <Link href={subItem.url} className="group/link">
+                                  <subItem.icon className="!size-4 transition-all duration-300 ease-in-out group-hover/link:scale-125 group-hover/link:-rotate-12" />
                                   <span>{subItem.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>
@@ -293,8 +293,8 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
                                 asChild
                                 isActive={isActive}
                               >
-                                <Link href={subItem.url}>
-                                  <subItem.icon className="!size-4 transition-all duration-300 ease-in-out group-hover/menu-item:scale-125 group-hover/menu-item:-rotate-12" />
+                                <Link href={subItem.url} className="group/link">
+                                  <subItem.icon className="!size-4 transition-all duration-300 ease-in-out group-hover/link:scale-125 group-hover/link:-rotate-12" />
                                   <span>{subItem.title}</span>
                                 </Link>
                               </SidebarMenuSubButton>
