@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { ChevronDown, ArrowRight } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { ChevronDown, ArrowRight, HelpCircle, MessageCircle } from 'lucide-react';
 
 interface FAQ {
   id: string;
@@ -15,26 +15,53 @@ interface FAQClientProps {
 
 export default function FAQClient({ faqs }: FAQClientProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section
+      ref={sectionRef}
       id="faq"
-      className="relative py-24 lg:py-32 bg-muted/30"
+      className="relative py-24 lg:py-32 bg-muted/30 overflow-hidden"
       aria-labelledby="faq-heading"
     >
-      <div className="max-w-3xl mx-auto px-6">
+      {/* Background decoration */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <div className="absolute top-1/2 left-0 w-[400px] h-[400px] bg-gradient-to-r from-violet-100/50 via-transparent to-transparent dark:from-violet-950/30 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2" />
+      </div>
+
+      <div className="relative max-w-3xl mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-16">
-          <p className="text-sm font-medium tracking-widest uppercase text-violet-600 dark:text-violet-400 mb-4">
-            FAQ
-          </p>
+          <div className={`inline-flex items-center gap-2 px-4 py-2 bg-violet-100 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300 text-sm font-medium rounded-full mb-6 transition-all duration-700 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+            <HelpCircle className="w-4 h-4" />
+            Common Questions
+          </div>
           <h2
             id="faq-heading"
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6"
+            className={`text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6 transition-all duration-700 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
           >
             Frequently asked questions
           </h2>
-          <p className="text-lg text-muted-foreground leading-relaxed">
+          <p className={`text-lg text-muted-foreground leading-relaxed transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             Everything you need to know before starting your project.
           </p>
         </div>
@@ -46,15 +73,16 @@ export default function FAQClient({ faqs }: FAQClientProps) {
             return (
               <div
                 key={faq.id || index}
-                className={`bg-card border rounded-xl overflow-hidden transition-all duration-200 ${
+                className={`bg-card border rounded-2xl overflow-hidden transition-all duration-500 ${
                   isOpen
-                    ? 'border-violet-200 dark:border-violet-800'
+                    ? 'border-violet-300 dark:border-violet-700 shadow-lg shadow-violet-500/5'
                     : 'border-border hover:border-violet-200 dark:hover:border-violet-800'
-                }`}
+                } ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+                style={{ transitionDelay: `${index * 50 + 300}ms` }}
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : index)}
-                  className="w-full flex items-center justify-between text-left p-5"
+                  className="w-full flex items-center justify-between text-left p-6"
                   aria-expanded={isOpen}
                   aria-controls={`faq-answer-${index}`}
                 >
@@ -62,16 +90,16 @@ export default function FAQClient({ faqs }: FAQClientProps) {
                     {faq.question}
                   </span>
                   <div
-                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 ${
+                    className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 ${
                       isOpen
-                        ? 'bg-violet-100 dark:bg-violet-950/50'
-                        : 'bg-muted'
+                        ? 'bg-violet-600 dark:bg-violet-500'
+                        : 'bg-muted hover:bg-violet-100 dark:hover:bg-violet-950/50'
                     }`}
                   >
                     <ChevronDown
-                      className={`w-4 h-4 transition-transform duration-200 ${
+                      className={`w-5 h-5 transition-all duration-300 ${
                         isOpen
-                          ? 'rotate-180 text-violet-600 dark:text-violet-400'
+                          ? 'rotate-180 text-white'
                           : 'text-muted-foreground'
                       }`}
                       aria-hidden="true"
@@ -80,14 +108,16 @@ export default function FAQClient({ faqs }: FAQClientProps) {
                 </button>
                 <div
                   id={`faq-answer-${index}`}
-                  className={`overflow-hidden transition-all duration-200 ${
-                    isOpen ? 'max-h-96' : 'max-h-0'
+                  className={`grid transition-all duration-300 ${
+                    isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
                   }`}
                   role="region"
                   aria-labelledby={`faq-question-${index}`}
                 >
-                  <div className="px-5 pb-5 text-muted-foreground leading-relaxed">
-                    {faq.answer}
+                  <div className="overflow-hidden">
+                    <div className="px-6 pb-6 text-muted-foreground leading-relaxed">
+                      {faq.answer}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -96,13 +126,19 @@ export default function FAQClient({ faqs }: FAQClientProps) {
         </div>
 
         {/* Contact CTA */}
-        <div className="mt-12 text-center">
-          <p className="text-muted-foreground mb-4">
+        <div className={`mt-12 p-8 bg-card border border-border rounded-2xl text-center transition-all duration-700 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <div className="w-14 h-14 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-violet-100 to-blue-100 dark:from-violet-950/50 dark:to-blue-950/50 flex items-center justify-center">
+            <MessageCircle className="w-7 h-7 text-violet-600 dark:text-violet-400" />
+          </div>
+          <p className="text-foreground font-medium mb-2">
             Still have questions?
+          </p>
+          <p className="text-sm text-muted-foreground mb-4">
+            We&apos;re here to help. Get in touch and we&apos;ll respond within 2 hours.
           </p>
           <a
             href="mailto:lunaxcode2030@gmail.com"
-            className="group inline-flex items-center gap-2 text-foreground font-medium hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+            className="group inline-flex items-center gap-2 px-6 py-3 bg-foreground text-background font-medium rounded-full hover:bg-foreground/90 transition-all hover:shadow-lg hover:-translate-y-0.5"
             aria-label="Contact us via email"
           >
             Contact us directly
