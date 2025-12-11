@@ -264,10 +264,18 @@ export const Navbar06 = React.forwardRef<HTMLElement, Navbar06Props>(
     ref
   ) => {
     const [isMobile, setIsMobile] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const containerRef = useRef<HTMLElement>(null);
     const selectId = useId();
 
+    // Handle hydration - only check width after mount
     useEffect(() => {
+      setMounted(true);
+    }, []);
+
+    useEffect(() => {
+      if (!mounted) return;
+
       const checkWidth = () => {
         if (containerRef.current) {
           const width = containerRef.current.offsetWidth;
@@ -285,7 +293,7 @@ export const Navbar06 = React.forwardRef<HTMLElement, Navbar06Props>(
       return () => {
         resizeObserver.disconnect();
       };
-    }, []);
+    }, [mounted]);
 
     // Combine refs
     const combinedRef = React.useCallback((node: HTMLElement | null) => {

@@ -5,6 +5,11 @@ import { eq } from 'drizzle-orm';
 import { fallbackProcess } from '@/lib/db/fallback-data';
 import ProcessClient from './ProcessClient';
 
+interface ProcessStep {
+  title: string;
+  description: string;
+}
+
 async function getProcessSteps() {
   try {
     const context = getCloudflareContext();

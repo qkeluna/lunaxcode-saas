@@ -12,7 +12,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, ArrowLeft, Loader2, Sparkles, Check, Rocket, Target, Users } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Loader2, Sparkles, Check, Rocket, Target, Users, Lightbulb } from 'lucide-react';
 import Link from 'next/link';
 import {
   Select,
@@ -513,23 +513,32 @@ export default function OnboardingPage() {
           <div>
             {(question.questionKey === 'required_sections' || question.questionKey === 'sections') && (
               <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
-                <p className="text-xs text-blue-900 dark:text-blue-100">
-                  💡 <strong>5 essential sections are pre-selected</strong> (Header, Hero, Features, Contact Form, Footer). You can uncheck them if not needed or add more sections.
-                </p>
+                <div className="flex items-start gap-2">
+                  <Lightbulb className="w-4 h-4 mt-0.5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                  <p className="text-xs text-blue-900 dark:text-blue-100">
+                    <strong>5 essential sections are pre-selected</strong> (Header, Hero, Features, Contact Form, Footer). You can uncheck them if not needed or add more sections.
+                  </p>
+                </div>
               </div>
             )}
             {question.questionKey === 'pages' && (
               <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
-                <p className="text-xs text-blue-900 dark:text-blue-100">
-                  💡 <strong>6 essential pages are pre-selected</strong> (Header, Home, About Us, Services, Contact, Footer). You can uncheck them if not needed or add more pages.
-                </p>
+                <div className="flex items-start gap-2">
+                  <Lightbulb className="w-4 h-4 mt-0.5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                  <p className="text-xs text-blue-900 dark:text-blue-100">
+                    <strong>6 essential pages are pre-selected</strong> (Header, Home, About Us, Services, Contact, Footer). You can uncheck them if not needed or add more pages.
+                  </p>
+                </div>
               </div>
             )}
             {question.questionKey === 'features' && (
               <div className="mb-3 p-3 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
-                <p className="text-xs text-blue-900 dark:text-blue-100">
-                  💡 <strong>2 essential features are pre-selected</strong> (Contact Form, Google Maps). You can uncheck them if not needed or add more features.
-                </p>
+                <div className="flex items-start gap-2">
+                  <Lightbulb className="w-4 h-4 mt-0.5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                  <p className="text-xs text-blue-900 dark:text-blue-100">
+                    <strong>2 essential features are pre-selected</strong> (Contact Form, Google Maps). You can uncheck them if not needed or add more features.
+                  </p>
+                </div>
               </div>
             )}
             <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: 'var(--sp-space-3)' }}>
@@ -599,6 +608,14 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 relative overflow-hidden">
+      {/* Skip Link for Keyboard Users */}
+      <a
+        href="#main-form"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white dark:focus:bg-gray-900 focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-purple-600 dark:focus:text-purple-400 focus:font-bold focus:ring-2 focus:ring-purple-500"
+      >
+        Skip to form
+      </a>
+
       {/* Background Decoration */}
       <div className="absolute inset-0 opacity-5 dark:opacity-10" aria-hidden="true">
         <div className="absolute top-20 left-1/4 w-96 h-96 bg-purple-600 dark:bg-purple-500 rounded-full blur-3xl" />
@@ -616,7 +633,7 @@ export default function OnboardingPage() {
         </div>
       </header>
 
-      <div className="relative max-w-5xl mx-auto" style={{ padding: 'var(--sp-space-6)' }}>
+      <div id="main-form" className="relative max-w-5xl mx-auto" style={{ padding: 'var(--sp-space-6)' }}>
         <div
           className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm rounded-3xl shadow-2xl"
           style={{ padding: 'var(--sp-space-8)' }}
@@ -650,7 +667,7 @@ export default function OnboardingPage() {
                       />
                     )}
                     <div
-                      className="relative flex items-center justify-center rounded-full font-bold transition-all duration-500"
+                      className="relative flex items-center justify-center rounded-full font-bold transition-all duration-500 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
                       style={{
                         width: 'var(--sp-space-8)',
                         height: 'var(--sp-space-8)',
@@ -766,7 +783,7 @@ export default function OnboardingPage() {
                         type="button"
                         onClick={handleGenerateSuggestions}
                         disabled={suggestionsLoading}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 disabled:opacity-50"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:outline-none"
                         style={{ minHeight: '32px' }}
                       >
                         {suggestionsLoading ? (
@@ -786,7 +803,7 @@ export default function OnboardingPage() {
                         type="button"
                         onClick={handleEnhanceDescription}
                         disabled={suggestionsLoading}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 disabled:opacity-50"
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:outline-none"
                         style={{ minHeight: '32px' }}
                       >
                         {suggestionsLoading ? (
@@ -820,7 +837,7 @@ export default function OnboardingPage() {
                           key={index}
                           type="button"
                           onClick={() => handleUseSuggestion(suggestion)}
-                          className="text-left p-3 text-sm border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-xl transition-all duration-200 hover:shadow-md hover:border-purple-300 dark:hover:border-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/30 group"
+                          className="text-left p-3 text-sm border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-xl transition-all duration-200 hover:shadow-md hover:border-purple-300 dark:hover:border-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/30 group cursor-pointer focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:outline-none"
                         >
                           <div className="flex items-start gap-2">
                             <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0 text-gray-400 dark:text-gray-500 group-hover:text-purple-500 dark:group-hover:text-purple-400 transition-colors" />
@@ -854,7 +871,12 @@ export default function OnboardingPage() {
                   aria-invalid={formData.description.length > 0 && formData.description.length < 20}
                 />
                 <div className="flex items-center justify-between mt-2">
-                  <p id="description-hint" className="text-xs text-gray-600 dark:text-gray-400">
+                  <p
+                    id="description-hint"
+                    role={formData.description.length > 0 && formData.description.length < 20 ? 'alert' : 'status'}
+                    aria-live="polite"
+                    className="text-xs text-gray-600 dark:text-gray-400"
+                  >
                     {formData.description.length === 0
                       ? 'Minimum 20 characters required'
                       : formData.description.length < 20
@@ -1042,12 +1064,12 @@ export default function OnboardingPage() {
                   aria-invalid={formData.clientEmail.length > 0 && !formData.clientEmail.includes('@')}
                 />
                 {formData.clientEmail.length > 0 && !formData.clientEmail.includes('@') && (
-                  <p id="email-hint" className="text-xs text-red-600 dark:text-red-400 mt-1">
+                  <p id="email-hint" role="alert" aria-live="polite" className="text-xs text-red-600 dark:text-red-400 mt-1">
                     Please enter a valid email address
                   </p>
                 )}
                 {formData.clientEmail.includes('@') && formData.clientEmail.includes('.') && (
-                  <p id="email-hint" className="text-xs text-green-600 dark:text-green-400 mt-1">
+                  <p id="email-hint" role="status" aria-live="polite" className="text-xs text-green-600 dark:text-green-400 mt-1">
                     ✓ Email looks good!
                   </p>
                 )}
@@ -1165,7 +1187,7 @@ export default function OnboardingPage() {
             {step > 1 ? (
               <button
                 onClick={handleBack}
-                className="flex items-center border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 font-bold hover:shadow-md py-3 px-6"
+                className="flex items-center border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-all duration-200 font-bold hover:shadow-md py-3 px-6 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:outline-none"
                 style={{
                   gap: 'var(--sp-space-2)',
                   minHeight: '48px',
@@ -1177,7 +1199,7 @@ export default function OnboardingPage() {
             ) : (
               <Link
                 href="/"
-                className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors font-bold"
+                className="flex items-center text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors font-bold focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:outline-none rounded-lg"
                 style={{ gap: 'var(--sp-space-2)', padding: 'var(--sp-space-3)' }}
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -1189,7 +1211,7 @@ export default function OnboardingPage() {
               <button
                 onClick={handleNext}
                 disabled={step === 1 ? !canProceedStep1 : !canProceedStep2()}
-                className="flex items-center text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-bold shadow-lg hover:shadow-xl hover:scale-105 py-3 px-8"
+                className="flex items-center text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-bold shadow-lg hover:shadow-xl hover:brightness-110 py-3 px-8 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:outline-none"
                 style={{
                   gap: 'var(--sp-space-2)',
                   minHeight: '48px',
@@ -1203,7 +1225,7 @@ export default function OnboardingPage() {
               <button
                 onClick={handleSubmit}
                 disabled={loading || !canProceedStep3}
-                className="flex items-center text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-bold shadow-lg hover:shadow-xl hover:scale-105 py-3 px-8"
+                className="flex items-center text-white rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed font-bold shadow-lg hover:shadow-xl hover:brightness-110 py-3 px-8 focus-visible:ring-2 focus-visible:ring-green-500 focus-visible:ring-offset-2 focus-visible:outline-none"
                 style={{
                   gap: 'var(--sp-space-2)',
                   minHeight: '48px',

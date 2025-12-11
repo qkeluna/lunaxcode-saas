@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { formatPrice } from '@/lib/utils/pricing';
+import { Info } from 'lucide-react';
 
 interface AddOn {
   id: number;
@@ -167,7 +168,7 @@ export function AddOnsSelection({ selectedAddOnIds = [], onSelectionChange, base
                   {categoryAddOns.map(addon => (
                     <div
                       key={addon.id}
-                      className="flex items-start gap-3 p-3 rounded-lg border hover:bg-accent/50 transition-colors"
+                      className="flex items-start gap-3 p-3 rounded-lg border hover:bg-accent/50 transition-colors cursor-pointer"
                     >
                       <Checkbox
                         id={`addon-${addon.id}`}
@@ -207,8 +208,11 @@ export function AddOnsSelection({ selectedAddOnIds = [], onSelectionChange, base
 
       {/* Help Text */}
       <div className="rounded-lg bg-muted p-4 text-sm">
-        <p className="font-medium mb-2">💡 About Add-ons</p>
-        <ul className="space-y-1 text-muted-foreground">
+        <div className="flex items-center gap-2 mb-2">
+          <Info className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <p className="font-medium">About Add-ons</p>
+        </div>
+        <ul className="space-y-1 text-muted-foreground ml-6">
           <li>• FREE add-ons are included at no extra cost</li>
           <li>• Select only the integrations you need</li>
           <li>• You can add more integrations later</li>

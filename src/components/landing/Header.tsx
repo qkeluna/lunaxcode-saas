@@ -14,14 +14,26 @@ interface HeaderProps {
 export default function Header({ session }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Handle hydration - only show scroll effects after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
+
+    // Check initial scroll position after mount
+    handleScroll();
+
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [mounted]);
 
   const navLinks = [
     { href: '#portfolio', label: 'Portfolio' },
@@ -40,7 +52,7 @@ export default function Header({ session }: HeaderProps) {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
+        mounted && isScrolled
           ? 'bg-background/80 backdrop-blur-lg border-b border-border'
           : 'bg-transparent'
       }`}
