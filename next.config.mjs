@@ -1,9 +1,13 @@
 import { setupDevPlatform } from '@cloudflare/next-on-pages/next-dev';
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Initialize OpenNext Cloudflare for development (required for getCloudflareContext)
+initOpenNextCloudflareForDev();
 
 // Enable local development bindings for Cloudflare
 if (process.env.NODE_ENV === 'development') {
