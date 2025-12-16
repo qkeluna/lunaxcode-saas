@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Lunaxcode is an AI-powered project management SaaS platform for Filipino web development agencies. The system automatically generates Project Requirements Documents (PRDs) and task breakdowns using Google Gemini AI, integrates PayMongo for Philippine payment methods, and provides client/admin dashboards.
+Lunaxcode is an AI-powered project management SaaS platform for Filipino web development agencies. The system automatically generates Project Requirements Documents (PRDs) and task breakdowns using AI, supports manual payment verification for Philippine payment methods (GCash, SeaBank, PayMaya, bank transfer), and provides client/admin dashboards.
 
-**Current Status**: Core features implemented and deployed. Admin dashboard, CMS system, authentication, and database seeding complete. Production deployment: https://lunaxcode-saas.pages.dev
+**Current Status**: Core features implemented and deployed. Admin dashboard, CMS system, authentication, AI generation, messaging, and payment verification complete. Production deployment: https://lunaxcode-saas.pages.dev
 
 ## Tech Stack
 
@@ -17,10 +17,18 @@ Lunaxcode is an AI-powered project management SaaS platform for Filipino web dev
 - **ORM**: Drizzle ORM
 - **Storage**: Cloudflare R2 (S3-compatible)
 - **Auth**: NextAuth.js with Google OAuth
-- **AI**: Google Gemini API
-- **Payments**: PayMongo (Philippine payment gateway)
+- **AI**: Multi-provider support (Google Gemini, configurable via admin)
+- **Payments**: Manual bank transfer verification (GCash, SeaBank, PayMaya, bank transfer)
+- **Email**: Resend (for contact form)
+- **Bot Protection**: Cloudflare Turnstile
+- **Error Monitoring**: Sentry
 - **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui
+- **UI Components**: shadcn/ui + Radix UI
+- **Charts**: Recharts
+- **Forms**: React Hook Form + Zod
+- **Tables**: TanStack Table
+- **Drag & Drop**: @dnd-kit
+- **Testing**: Vitest + Testing Library
 - **Deployment**: Cloudflare Pages
 - **CLI**: Wrangler
 
@@ -29,8 +37,14 @@ Lunaxcode is an AI-powered project management SaaS platform for Filipino web dev
 ```bash
 # Development
 npm run dev                    # Start dev server (localhost:3000)
-npm run build                  # Build for production
+npm run build                  # Build for production (use pages:build for Cloudflare)
 npm run start                  # Start production server
+
+# Testing (Vitest)
+npm run test                   # Run tests in watch mode
+npm run test:ui                # Run tests with UI
+npm run test:run               # Run tests once
+npm run test:coverage          # Run tests with coverage report
 
 # Database (Drizzle + D1)
 npm run db:generate           # Generate migrations from schema
@@ -40,27 +54,28 @@ npm run db:studio             # Open Drizzle Studio (visual DB editor)
 npm run db:seed               # Seed local database with sample data
 npm run db:seed:dev           # Seed remote dev database
 npm run db:seed:prod          # Seed remote production database
+npm run d1:migrate:local      # Apply migrations to local D1
+npm run d1:migrate:dev        # Apply migrations to remote dev D1
+npm run d1:migrate:prod       # Apply migrations to remote production D1
 
 # Cloudflare (Wrangler CLI)
 npm run pages:build               # Build for Cloudflare Pages (USE THIS, not npm run build)
 npm run preview                   # Preview Cloudflare Pages build locally
 npm run deploy                    # Build and deploy to Cloudflare Pages
+npm run cf:deploy                 # Alias for deploy
+npm run cf:deploy:prod            # Deploy to production environment
 wrangler d1 create <db-name>              # Create D1 database
-wrangler d1 migrations apply <db-name>    # Apply migrations
-wrangler d1 migrations apply <db-name> --local  # Apply to local DB
 wrangler d1 execute <db-name> --command="SQL"   # Execute SQL command
 wrangler r2 bucket create <bucket-name>   # Create R2 bucket
-wrangler secret put <SECRET_NAME>         # Set production secret
-wrangler pages deploy                     # Deploy to Cloudflare Pages
 wrangler pages deployment list            # List recent deployments
 wrangler login                            # Login to Cloudflare
 
 # Linting & Formatting
 npm run lint                 # Run ESLint
-npm run format               # Format with Prettier
 
 # Utility Scripts
 npm run create-admin         # Create first admin user
+npm run test:resend          # Test Resend email integration
 ```
 
 ## Architecture Overview
@@ -80,69 +95,74 @@ lunaxcode/
 ├── src/
 │   ├── app/
 │   │   ├── (marketing)/      # Public landing page
-│   │   ├── (admin)/          # ✅ Admin dashboard (implemented)
-│   │   │   ├── admin/
-│   │   │   │   ├── page.tsx          # Dashboard overview with stats
-│   │   │   │   ├── clients/page.tsx  # Client management
-│   │   │   │   ├── projects/page.tsx # Project management
-│   │   │   │   ├── payments/page.tsx # Payment tracking
-│   │   │   │   ├── settings/page.tsx # System settings
-│   │   │   │   └── cms/              # CMS system
-│   │   │   │       ├── faqs/page.tsx      # FAQ management
-│   │   │   │       ├── portfolio/page.tsx # Portfolio management
-│   │   │   │       ├── services/page.tsx  # Services management
-│   │   │   │       ├── process/page.tsx   # Process steps
-│   │   │   │       └── features/page.tsx  # Platform features
-│   │   ├── api/              # ✅ API routes (implemented)
-│   │   │   ├── auth/         # NextAuth handlers
-│   │   │   ├── projects/     # Project CRUD
-│   │   │   ├── tasks/        # Task management
-│   │   │   ├── messages/     # Project messaging
-│   │   │   └── admin/        # Admin API endpoints
-│   │   │       ├── clients/  # Client management API
-│   │   │       ├── projects/ # Admin project management
-│   │   │       ├── payments/ # Payment tracking API
-│   │   │       ├── cms/      # CMS API (faqs, portfolio, services, process)
-│   │   │       ├── stats/    # Dashboard statistics
-│   │   │       └── make-admin/ # User to admin promotion endpoint
-│   │   ├── dashboard/        # Client dashboard
-│   │   ├── projects/         # Project pages
-│   │   ├── login/            # Login page
+│   │   ├── (auth)/           # Authentication pages
+│   │   │   └── login/        # Google OAuth login
+│   │   ├── (dashboard)/      # Client dashboard (protected)
+│   │   │   ├── dashboard/    # Overview & create project
+│   │   │   ├── projects/     # Project list & detail pages
+│   │   │   │   └── [id]/     # Project detail, messages, payment
+│   │   │   └── settings/     # Client settings
+│   │   ├── (admin)/          # Admin dashboard (protected, admin role)
+│   │   │   └── admin/
+│   │   │       ├── page.tsx              # Dashboard overview with stats
+│   │   │       ├── clients/              # Client management
+│   │   │       ├── projects/             # Project management & detail
+│   │   │       ├── payments/             # Payment tracking
+│   │   │       ├── users/                # User management
+│   │   │       ├── settings/             # System settings
+│   │   │       │   ├── page.tsx          # General settings
+│   │   │       │   ├── payment-accounts/ # Payment accounts config
+│   │   │       │   └── ai-settings/      # AI provider settings
+│   │   │       └── cms/                  # Content management
+│   │   │           ├── faqs/             # FAQ management
+│   │   │           ├── portfolio/        # Portfolio items
+│   │   │           ├── services/         # Service offerings
+│   │   │           ├── process/          # Process steps
+│   │   │           ├── features/         # Platform features
+│   │   │           ├── questions/        # Dynamic onboarding questions
+│   │   │           └── add-ons/          # Optional add-ons
+│   │   ├── api/              # API routes
+│   │   │   ├── auth/         # NextAuth handlers + session refresh
+│   │   │   ├── projects/     # Project CRUD + create-from-onboarding
+│   │   │   ├── tasks/        # Task status updates
+│   │   │   ├── messages/     # Messaging (send, mark-read, unread count)
+│   │   │   ├── payments/     # Payment submission
+│   │   │   ├── ai/           # AI generation endpoints
+│   │   │   ├── public/       # Public landing page data
+│   │   │   ├── contact/      # Contact form
+│   │   │   ├── questions/    # Dynamic questions per service
+│   │   │   ├── add-ons/      # Add-ons API
+│   │   │   ├── upload/       # File upload to R2
+│   │   │   ├── site-settings/ # Site configuration
+│   │   │   └── admin/        # Admin-only endpoints
 │   │   ├── onboarding/       # Project creation wizard
-│   │   ├── error.tsx         # ✅ Global error handler
-│   │   ├── not-found.tsx     # ✅ 404 page
-│   │   ├── global-error.tsx  # ✅ Root error handler
+│   │   ├── error.tsx         # Global error handler
+│   │   ├── not-found.tsx     # 404 page
+│   │   ├── global-error.tsx  # Root error handler
 │   │   └── layout.tsx        # Root layout
 │   ├── components/
-│   │   └── ui/               # ✅ shadcn/ui components (installed)
-│   │       ├── button.tsx
-│   │       ├── input.tsx
-│   │       ├── textarea.tsx
-│   │       ├── label.tsx
-│   │       ├── switch.tsx
-│   │       ├── select.tsx
-│   │       ├── table.tsx
-│   │       ├── badge.tsx
-│   │       ├── dialog.tsx
-│   │       ├── card.tsx
-│   │       └── tabs.tsx
+│   │   ├── ui/               # shadcn/ui components
+│   │   ├── landing/          # Landing page components
+│   │   ├── dashboard/        # Dashboard components
+│   │   └── admin/            # Admin-specific components
 │   ├── lib/
 │   │   ├── db/
-│   │   │   ├── schema.ts     # ✅ Drizzle schema (complete)
+│   │   │   ├── schema.ts     # Drizzle schema (20+ tables)
 │   │   │   └── index.ts      # DB client
 │   │   ├── auth.ts           # NextAuth configuration
 │   │   └── utils.ts          # Utility functions
 │   └── auth.ts               # NextAuth handlers
 ├── scripts/
-│   ├── seed.ts               # ✅ TypeScript seed script
-│   └── seed.sql              # ✅ SQL seed script
+│   ├── seed.ts               # TypeScript seed script
+│   ├── seed.sql              # SQL seed script
+│   └── create-admin.ts       # Create admin user script
 ├── docs/
 │   ├── lunaxcode_complete_plan.txt  # Original development plan
-│   └── SEEDING_SUMMARY.md           # ✅ Database seeding documentation
+│   └── SEEDING_SUMMARY.md           # Database seeding documentation
 ├── migrations/               # Database migrations (SQL)
 ├── public/                   # Static assets
 ├── .env.local                # Local environment variables
-├── components.json           # ✅ shadcn/ui configuration
+├── components.json           # shadcn/ui configuration
 ├── wrangler.toml             # Cloudflare configuration
 └── CLAUDE.md                 # This file
 ```
@@ -150,69 +170,142 @@ lunaxcode/
 ### Key Pages & Routes
 
 **Authentication:**
-- ✅ `/login` - Google OAuth login
-- `/signup` - User registration (to be implemented)
+- `/login` - Google OAuth login with Turnstile bot protection
 
 **Client Dashboard:**
-- ✅ `/dashboard` - Overview with stats
-- ✅ `/projects` - All projects list
-- ✅ `/projects/[id]` - Project detail (PRD, tasks, timeline)
-- `/projects/[id]/messages` - Project messaging (to be implemented)
-- `/projects/[id]/payment` - Payment interface (to be implemented)
-- ✅ `/onboarding` - New project creation (3-step form)
+- `/dashboard` - Overview with stats and quick actions
+- `/dashboard/create-project` - Start new project wizard
+- `/projects` - All client projects list
+- `/projects/[id]` - Project detail (PRD, tasks, timeline)
+- `/projects/[id]/messages` - Project messaging with admin
+- `/projects/[id]/payment` - Payment submission with proof upload
+- `/settings` - Client account settings
+- `/onboarding` - Multi-step project creation wizard
+- `/onboarding/complete` - Project creation confirmation
 
-**Admin Dashboard (✅ Fully Implemented):**
-- ✅ `/admin` - Overview & analytics with stats cards
-- ✅ `/admin/projects` - All projects management
-- ✅ `/admin/clients` - Client management with user table
-- ✅ `/admin/payments` - Payment tracking with status filters
-- ✅ `/admin/cms/faqs` - FAQ content management
-- ✅ `/admin/cms/portfolio` - Portfolio items management
-- ✅ `/admin/cms/services` - Service offerings and pricing
-- ✅ `/admin/cms/process` - Process steps management
-- ✅ `/admin/cms/features` - Platform features management
-- ✅ `/admin/settings` - System configuration (profile, system, notifications, security)
+**Admin Dashboard:**
+- `/admin` - Overview & analytics with stats cards (recharts)
+- `/admin/projects` - All projects management with filters
+- `/admin/projects/[id]` - Project detail with PRD generation
+- `/admin/projects/[id]/messages` - Admin messaging with client
+- `/admin/clients` - Client management with user table
+- `/admin/users` - User management (all users)
+- `/admin/payments` - Payment verification with status filters
+- `/admin/settings` - System configuration
+- `/admin/settings/payment-accounts` - Configure payment methods (GCash, SeaBank, etc.)
+- `/admin/settings/ai-settings` - AI provider configuration (API keys, models)
+- `/admin/cms/faqs` - FAQ content management
+- `/admin/cms/portfolio` - Portfolio items management
+- `/admin/cms/services` - Service offerings and pricing
+- `/admin/cms/process` - Process steps management
+- `/admin/cms/features` - Platform features management
+- `/admin/cms/questions` - Dynamic onboarding questions per service
+- `/admin/cms/add-ons` - Optional add-ons management
 
 **API Routes:**
-- ✅ `/api/auth/[...nextauth]` - NextAuth handlers
-- ✅ `/api/projects` - Project CRUD
-- ✅ `/api/projects/[id]` - Individual project operations
-- ✅ `/api/tasks/[id]` - Task status updates
-- ✅ `/api/messages` - Project messaging
-- ✅ `/api/admin/clients` - Client management API
-- ✅ `/api/admin/clients/[id]` - Individual client operations
-- ✅ `/api/admin/projects` - Admin project management
-- ✅ `/api/admin/projects/[id]` - Admin project operations
-- ✅ `/api/admin/payments` - Payment tracking API
-- ✅ `/api/admin/payments/[id]` - Individual payment operations
-- ✅ `/api/admin/stats` - Dashboard statistics
-- ✅ `/api/admin/cms/faqs` - FAQ CRUD operations
-- ✅ `/api/admin/cms/faqs/[id]` - Individual FAQ operations
-- ✅ `/api/admin/cms/portfolio` - Portfolio CRUD
-- ✅ `/api/admin/cms/portfolio/[id]` - Individual portfolio operations
-- ✅ `/api/admin/cms/services` - Services CRUD
-- ✅ `/api/admin/cms/services/[id]` - Individual service operations
-- ✅ `/api/admin/cms/process` - Process steps CRUD
-- ✅ `/api/admin/cms/process/[id]` - Individual process operations
-- ✅ `/api/admin/make-admin` - Promote authenticated user to admin (GET to check, POST to promote)
-- `/api/payment` - Payment processing (to be implemented)
-- `/api/upload` - File upload to R2 (to be implemented)
-- `/api/webhooks/paymongo` - Payment webhooks (to be implemented)
+
+*Authentication:*
+- `/api/auth/[...nextauth]` - NextAuth handlers
+- `/api/auth/refresh-session` - Force session refresh
+
+*Projects:*
+- `/api/projects` - Project CRUD (GET, POST)
+- `/api/projects/[id]` - Individual project operations (GET, PUT, DELETE)
+- `/api/projects/create-from-onboarding` - Create project from onboarding wizard
+
+*Tasks:*
+- `/api/tasks/[id]` - Task status updates (PATCH)
+
+*Messaging:*
+- `/api/messages` - Send/receive messages (GET, POST)
+- `/api/messages/mark-read` - Mark messages as read (POST)
+- `/api/messages/unread/count` - Get unread message count (GET)
+
+*Payments:*
+- `/api/payments` - Submit payment proof (POST)
+- `/api/payment-accounts` - Get active payment accounts (GET)
+
+*AI Generation:*
+- `/api/ai/suggest-description` - AI description suggestions
+- `/api/ai/validate` - Validate AI generation eligibility
+- `/api/ai/stream` - Streaming AI responses
+- `/api/ai/proxy` - AI proxy endpoint
+- `/api/ai/secure-generate` - Secure AI generation with rate limiting
+
+*Public (Landing Page):*
+- `/api/public/features` - Get platform features
+- `/api/public/faqs` - Get FAQs
+- `/api/public/portfolio` - Get portfolio items
+- `/api/public/services` - Get service types
+- `/api/public/process` - Get process steps
+
+*Other:*
+- `/api/contact` - Contact form submission (Resend email)
+- `/api/questions/[serviceId]` - Get dynamic questions for service
+- `/api/add-ons` - Get available add-ons
+- `/api/upload` - File upload to R2
+- `/api/site-settings` - Get site configuration
+
+*Admin API:*
+- `/api/admin/stats` - Dashboard statistics
+- `/api/admin/clients` - Client management CRUD
+- `/api/admin/users` - User management CRUD
+- `/api/admin/projects` - Admin project management
+- `/api/admin/projects/[id]` - Admin project operations
+- `/api/admin/projects/[id]/tasks` - Task management for project
+- `/api/admin/projects/[id]/generate-prd` - Generate PRD with AI
+- `/api/admin/projects/[id]/preview-prompt` - Preview AI prompt
+- `/api/admin/payments` - Payment management
+- `/api/admin/payments/[id]` - Verify/reject payments
+- `/api/admin/payment-accounts` - Payment accounts CRUD
+- `/api/admin/ai-settings` - AI provider settings CRUD
+- `/api/admin/ai-usage` - AI usage statistics
+- `/api/admin/site-settings` - Site settings management
+- `/api/admin/make-admin` - Promote user to admin
+- `/api/admin/cms/*` - CMS endpoints (faqs, portfolio, services, process, features, questions, add-ons)
 
 ## Database Schema
 
-### Core Tables (✅ All Implemented)
-- **users** - Authentication and user profiles (role: 'admin' | 'client')
+### Core Tables (20+ tables in `src/lib/db/schema.ts`)
+
+**User & Auth:**
+- **users** - User profiles (role: 'admin' | 'client')
+- **accounts** - OAuth accounts (NextAuth)
+- **sessions** - User sessions (NextAuth)
+- **verificationTokens** - Email verification tokens
+
+**Projects & Tasks:**
 - **projects** - Main project records with PRD, status, payment info
-- **tasks** - AI-generated task breakdown for each project
-- **payments** - Payment records linked to projects
+- **tasks** - AI-generated task breakdown (status: pending → to-do → in-progress → testing → done)
+- **projectAnswers** - Stores onboarding question answers per project
+- **projectAddOns** - Selected add-ons per project (junction table)
+
+**Payments:**
+- **payments** - Payment records with proof images and verification status
+- **paymentAccounts** - Admin-configured payment methods (GCash, SeaBank, PayMaya, bank transfer)
+
+**Messaging:**
+- **messages** - Client-admin communication per project (with read/unread status)
+- **unreadCounts** - Denormalized cache for message counts
+- **messageSettings** - Per-project messaging configuration
+
+**Files:**
 - **files** - R2 file references for project uploads
-- **messages** - Client-agency communication per project
-- **service_types** - CMS for service offerings and pricing
-- **faqs** - CMS for FAQ content
-- **portfolio** - CMS for portfolio showcase items
-- **process_steps** - CMS for process/workflow steps
-- **platform_features** - CMS for platform feature highlights
+
+**CMS Content:**
+- **serviceTypes** - Service offerings with base pricing
+- **questions** - Dynamic onboarding questions per service type
+- **questionOptions** - Options for select/radio/checkbox questions
+- **addOns** - Optional services/integrations with pricing
+- **faqs** - FAQ content
+- **portfolio** - Portfolio showcase items
+- **processSteps** - Process/workflow steps
+- **features** - Platform feature highlights
+
+**AI & Settings:**
+- **aiSettings** - Admin-configured AI provider settings (API keys, models, limits)
+- **aiUsageLog** - Tracks AI generations per user for rate limiting
+- **siteSettings** - Key-value store for site configuration
 
 ### Key Relationships
 - User → Projects (one-to-many)
@@ -220,9 +313,15 @@ lunaxcode/
 - Project → Payments (one-to-many)
 - Project → Files (one-to-many)
 - Project → Messages (one-to-many)
+- Project → ProjectAnswers (one-to-many)
+- Project → ProjectAddOns (one-to-many)
 - ServiceType → Projects (one-to-many)
+- ServiceType → Questions (one-to-many)
+- ServiceType → AddOns (one-to-many, optional)
+- Question → QuestionOptions (one-to-many)
+- User → AIUsageLog (one-to-many)
 
-### Seeded Data (✅ Production Database)
+### Seeded Data
 The production database has been seeded with:
 - **1 admin user**: admin@lunaxcode.com (from seed script)
 - **2 sample clients**: Juan dela Cruz, Maria Santos
@@ -280,13 +379,8 @@ AUTH_SECRET=<generate-with-openssl>
 AUTH_GOOGLE_ID=<from-google-cloud-console>
 AUTH_GOOGLE_SECRET=<from-google-cloud-console>
 
-# Google Gemini API (AI generation)
+# Google Gemini API (AI generation - can also configure via admin dashboard)
 GEMINI_API_KEY=<from-google-ai-studio>
-
-# PayMongo (Philippine payments)
-PAYMONGO_PUBLIC_KEY=pk_test_<your-key>
-PAYMONGO_SECRET_KEY=sk_test_<your-key>
-PAYMONGO_WEBHOOK_SECRET=whsec_<your-secret>
 
 # Resend (Email service for contact form)
 RESEND_API_KEY=<from-resend.com>
@@ -297,7 +391,12 @@ TURNSTILE_SECRET_KEY=<from-cloudflare-dashboard>
 
 # App URL
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# Sentry (Error Monitoring - optional)
+SENTRY_DSN=<from-sentry.io>
 ```
+
+**Note**: AI provider API keys can also be configured via the admin dashboard at `/admin/settings/ai-settings`. Environment variables serve as fallback.
 
 ### Getting Cloudflare Turnstile Keys
 
@@ -353,40 +452,66 @@ The `wrangler.toml` file should include:
 - Environment-specific settings
 - Compatibility flags for Next.js
 
-## AI Integration (Google Gemini)
+## AI Integration (Multi-Provider)
 
-### Key Functions (lib/gemini.ts)
-- `generatePRD()` - Creates comprehensive Project Requirements Document
-- `generateTasks()` - Breaks down PRD into 15-25 structured tasks
-- `estimatePrice()` - AI-powered pricing estimation based on scope
+### Configuration
+AI providers are configured via the admin dashboard at `/admin/settings/ai-settings`. Supports:
+- Google Gemini (default)
+- OpenAI
+- Anthropic
+- DeepSeek
+- Groq
+
+### Rate Limiting
+- Each user has a configurable limit of AI generations (default: 3 per project)
+- Usage tracked in `aiUsageLog` table
+- Limits configurable per provider via `aiSettings.maxGenerationsPerUser`
+- Validation endpoint: `/api/ai/validate`
+
+### Key Endpoints
+- `/api/ai/suggest-description` - AI description suggestions during onboarding
+- `/api/ai/secure-generate` - Secure PRD/task generation with rate limiting
+- `/api/ai/stream` - Streaming AI responses for real-time feedback
+- `/api/admin/projects/[id]/generate-prd` - Admin-triggered PRD generation
+- `/api/admin/projects/[id]/preview-prompt` - Preview AI prompt before generation
 
 ### AI Generation Flow
-1. User submits onboarding form (service type, description, features, timeline)
-2. System calls Gemini API to generate PRD (target: <30 seconds)
-3. System generates task breakdown with estimates, dependencies, priorities
-4. All saved to D1 database atomically
-5. User redirected to project detail page
+1. User submits onboarding form (service type, description, answers to dynamic questions)
+2. Admin reviews project and triggers PRD generation
+3. System validates user hasn't exceeded generation limit
+4. System calls configured AI provider to generate PRD (target: <30 seconds)
+5. System generates task breakdown with estimates, dependencies, priorities
+6. Usage logged to `aiUsageLog` table
+7. All saved to D1 database atomically
 
-## Payment Integration (PayMongo)
+## Payment Integration (Manual Verification)
 
 ### Supported Methods
-- Credit/Debit Cards (Visa, Mastercard)
 - GCash (e-wallet)
+- SeaBank (digital bank)
 - PayMaya (e-wallet)
+- Bank Transfer (traditional banks)
 
 ### Payment Flow
-1. Client views project payment page
-2. Selects payment method and amount
-3. Creates payment intent via `/api/payment`
-4. Redirects to PayMongo checkout (for e-wallets) or processes card (for cards)
-5. Webhook receives payment confirmation
-6. System updates project payment status
-7. Client sees confirmation
+1. Admin configures payment accounts via `/admin/settings/payment-accounts`
+2. Client views project payment page at `/projects/[id]/payment`
+3. Client selects payment method and sees account details
+4. Client makes payment externally (via banking app)
+5. Client uploads payment proof (screenshot/receipt) via `/api/payments`
+6. Admin reviews payment proof in `/admin/payments`
+7. Admin verifies or rejects payment with optional notes
+8. Project payment status updates automatically (pending → verified/rejected)
 
-### Webhook Security
-- Always verify PayMongo signature in webhook handler
-- Use `PAYMONGO_WEBHOOK_SECRET` for verification
-- Update database only after successful verification
+### Payment Types
+- **Deposit** (50%): Required to start project
+- **Completion** (50%): Required upon project completion
+
+### Admin Verification
+- View payment proof images
+- Verify reference numbers
+- Add admin notes
+- Reject with reason if needed
+- All verification actions logged with timestamp and admin ID
 
 ## Authentication & Authorization
 
@@ -527,9 +652,9 @@ git merge task-XXX-description
    - Create projects (which creates their user record), OR
    - Use `/api/admin/make-admin` endpoint to manually create their record
 
-5. **Database Schema Changes**: Always generate migrations with `npm run db:generate`, don't push directly in production. Run `wrangler d1 migrations apply` to apply.
+5. **Database Schema Changes**: Always generate migrations with `npm run db:generate`, don't push directly in production. Run `npm run d1:migrate:prod` to apply.
 
-6. **Payment Webhooks**: Must verify PayMongo signature before processing to prevent fraud.
+6. **Payment Verification**: This system uses manual bank transfer verification (not PayMongo). Admins verify payment proofs via `/admin/payments`.
 
 7. **Role Checks**: Always verify user role on server side, never trust client. Check database role, not just JWT token.
 
@@ -540,6 +665,14 @@ git merge task-XXX-description
 10. **Session Expiry**: Handle session expiry gracefully, redirect to login.
 
 11. **Error Pages**: Next.js App Router requires `error.tsx`, `not-found.tsx`, and `global-error.tsx` for proper error handling in production builds.
+
+12. **AI Rate Limiting**: Users have a configurable limit of AI generations per project. Check `aiSettings.maxGenerationsPerUser` and track usage in `aiUsageLog` table. Configure limits via `/admin/settings/ai-settings`.
+
+13. **Payment Accounts Required**: Before clients can submit payments, admin must configure payment accounts in `/admin/settings/payment-accounts`. Without active accounts, the payment form won't show options.
+
+14. **Dynamic Questions**: Onboarding questions are per-service-type and stored in the `questions` table. Update them via `/admin/cms/questions`. Each service can have different questions.
+
+15. **Add-ons Pricing**: Add-ons can be service-specific or global (null serviceTypeId). Final project price = base service price + selected add-ons.
 
 ## Deployment
 
@@ -577,16 +710,14 @@ AUTH_GOOGLE_SECRET=<your-google-client-secret>
 
 GEMINI_API_KEY=<your-gemini-api-key>
 
-PAYMONGO_PUBLIC_KEY=<your-paymongo-public-key>
-PAYMONGO_SECRET_KEY=<your-paymongo-secret-key>
-PAYMONGO_WEBHOOK_SECRET=<your-webhook-secret>
-
 RESEND_API_KEY=<your-resend-api-key>
 
 NEXT_PUBLIC_TURNSTILE_SITE_KEY=<your-turnstile-site-key>
 TURNSTILE_SECRET_KEY=<your-turnstile-secret-key>
 
 NEXT_PUBLIC_APP_URL=https://lunaxcode-saas.pages.dev (or your custom domain)
+
+SENTRY_DSN=<your-sentry-dsn> (optional)
 ```
 
 **Note:** For Workers (not Pages), you would use `wrangler secret put`, but Pages uses environment variables set via the dashboard.
@@ -626,8 +757,12 @@ npx wrangler pages deployment list --project-name=lunaxcode-saas
 - **Cloudflare Turnstile**: https://developers.cloudflare.com/turnstile
 - **Drizzle ORM**: https://orm.drizzle.team
 - **Google Gemini**: https://ai.google.dev
-- **PayMongo**: https://developers.paymongo.com
 - **shadcn/ui**: https://ui.shadcn.com
+- **Resend**: https://resend.com/docs
+- **Sentry**: https://docs.sentry.io/platforms/javascript/guides/nextjs/
+- **Vitest**: https://vitest.dev
+- **TanStack Table**: https://tanstack.com/table
+- **dnd-kit**: https://dndkit.com
 
 ## Project Context
 
@@ -636,26 +771,37 @@ npx wrangler pages deployment list --project-name=lunaxcode-saas
 **✅ Completed Features:**
 - Authentication system with Google OAuth (NextAuth.js)
 - Bot protection with Cloudflare Turnstile (CAPTCHA alternative)
-- Complete admin dashboard with 10+ pages
-- CMS system (FAQs, Portfolio, Services, Process Steps, Features)
-- Database schema with 11 tables
+- Complete admin dashboard with 15+ pages
+- CMS system (FAQs, Portfolio, Services, Process Steps, Features, Questions, Add-ons)
+- Database schema with 20+ tables
 - Database seeding scripts (TypeScript + SQL)
-- All admin API endpoints (20+ routes)
+- All admin API endpoints (50+ routes)
 - shadcn/ui component library installed
 - Error pages for App Router
 - Production deployment on Cloudflare Pages
 - Light/Dark mode support throughout the application
-
-**🚧 In Progress / To Be Implemented:**
-- AI-powered PRD generation (Google Gemini integration)
-- PayMongo payment integration
-- Client project messaging system
+- AI generation endpoints with rate limiting and usage tracking
+- Client-admin messaging system with read/unread tracking
+- Manual payment verification system (GCash, SeaBank, PayMaya, bank transfer)
+- Payment accounts management for admin
+- Dynamic onboarding questions per service type
+- Add-ons system for optional services
 - File upload to R2 storage
-- Payment webhooks
-- Advanced client dashboard features
+- Contact form with Resend email integration
+- Site settings configuration
+- Recharts dashboard analytics
+- Drag-and-drop task management (@dnd-kit)
+- Sentry error monitoring integration
+
+**🚧 Potential Improvements:**
+- Real-time messaging (WebSocket/SSE)
+- Email notifications for project updates
+- Invoice/receipt generation
+- Client self-service features
+- Advanced analytics and reporting
 
 **📖 Development Plan:**
-The original development plan (`docs/lunaxcode_complete_plan.txt`) contains the 34-task roadmap. Current progress: ~40% complete (focusing on admin features first).
+The original development plan (`docs/lunaxcode_complete_plan.txt`) contains the 34-task roadmap. Current progress: ~80% complete.
 
 **🔗 Production URL:** https://lunaxcode-saas.pages.dev
 
@@ -670,3 +816,5 @@ The original development plan (`docs/lunaxcode_complete_plan.txt`) contains the 
 - Cloudflare D1 for database (SQLite)
 - Cloudflare Pages for hosting
 - Automatic deployments on git push
+- Manual payment verification (no PayMongo - using proof uploads)
+- Multi-provider AI support (configured via admin settings)

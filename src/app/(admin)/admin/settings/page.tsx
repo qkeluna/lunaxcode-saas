@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Settings, User, Bell, Shield, Database, Palette, CheckCircle } from 'lucide-react';
+import { Settings, User, Bell, Shield, Database, Palette, CheckCircle, Globe, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -53,6 +53,34 @@ export default function AdminSettingsPage() {
     requirePasswordChange: false,
   });
 
+  // Landing page settings
+  const [landingSettings, setLandingSettings] = useState({
+    whatsappEnabled: true,
+    whatsappNumber: '639190852974',
+  });
+  const [landingLoading, setLandingLoading] = useState(true);
+
+  // Fetch landing page settings on mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/admin/site-settings');
+        if (response.ok) {
+          const data = await response.json() as { settings: { whatsapp_enabled: string; whatsapp_number: string } };
+          setLandingSettings({
+            whatsappEnabled: data.settings.whatsapp_enabled === 'true',
+            whatsappNumber: data.settings.whatsapp_number || '639190852974',
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching site settings:', error);
+      } finally {
+        setLandingLoading(false);
+      }
+    };
+    fetchSettings();
+  }, []);
+
   const handleSaveProfile = () => {
     setLoading(true);
     // Simulate API call
@@ -81,6 +109,30 @@ export default function AdminSettingsPage() {
     }, 1000);
   };
 
+  const handleSaveLandingSettings = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/admin/site-settings', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          settings: {
+            whatsapp_enabled: String(landingSettings.whatsappEnabled),
+            whatsapp_number: landingSettings.whatsappNumber,
+          },
+        }),
+      });
+      if (response.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+      }
+    } catch (error) {
+      console.error('Error saving landing settings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -100,7 +152,7 @@ export default function AdminSettingsPage() {
 
       {/* Settings Tabs */}
       <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:w-auto">
+        <TabsList className="grid w-full grid-cols-5 lg:w-auto">
           <TabsTrigger value="profile">
             <User className="h-4 w-4 mr-2" />
             Profile
@@ -116,6 +168,10 @@ export default function AdminSettingsPage() {
           <TabsTrigger value="security">
             <Shield className="h-4 w-4 mr-2" />
             Security
+          </TabsTrigger>
+          <TabsTrigger value="landing">
+            <Globe className="h-4 w-4 mr-2" />
+            Landing
           </TabsTrigger>
         </TabsList>
 
@@ -480,6 +536,67 @@ export default function AdminSettingsPage() {
                   <p className="text-sm text-muted-foreground">Secure authentication via Google</p>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Landing Page Settings */}
+        <TabsContent value="landing" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageCircle className="h-5 w-5 text-[#25D366]" />
+                WhatsApp Widget
+              </CardTitle>
+              <CardDescription>
+                Configure the floating WhatsApp button on the landing page
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {landingLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between py-3 border-b">
+                    <div>
+                      <p className="font-medium text-sm">Show WhatsApp Button</p>
+                      <p className="text-sm text-muted-foreground">
+                        Display the floating WhatsApp chat button on the landing page
+                      </p>
+                    </div>
+                    <Switch
+                      checked={landingSettings.whatsappEnabled}
+                      onCheckedChange={(checked) =>
+                        setLandingSettings({ ...landingSettings, whatsappEnabled: checked })
+                      }
+                    />
+                  </div>
+
+                  <div className="space-y-2 py-3">
+                    <Label htmlFor="whatsappNumber">WhatsApp Phone Number</Label>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Phone number with country code (without + or spaces)
+                    </p>
+                    <Input
+                      id="whatsappNumber"
+                      value={landingSettings.whatsappNumber}
+                      onChange={(e) =>
+                        setLandingSettings({ ...landingSettings, whatsappNumber: e.target.value })
+                      }
+                      placeholder="639XXXXXXXXX"
+                      className="max-w-xs"
+                    />
+                  </div>
+
+                  <div className="flex justify-end pt-4">
+                    <Button onClick={handleSaveLandingSettings} disabled={loading}>
+                      {loading ? 'Saving...' : 'Save Changes'}
+                    </Button>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

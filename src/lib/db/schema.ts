@@ -106,20 +106,20 @@ export const payments = sqliteTable('payments', {
   amount: integer('amount').notNull(),
   paymentType: text('payment_type').notNull(), // 'deposit' | 'completion' (50% each)
   paymentMethod: text('payment_method').notNull(), // 'gcash' | 'seabank' | 'paymaya' | 'bank_transfer'
-  
+
   // Payment proof details
   proofImageUrl: text('proof_image_url'), // R2 URL or base64 data URL
   referenceNumber: text('reference_number'), // Transaction reference from bank
   senderName: text('sender_name'), // Name of person who sent payment
   senderAccountNumber: text('sender_account_number'), // Last 4 digits or partial account
-  
+
   // Admin verification
   status: text('status').notNull().default('pending'), // 'pending' | 'verified' | 'rejected'
   verifiedBy: text('verified_by'), // Admin user ID who verified
   verifiedAt: integer('verified_at', { mode: 'timestamp' }),
   rejectionReason: text('rejection_reason'),
   adminNotes: text('admin_notes'),
-  
+
   metadata: text('metadata'), // JSON string for additional data
   createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
@@ -280,6 +280,13 @@ export const aiSettings = sqliteTable('ai_settings', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
+// Site Settings table (flexible key-value store for site configuration)
+export const siteSettings = sqliteTable('site_settings', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
 // NextAuth Session table
 export const sessions = sqliteTable('sessions', {
   sessionToken: text('session_token').primaryKey(),
@@ -367,3 +374,6 @@ export type NewAIUsageLog = typeof aiUsageLog.$inferInsert;
 
 export type AISetting = typeof aiSettings.$inferSelect;
 export type NewAISetting = typeof aiSettings.$inferInsert;
+
+export type SiteSetting = typeof siteSettings.$inferSelect;
+export type NewSiteSetting = typeof siteSettings.$inferInsert;
