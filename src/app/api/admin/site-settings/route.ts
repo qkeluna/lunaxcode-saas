@@ -128,7 +128,10 @@ export async function PUT(request: NextRequest) {
     } catch (error: any) {
         console.error('Error updating site settings:', error);
         return NextResponse.json(
-            { error: 'Failed to update site settings' },
+            {
+                error: 'Failed to update site settings',
+                details: error?.message || String(error),
+            },
             { status: 500 }
         );
     }
@@ -198,7 +201,10 @@ export async function PATCH(request: NextRequest) {
     } catch (error: any) {
         console.error('Error updating site settings:', error);
         return NextResponse.json(
-            { error: 'Failed to update site settings' },
+            {
+                error: 'Failed to update site settings',
+                details: error?.message || String(error),
+            },
             { status: 500 }
         );
     }
