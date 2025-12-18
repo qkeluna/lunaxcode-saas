@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { User, Bell, Lock, Save } from 'lucide-react';
 import { useAlertDialog } from '@/hooks/use-alert-dialog';
@@ -22,10 +23,30 @@ import {
   TabsTrigger,
 } from '@/components/ui/tabs';
 
+// Valid tab values
+const VALID_TABS = ['profile', 'notifications', 'security'] as const;
+type TabValue = typeof VALID_TABS[number];
+
 export default function SettingsPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const { showError, showSuccess, AlertDialog } = useAlertDialog();
   const { data: session } = useSession();
   const [saving, setSaving] = useState(false);
+
+  // Get initial tab from URL or default to 'profile'
+  const tabParam = searchParams.get('tab');
+  const initialTab: TabValue = VALID_TABS.includes(tabParam as TabValue) ? (tabParam as TabValue) : 'profile';
+  const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
+
+  // Handle tab change and update URL
+  const handleTabChange = (value: string) => {
+    const tab = value as TabValue;
+    setActiveTab(tab);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', tab);
+    router.push(`/settings?${params.toString()}`, { scroll: false });
+  };
 
   // Profile settings
   const [profileData, setProfileData] = useState({
@@ -80,7 +101,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="profile" className="space-y-4">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
         <TabsList>
           <TabsTrigger value="profile">
             <User className="w-4 h-4 mr-2" />

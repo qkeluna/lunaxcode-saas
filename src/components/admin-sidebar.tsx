@@ -126,24 +126,8 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
   const navSettings = [
     {
       title: "Settings",
+      url: "/admin/settings",
       icon: SettingsIcon,
-      items: [
-        {
-          title: "Profile",
-          url: "/admin/settings",
-          icon: UsersIcon,
-        },
-        {
-          title: "AI Settings",
-          url: "/admin/settings/ai-settings",
-          icon: ShieldIcon,
-        },
-        {
-          title: "Payment Accounts",
-          url: "/admin/settings/payment-accounts",
-          icon: DollarSignIcon,
-        },
-      ],
     },
   ]
 
@@ -266,46 +250,23 @@ export function AdminSidebar({ user, ...props }: AdminSidebarProps) {
         <SidebarGroup className="mt-auto">
           <SidebarGroupContent>
             <SidebarMenu>
-              {navSettings.map((item) => (
-                <Collapsible
-                  key={item.title}
-                  asChild
-                  defaultOpen={item.items?.some((subItem) =>
-                    pathname.startsWith(subItem.url)
-                  )}
-                  className="group/collapsible"
-                >
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton tooltip={item.title} size="sm">
-                        <item.icon className="transition-all duration-300 ease-in-out group-hover/menu-item:scale-110 group-hover/menu-item:rotate-12" />
+              {navSettings.map((item) => {
+                const isActive = pathname.startsWith(item.url)
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      tooltip={item.title}
+                      isActive={isActive}
+                    >
+                      <Link href={item.url}>
+                        <item.icon className="transition-all duration-300 ease-in-out group-hover/menu-item:scale-110 group-hover/menu-item:rotate-3" />
                         <span>{item.title}</span>
-                        <ChevronRight className="ml-auto transition-all duration-300 ease-out group-data-[state=open]/collapsible:rotate-90 group-hover/menu-item:scale-125" />
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.items?.map((subItem) => {
-                          const isActive = pathname === subItem.url
-                          return (
-                            <SidebarMenuSubItem key={subItem.title}>
-                              <SidebarMenuSubButton
-                                asChild
-                                isActive={isActive}
-                              >
-                                <Link href={subItem.url} className="group/link">
-                                  <subItem.icon className="!size-4 transition-all duration-300 ease-in-out group-hover/link:scale-125 group-hover/link:-rotate-12" />
-                                  <span>{subItem.title}</span>
-                                </Link>
-                              </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                          )
-                        })}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
+                      </Link>
+                    </SidebarMenuButton>
                   </SidebarMenuItem>
-                </Collapsible>
-              ))}
+                )
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

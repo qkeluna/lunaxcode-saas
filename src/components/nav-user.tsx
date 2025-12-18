@@ -44,6 +44,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const settingsPath = basePath ? `${basePath}/settings` : "/settings"
+  const isAdmin = basePath.includes('admin')
 
   return (
     <SidebarMenu>
@@ -90,19 +91,21 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
-                <Link href={settingsPath} className="cursor-pointer group">
+                <Link href={`${settingsPath}?tab=profile`} className="cursor-pointer group">
                   <UserCircleIcon className="transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12" />
                   Account
                 </Link>
               </DropdownMenuItem>
+              {isAdmin && (
+                <DropdownMenuItem asChild>
+                  <Link href={`${settingsPath}?tab=payment-accounts`} className="cursor-pointer group">
+                    <CreditCardIcon className="transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:-rotate-6" />
+                    Billing
+                  </Link>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem asChild>
-                <Link href={settingsPath} className="cursor-pointer group">
-                  <CreditCardIcon className="transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:-rotate-6" />
-                  Billing
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={settingsPath} className="cursor-pointer group">
+                <Link href={`${settingsPath}?tab=notifications`} className="cursor-pointer group">
                   <BellIcon className="transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:animate-pulse" />
                   Notifications
                 </Link>
