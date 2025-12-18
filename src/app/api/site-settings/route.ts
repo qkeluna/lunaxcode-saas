@@ -5,9 +5,9 @@
  * Only returns public-safe settings (no sensitive data).
  */
 
-import { NextRequest, NextResponse } from 'next/server';
-import { getDb } from '@/lib/db';
-import { getCloudflareContext } from '@opennextjs/cloudflare';
+import { NextResponse } from 'next/server';
+import { getCloudflareContext } from '@/lib/db/context';
+import { drizzle } from 'drizzle-orm/d1';
 import { siteSettings } from '@/lib/db/schema';
 
 export const runtime = 'edge';
@@ -22,10 +22,18 @@ const DEFAULT_SETTINGS: Record<string, string> = {
 };
 
 // GET: Get public site settings
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
-        const { env } = await getCloudflareContext();
-        const db = getDb(env.DB);
+        const context = getCloudflareContext();
+
+        if (!context) {
+            // Return defaults in development
+            return NextResponse.json({
+                settings: DEFAULT_SETTINGS,
+            });
+        }
+
+        const db = drizzle(context.env.DB);
 
         // Get all site settings
         const settings = await db.select().from(siteSettings);

@@ -8,15 +8,15 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { getDb } from '@/lib/db';
-import { getCloudflareContext } from '@opennextjs/cloudflare';
+import { getCloudflareContext } from '@/lib/db/context';
+import { drizzle } from 'drizzle-orm/d1';
 import { siteSettings, users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
 export const runtime = 'edge';
 
 // Default site settings
-const DEFAULT_SETTINGS = {
+const DEFAULT_SETTINGS: Record<string, string> = {
     whatsapp_enabled: 'true',
     whatsapp_number: '639190852974',
 };
@@ -30,8 +30,12 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { env } = await getCloudflareContext();
-        const db = getDb(env.DB);
+        const context = getCloudflareContext();
+        if (!context) {
+            return NextResponse.json({ settings: DEFAULT_SETTINGS });
+        }
+
+        const db = drizzle(context.env.DB);
 
         // Check if user is admin
         const userResult = await db
@@ -65,7 +69,7 @@ export async function GET(request: NextRequest) {
     }
 }
 
-// PUT: Update site settings
+// PUT: Update a single site setting
 export async function PUT(request: NextRequest) {
     try {
         // Verify admin access
@@ -74,8 +78,12 @@ export async function PUT(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { env } = await getCloudflareContext();
-        const db = getDb(env.DB);
+        const context = getCloudflareContext();
+        if (!context) {
+            return NextResponse.json({ error: 'Database not available' }, { status: 500 });
+        }
+
+        const db = drizzle(context.env.DB);
 
         // Check if user is admin
         const userResult = await db
@@ -146,8 +154,12 @@ export async function PATCH(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const { env } = await getCloudflareContext();
-        const db = getDb(env.DB);
+        const context = getCloudflareContext();
+        if (!context) {
+            return NextResponse.json({ error: 'Database not available' }, { status: 500 });
+        }
+
+        const db = drizzle(context.env.DB);
 
         // Check if user is admin
         const userResult = await db
