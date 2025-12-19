@@ -287,6 +287,34 @@ export const siteSettings = sqliteTable('site_settings', {
   updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
+// Notification Preferences table (user email notification settings)
+export const notificationPreferences = sqliteTable('notification_preferences', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').notNull().unique().references(() => users.id, { onDelete: 'cascade' }),
+  emailNotifications: integer('email_notifications', { mode: 'boolean' }).default(true), // Master toggle
+  projectUpdates: integer('project_updates', { mode: 'boolean' }).default(true),
+  paymentReminders: integer('payment_reminders', { mode: 'boolean' }).default(true),
+  taskUpdates: integer('task_updates', { mode: 'boolean' }).default(true),
+  messageNotifications: integer('message_notifications', { mode: 'boolean' }).default(true),
+  marketingEmails: integer('marketing_emails', { mode: 'boolean' }).default(false),
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
+// Email Logs table (tracks sent emails for debugging and analytics)
+export const emailLogs = sqliteTable('email_logs', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').references(() => users.id, { onDelete: 'set null' }),
+  emailType: text('email_type').notNull(), // 'project_status' | 'payment' | 'message' | 'task' | 'admin_alert' | 'contact'
+  recipientEmail: text('recipient_email').notNull(),
+  subject: text('subject').notNull(),
+  resendEmailId: text('resend_email_id'), // ID from Resend API
+  status: text('status').default('sent'), // 'sent' | 'failed' | 'bounced' | 'delivered'
+  errorMessage: text('error_message'),
+  metadata: text('metadata'), // JSON string
+  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => new Date()),
+});
+
 // NextAuth Session table
 export const sessions = sqliteTable('sessions', {
   sessionToken: text('session_token').primaryKey(),
@@ -377,3 +405,9 @@ export type NewAISetting = typeof aiSettings.$inferInsert;
 
 export type SiteSetting = typeof siteSettings.$inferSelect;
 export type NewSiteSetting = typeof siteSettings.$inferInsert;
+
+export type NotificationPreference = typeof notificationPreferences.$inferSelect;
+export type NewNotificationPreference = typeof notificationPreferences.$inferInsert;
+
+export type EmailLog = typeof emailLogs.$inferSelect;
+export type NewEmailLog = typeof emailLogs.$inferInsert;

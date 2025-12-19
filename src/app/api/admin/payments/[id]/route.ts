@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { getDb } from '@/lib/db/client';
-import { payments, projects } from '@/lib/db/schema';
+import { payments, projects, users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { notifyPaymentUpdate } from '@/lib/email/notifications';
 
 export const runtime = 'edge';
 
@@ -65,42 +66,71 @@ export async function PATCH(
       })
       .where(eq(payments.id, paymentId));
 
+    // Get project and user details for notification
+    const project = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.id, payment.projectId))
+      .get();
+
     // Update project payment status based on verification
-    if (status === 'verified') {
-      const project = await db
-        .select()
-        .from(projects)
-        .where(eq(projects.id, payment.projectId))
-        .get();
+    if (status === 'verified' && project) {
+      let newPaymentStatus = project.paymentStatus;
+      let newProjectStatus = project.status;
 
-      if (project) {
-        let newPaymentStatus = project.paymentStatus;
-        let newProjectStatus = project.status;
-
-        if (payment.paymentType === 'deposit') {
-          // Deposit verified - project can now start
-          newPaymentStatus = 'partially-paid';
-          if (project.status === 'pending') {
-            newProjectStatus = 'in-progress'; // Start the project
-          }
-        } else if (payment.paymentType === 'completion') {
-          // Completion payment verified - project fully paid
-          newPaymentStatus = 'paid';
-          // Optionally mark project as completed if not already
-          if (project.status === 'in-progress') {
-            newProjectStatus = 'completed';
-          }
+      if (payment.paymentType === 'deposit') {
+        // Deposit verified - project can now start
+        newPaymentStatus = 'partially-paid';
+        if (project.status === 'pending') {
+          newProjectStatus = 'in-progress'; // Start the project
         }
+      } else if (payment.paymentType === 'completion') {
+        // Completion payment verified - project fully paid
+        newPaymentStatus = 'paid';
+        // Optionally mark project as completed if not already
+        if (project.status === 'in-progress') {
+          newProjectStatus = 'completed';
+        }
+      }
 
-        await db
-          .update(projects)
-          .set({
-            paymentStatus: newPaymentStatus,
-            status: newProjectStatus,
-            startDate: payment.paymentType === 'deposit' && !project.startDate ? now : project.startDate,
-            updatedAt: now,
-          })
-          .where(eq(projects.id, payment.projectId));
+      await db
+        .update(projects)
+        .set({
+          paymentStatus: newPaymentStatus,
+          status: newProjectStatus,
+          startDate: payment.paymentType === 'deposit' && !project.startDate ? now : project.startDate,
+          updatedAt: now,
+        })
+        .where(eq(projects.id, payment.projectId));
+    }
+
+    // Send payment notification email
+    if (project) {
+      try {
+        const user = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, project.userId))
+          .get();
+
+        if (user) {
+          notifyPaymentUpdate(db, {
+            userId: user.id,
+            recipientEmail: user.email,
+            recipientName: user.name,
+            projectTitle: project.name,
+            projectId: project.id.toString(),
+            paymentType: payment.paymentType as 'deposit' | 'completion',
+            amount: payment.amount,
+            status: status as 'verified' | 'rejected',
+            referenceNumber: payment.referenceNumber || undefined,
+            adminNotes: status === 'rejected' ? rejectionReason : adminNotes,
+          }).catch(err => {
+            console.error('Failed to send payment notification:', err);
+          });
+        }
+      } catch (notificationError) {
+        console.error('Error preparing payment notification:', notificationError);
       }
     }
 

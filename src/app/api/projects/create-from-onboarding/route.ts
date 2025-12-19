@@ -5,6 +5,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import { projects, projectAnswers, questions, serviceTypes, tasks, users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { generatePRD, generateTasks } from '@/lib/ai/gemini';
+import { notifyAdmin } from '@/lib/email/notifications';
 
 export const runtime = 'edge';
 
@@ -247,7 +248,23 @@ Our team will review your requirements and reach out with a detailed project pla
       console.log(`✅ ${generatedTasks.length} tasks saved to database`);
     }
 
-    // 12. Return success
+    // 12. Send admin alert for new project
+    try {
+      notifyAdmin(db, {
+        type: 'new_project',
+        clientName: clientName,
+        clientEmail: clientEmail,
+        projectTitle: `${serviceName} for ${clientName}`,
+        projectId: project.id.toString(),
+        details: `Service: ${serviceName}\nBudget: ₱${service.basePrice.toLocaleString()}\nTimeline: ${service.timeline || `${timelineDays} days`}`,
+      }).catch(err => {
+        console.error('Failed to send admin new project alert:', err);
+      });
+    } catch (notificationError) {
+      console.error('Error sending project notification:', notificationError);
+    }
+
+    // 13. Return success
     return NextResponse.json({
       success: true,
       projectId: project.id,

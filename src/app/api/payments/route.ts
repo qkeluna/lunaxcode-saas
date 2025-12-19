@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { getDb } from '@/lib/db/client';
 import { payments, projects } from '@/lib/db/schema';
 import { eq, and } from 'drizzle-orm';
+import { notifyAdmin, notifyPaymentUpdate } from '@/lib/email/notifications';
 
 export const runtime = 'edge';
 
@@ -150,6 +151,39 @@ export async function POST(request: NextRequest) {
           updatedAt: now,
         })
         .where(eq(projects.id, projectId));
+    }
+
+    // Send admin alert for new payment submission
+    try {
+      notifyAdmin(db, {
+        type: 'payment_submitted',
+        clientName: senderName || session.user.name || 'Unknown',
+        clientEmail: session.user.email || '',
+        projectTitle: project.name,
+        projectId: projectId.toString(),
+        paymentAmount: amount,
+        paymentType: paymentType === 'deposit' ? 'Deposit (50%)' : 'Completion (50%)',
+        details: `Reference: ${referenceNumber}\nPayment Method: ${paymentMethod}`,
+      }).catch(err => {
+        console.error('Failed to send admin payment alert:', err);
+      });
+
+      // Also send confirmation to client
+      notifyPaymentUpdate(db, {
+        userId: session.user.id,
+        recipientEmail: session.user.email || project.clientEmail,
+        recipientName: session.user.name || project.clientName,
+        projectTitle: project.name,
+        projectId: projectId.toString(),
+        paymentType: paymentType as 'deposit' | 'completion',
+        amount,
+        status: 'submitted',
+        referenceNumber,
+      }).catch(err => {
+        console.error('Failed to send payment confirmation:', err);
+      });
+    } catch (notificationError) {
+      console.error('Error sending payment notifications:', notificationError);
     }
 
     return NextResponse.json({

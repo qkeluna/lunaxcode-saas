@@ -4,6 +4,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import { projects, tasks, users, projectAnswers, questions } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { checkIsAdmin } from '@/lib/auth/check-admin';
+import { notifyProjectStatusChange } from '@/lib/email/notifications';
 
 export const runtime = 'edge';
 
@@ -174,6 +175,20 @@ export async function PATCH(
     const { id } = await params;
     const projectId = parseInt(id);
 
+    // Fetch current project state (for detecting status changes)
+    const [currentProject] = await db
+      .select()
+      .from(projects)
+      .where(eq(projects.id, projectId))
+      .limit(1);
+
+    if (!currentProject) {
+      return NextResponse.json(
+        { error: 'Project not found' },
+        { status: 404 }
+      );
+    }
+
     // Get update data from request body
     const body = await request.json() as {
       status?: string;
@@ -183,6 +198,7 @@ export async function PATCH(
       timeline?: number;
       budget?: number;
       price?: number;
+      statusMessage?: string; // Optional message to include in notification
     };
 
     // Convert string dates to Date objects if provided
@@ -190,7 +206,10 @@ export async function PATCH(
       ...body,
       updatedAt: new Date(),
     };
-    
+
+    // Remove statusMessage from updateData (not a DB field)
+    delete updateData.statusMessage;
+
     if (body.startDate) {
       updateData.startDate = new Date(body.startDate);
     }
@@ -204,9 +223,40 @@ export async function PATCH(
       .set(updateData)
       .where(eq(projects.id, projectId));
 
-    return NextResponse.json({ 
+    // Check if status changed and send notification
+    if (body.status && body.status !== currentProject.status) {
+      try {
+        // Fetch user info for notification
+        const [user] = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, currentProject.userId))
+          .limit(1);
+
+        if (user) {
+          // Send notification asynchronously (don't block response)
+          notifyProjectStatusChange(db, {
+            userId: user.id,
+            recipientEmail: user.email,
+            recipientName: user.name,
+            projectTitle: currentProject.name,
+            projectId: projectId.toString(),
+            oldStatus: currentProject.status || 'pending',
+            newStatus: body.status,
+            message: body.statusMessage,
+          }).catch(err => {
+            console.error('Failed to send project status notification:', err);
+          });
+        }
+      } catch (notificationError) {
+        console.error('Error preparing status notification:', notificationError);
+        // Don't fail the request if notification fails
+      }
+    }
+
+    return NextResponse.json({
       success: true,
-      message: 'Project updated successfully' 
+      message: 'Project updated successfully'
     });
 
   } catch (error) {

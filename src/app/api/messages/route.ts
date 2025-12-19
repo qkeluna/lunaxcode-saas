@@ -3,6 +3,7 @@ import { auth } from '@/auth';
 import { getDatabase } from '@/lib/db/client';
 import { messages, unreadCounts, projects, users } from '@/lib/db/schema';
 import { eq, desc, and, sql } from 'drizzle-orm';
+import { notifyNewMessage } from '@/lib/email/notifications';
 
 // In-memory fallback for when D1 is not available
 let messagesStore: any[] = [];
@@ -80,10 +81,45 @@ export async function POST(request: NextRequest) {
             lastUpdated: new Date()
           });
         }
+        // Send email notification to client
+        if (project) {
+          const [clientUser] = await db
+            .select()
+            .from(users)
+            .where(eq(users.id, project.userId))
+            .limit(1);
+
+          if (clientUser) {
+            // Get unread count for this project
+            const projectUnread = await db
+              .select()
+              .from(messages)
+              .where(
+                and(
+                  eq(messages.projectId, parseInt(projectId)),
+                  eq(messages.status, 'sent'),
+                  eq(messages.senderRole, 'admin')
+                )
+              );
+
+            notifyNewMessage(db, {
+              userId: clientUser.id,
+              recipientEmail: clientUser.email,
+              recipientName: clientUser.name,
+              senderName: session.user.name || 'Admin',
+              projectTitle: project.name,
+              projectId: projectId,
+              messagePreview: content.trim(),
+              unreadCount: projectUnread.length,
+            }).catch(err => {
+              console.error('Failed to send message notification:', err);
+            });
+          }
+        }
       } else {
         // Client sent message, increment all admins' unread counts
         const adminUsers = await db
-          .select({ id: users.id })
+          .select({ id: users.id, email: users.email, name: users.name })
           .from(users)
           .where(eq(users.role, 'admin'));
 
@@ -107,6 +143,34 @@ export async function POST(request: NextRequest) {
               userId: admin.id,
               totalCount: 1,
               lastUpdated: new Date()
+            });
+          }
+
+          // Send email notification to admin
+          if (project) {
+            // Get unread count for this project from admin's perspective
+            const projectUnread = await db
+              .select()
+              .from(messages)
+              .where(
+                and(
+                  eq(messages.projectId, parseInt(projectId)),
+                  eq(messages.status, 'sent'),
+                  eq(messages.senderRole, 'client')
+                )
+              );
+
+            notifyNewMessage(db, {
+              userId: admin.id,
+              recipientEmail: admin.email,
+              recipientName: admin.name,
+              senderName: session.user.name || project.clientName,
+              projectTitle: project.name,
+              projectId: projectId,
+              messagePreview: content.trim(),
+              unreadCount: projectUnread.length,
+            }).catch(err => {
+              console.error('Failed to send admin message notification:', err);
             });
           }
         }
