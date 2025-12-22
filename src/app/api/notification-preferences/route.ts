@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { getCloudflareContext } from '@/lib/cloudflare';
+import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
 import { notificationPreferences, users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';

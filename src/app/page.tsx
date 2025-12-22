@@ -11,6 +11,8 @@ import FAQ from '@/components/landing/FAQ';
 import ContactCTA from '@/components/landing/ContactCTA';
 import Footer from '@/components/landing/Footer';
 import FloatingButtons from '@/components/landing/FloatingButtons';
+import LocalBusinessSchema from '@/components/seo/LocalBusinessSchema';
+import WebsiteSchema from '@/components/seo/WebsiteSchema';
 
 // Force dynamic rendering for Cloudflare Pages
 export const runtime = 'edge';
@@ -21,6 +23,10 @@ export default async function LandingPage() {
 
   return (
     <>
+      {/* Structured Data for SEO */}
+      <LocalBusinessSchema />
+      <WebsiteSchema />
+
       <Header session={session} />
       <main className="min-h-screen">
         <Hero />

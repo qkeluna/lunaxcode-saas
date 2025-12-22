@@ -1,4 +1,5 @@
 import FAQClient from './FAQClient';
+import FAQSchema from '@/components/seo/FAQSchema';
 import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
 import { faqs } from '@/lib/db/schema';
@@ -29,7 +30,12 @@ async function getFAQs() {
 }
 
 export default async function FAQ() {
-  const faqs = await getFAQs();
+  const faqData = await getFAQs();
 
-  return <FAQClient faqs={faqs} />;
+  return (
+    <>
+      <FAQSchema faqs={faqData} />
+      <FAQClient faqs={faqData} />
+    </>
+  );
 }

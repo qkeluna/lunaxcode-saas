@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ArrowUp, MessageCircle } from 'lucide-react';
+import { conversionEvents } from '@/components/analytics/GoogleAnalytics';
 
 interface FloatingButtonsProps {
   showWhatsApp?: boolean;
@@ -66,6 +67,7 @@ export default function FloatingButtons({
           aria-label="Chat on WhatsApp"
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
+          onClick={() => conversionEvents.whatsappClick()}
         >
           <MessageCircle className="w-6 h-6" />
 
