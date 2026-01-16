@@ -1,9 +1,18 @@
 import type { Metadata, Viewport } from 'next';
-import { Onest } from 'next/font/google';
+import { Onest, Sora } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 import GoogleAnalytics from '@/components/analytics/GoogleAnalytics';
 
+// Display font for headings - distinctive and memorable
+const sora = Sora({
+  subsets: ['latin'],
+  variable: '--font-sora',
+  display: 'swap',
+  weight: ['400', '500', '600', '700', '800'],
+});
+
+// Body font - clean and readable
 const onest = Onest({
   subsets: ['latin'],
   variable: '--font-onest',
@@ -134,7 +143,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${onest.variable} font-sans`}>
+      <body className={`${sora.variable} ${onest.variable} font-sans`}>
         <GoogleAnalytics measurementId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID} />
         <Providers>{children}</Providers>
       </body>

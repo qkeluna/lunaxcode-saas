@@ -6,7 +6,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Lunaxcode is an AI-powered project management SaaS platform for Filipino web development agencies. The system automatically generates Project Requirements Documents (PRDs) and task breakdowns using AI, supports manual payment verification for Philippine payment methods (GCash, SeaBank, PayMaya, bank transfer), and provides client/admin dashboards.
 
-**Current Status**: Core features implemented and deployed. Admin dashboard, CMS system, authentication, AI generation, messaging, and payment verification complete. Production deployment: https://lunaxcode-saas.pages.dev
+**Current Status**: Core features implemented and deployed. Admin dashboard, CMS system, authentication, AI generation, messaging, and payment verification complete.
+
+**Production URL**: https://app.lunaxcode.site
+
+## Quick Reference
+
+```bash
+# Start development
+npm run dev
+
+# Build for Cloudflare (REQUIRED - not npm run build)
+npm run pages:build
+
+# Run tests
+npm run test:run
+
+# Deploy to production
+npm run deploy
+
+# Apply database migrations
+npm run d1:migrate:prod
+```
 
 ## Tech Stack
 
@@ -84,7 +105,7 @@ npm run test:resend          # Test Resend email integration
 ```
 Client Browser → Cloudflare Edge (Next.js) → D1 Database
                         ↓
-        External Services (Google OAuth, Gemini AI, PayMongo)
+        External Services (Google OAuth, Gemini AI, Resend Email)
                         ↓
                   R2 Storage (Files)
 ```
@@ -360,6 +381,22 @@ See `docs/SEEDING_SUMMARY.md` for detailed seed data documentation.
 - Use Tailwind CSS with mobile-first approach
 - Use shadcn/ui and Radix UI for components
 - Implement responsive design (min 320px mobile support)
+
+### Typography System
+- **Body font**: Onest (`font-sans`) - Clean, readable sans-serif for body text
+- **Display font**: Sora (`font-display`) - Bold display font for headings and CTAs
+- Usage: Apply `font-display` class to section headings, hero text, and prominent CTAs
+- CSS variables defined in `globals.css`, fonts configured in `tailwind.config.ts`
+
+### Landing Page Component Pattern
+Landing page components follow a Server Component + Client Component split:
+- `Features.tsx` (Server) → fetches data from API, renders `FeaturesClient.tsx`
+- `FeaturesClient.tsx` (Client) → handles animations and interactivity
+
+This pattern is used for: Features, FAQ, Pricing, Process sections. Benefits:
+- Server-side data fetching for SEO and performance
+- Client-side interactivity (animations, accordions, carousels)
+- Clean separation of concerns
 
 ### Performance
 - Optimize images: WebP format, include size data, lazy loading
@@ -792,6 +829,9 @@ npx wrangler pages deployment list --project-name=lunaxcode-saas
 - Recharts dashboard analytics
 - Drag-and-drop task management (@dnd-kit)
 - Sentry error monitoring integration
+- Enhanced landing page UI/UX (sticky CTA, touch swipe gestures, progress indicators)
+- Dual-font typography system (Onest body + Sora display)
+- Accessibility improvements (skip navigation, focus states)
 
 **🚧 Potential Improvements:**
 - Real-time messaging (WebSocket/SSE)
@@ -801,9 +841,9 @@ npx wrangler pages deployment list --project-name=lunaxcode-saas
 - Advanced analytics and reporting
 
 **📖 Development Plan:**
-The original development plan (`docs/lunaxcode_complete_plan.txt`) contains the 34-task roadmap. Current progress: ~80% complete.
+The original development plan (`docs/lunaxcode_complete_plan.txt`) contains the 34-task roadmap. Current progress: ~90% complete.
 
-**🔗 Production URL:** https://lunaxcode-saas.pages.dev
+**🔗 Production URL:** https://app.lunaxcode.site
 
 **📝 Key Documentation:**
 - `CLAUDE.md` - This file (project overview and development guide)

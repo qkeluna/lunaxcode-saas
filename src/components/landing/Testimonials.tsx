@@ -1,7 +1,9 @@
 'use client';
 
 import { Star, Quote, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+
+const SWIPE_THRESHOLD = 50; // Minimum swipe distance to trigger navigation
 
 const testimonials = [
   {
@@ -57,7 +59,11 @@ const testimonials = [
 export default function Testimonials() {
   const [isVisible, setIsVisible] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isSwiping, setIsSwiping] = useState(false);
+  const [swipeOffset, setSwipeOffset] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const touchCurrentRef = useRef<number>(0);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -94,6 +100,54 @@ export default function Testimonials() {
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
+  // Touch event handlers for swipe gestures
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+    touchCurrentRef.current = e.touches[0].clientX;
+    setIsSwiping(true);
+  }, []);
+
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+
+    const currentX = e.touches[0].clientX;
+    const currentY = e.touches[0].clientY;
+    const diffX = currentX - touchStartRef.current.x;
+    const diffY = currentY - touchStartRef.current.y;
+
+    // Only track horizontal swipes (ignore vertical scrolling)
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      e.preventDefault(); // Prevent vertical scroll when swiping horizontally
+      touchCurrentRef.current = currentX;
+      setSwipeOffset(diffX);
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!touchStartRef.current) return;
+
+    const diffX = touchCurrentRef.current - touchStartRef.current.x;
+
+    if (Math.abs(diffX) >= SWIPE_THRESHOLD) {
+      if (diffX > 0) {
+        // Swipe right - go to previous
+        prevTestimonial();
+      } else {
+        // Swipe left - go to next
+        nextTestimonial();
+      }
+    }
+
+    // Reset touch tracking
+    touchStartRef.current = null;
+    touchCurrentRef.current = 0;
+    setIsSwiping(false);
+    setSwipeOffset(0);
+  }, []);
+
   return (
     <section
       ref={sectionRef}
@@ -114,7 +168,7 @@ export default function Testimonials() {
           </p>
           <h2
             id="testimonials-heading"
-            className={`text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6 transition-all duration-700 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+            className={`font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6 transition-all duration-700 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
           >
             What our clients say
           </h2>
@@ -136,11 +190,18 @@ export default function Testimonials() {
         </div>
 
         {/* Mobile Carousel */}
-        <div className="lg:hidden relative">
+        <div
+          className="lg:hidden relative touch-pan-y"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           <div className="overflow-hidden">
             <div
-              className="flex transition-transform duration-500 ease-out"
-              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+              className={`flex ${isSwiping ? '' : 'transition-transform duration-500 ease-out'}`}
+              style={{
+                transform: `translateX(calc(-${currentIndex * 100}% + ${swipeOffset}px))`,
+              }}
             >
               {testimonials.map((testimonial, index) => (
                 <article
@@ -219,6 +280,11 @@ export default function Testimonials() {
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
+
+          {/* Swipe hint */}
+          <p className="text-xs text-muted-foreground text-center mt-3">
+            Swipe to see more reviews
+          </p>
         </div>
 
         {/* Desktop Grid - Show first 3 prominently, rest smaller */}

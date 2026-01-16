@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone } from 'lucide-react';
 
 export default function Footer() {
@@ -9,12 +10,14 @@ export default function Footer() {
           {/* Company Info */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <img
+              <Image
                 src="/android-chrome-192x192.png"
                 alt="Lunaxcode Logo"
-                className="w-8 h-8 rounded-lg"
+                width={32}
+                height={32}
+                className="rounded-lg"
               />
-              <span className="text-xl font-bold text-foreground">
+              <span className="text-xl font-bold text-foreground font-display">
                 Lunaxcode
               </span>
             </div>

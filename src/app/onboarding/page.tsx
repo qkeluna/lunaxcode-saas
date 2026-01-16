@@ -21,7 +21,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { loadAIConfig, getDefaultProviderConfig } from '@/lib/ai/storage';
 import { useAlertDialog } from '@/hooks/use-alert-dialog';
 import { AddOnsSelection } from '@/components/onboarding/AddOnsSelection';
 import { formatPrice } from '@/lib/utils/pricing';
@@ -47,7 +46,7 @@ interface Question {
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { showAlert, showError, AlertDialog } = useAlertDialog();
+  const { AlertDialog } = useAlertDialog();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [servicesLoading, setServicesLoading] = useState(true);
@@ -66,8 +65,6 @@ export default function OnboardingPage() {
   });
   const [addOnsTotal, setAddOnsTotal] = useState(0);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const [aiSuggestions, setAiSuggestions] = useState<string[]>([]);
-  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 
   // Restore form data from sessionStorage on mount (scoped by serviceId)
   useEffect(() => {
@@ -253,105 +250,6 @@ export default function OnboardingPage() {
     }
   }, [formData.serviceId]);
 
-  // Generate AI suggestions
-  const handleGenerateSuggestions = async () => {
-    if (!selectedService) return;
-
-    // Get AI config from new multi-provider storage
-    const config = loadAIConfig();
-    const defaultProviderConfig = getDefaultProviderConfig(config);
-
-    if (!defaultProviderConfig) {
-      showError('Please configure a default AI provider in Admin Settings > AI Settings');
-      return;
-    }
-
-    const aiProvider = defaultProviderConfig.providerId;
-    const aiApiKey = defaultProviderConfig.config.apiKey;
-    const aiModel = defaultProviderConfig.config.model;
-
-    setSuggestionsLoading(true);
-    try {
-      const response = await fetch('/api/ai/suggest-description', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          serviceName: selectedService.name,
-          mode: 'generate',
-          aiConfig: {
-            provider: aiProvider,
-            apiKey: aiApiKey,
-            model: aiModel || 'gemini-1.5-flash'
-          }
-        }),
-      });
-
-      if (response.ok) {
-        const data: { suggestions?: string[] } = await response.json();
-        setAiSuggestions(data.suggestions || []);
-      } else {
-        const error: { error?: string } = await response.json();
-        showError(error.error || 'Failed to generate suggestions');
-      }
-    } catch (error) {
-      console.error('Error generating suggestions:', error);
-      showError('Failed to generate suggestions. Please check your AI settings.');
-    } finally {
-      setSuggestionsLoading(false);
-    }
-  };
-
-  // Enhance existing description
-  const handleEnhanceDescription = async () => {
-    if (!selectedService || !formData.description) return;
-
-    // Get AI config from new multi-provider storage
-    const config = loadAIConfig();
-    const defaultProviderConfig = getDefaultProviderConfig(config);
-
-    if (!defaultProviderConfig) {
-      showError('Please configure a default AI provider in Admin Settings > AI Settings');
-      return;
-    }
-
-    const aiProvider = defaultProviderConfig.providerId;
-    const aiApiKey = defaultProviderConfig.config.apiKey;
-    const aiModel = defaultProviderConfig.config.model;
-
-    setSuggestionsLoading(true);
-    try {
-      const response = await fetch('/api/ai/suggest-description', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          serviceName: selectedService.name,
-          mode: 'enhance',
-          currentDescription: formData.description,
-          aiConfig: {
-            provider: aiProvider,
-            apiKey: aiApiKey,
-            model: aiModel || 'gemini-1.5-flash'
-          }
-        }),
-      });
-
-      if (response.ok) {
-        const data: { enhanced?: string } = await response.json();
-        if (data.enhanced) {
-          setFormData({ ...formData, description: data.enhanced });
-        }
-      } else {
-        const error: { error?: string } = await response.json();
-        showError(error.error || 'Failed to enhance description');
-      }
-    } catch (error) {
-      console.error('Error enhancing description:', error);
-      showError('Failed to enhance description. Please check your AI settings.');
-    } finally {
-      setSuggestionsLoading(false);
-    }
-  };
-
   const handleNext = () => {
     if (step < 3) setStep(step + 1);
   };
@@ -368,11 +266,6 @@ export default function OnboardingPage() {
         [questionKey]: value,
       },
     });
-  };
-
-  const handleUseSuggestion = (suggestion: string) => {
-    setFormData({ ...formData, description: suggestion });
-    setAiSuggestions([]); // Clear suggestions after use
   };
 
   const handleAddOnsChange = (addOnIds: number[], total: number) => {
@@ -768,86 +661,13 @@ export default function OnboardingPage() {
               </div>
 
               <div>
-                <div className="flex items-center justify-between" style={{ marginBottom: 'var(--sp-space-2)' }}>
-                  <label
-                    htmlFor="project-description"
-                    className="block text-sm font-bold text-gray-700 dark:text-gray-300"
-                  >
-                    Project Description <span className="text-purple-600 dark:text-purple-400">*</span>
-                  </label>
-
-                  {/* AI Action Buttons */}
-                  <div className="flex items-center gap-2">
-                    {formData.description.length === 0 ? (
-                      <button
-                        type="button"
-                        onClick={handleGenerateSuggestions}
-                        disabled={suggestionsLoading}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:outline-none"
-                        style={{ minHeight: '32px' }}
-                      >
-                        {suggestionsLoading ? (
-                          <>
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            <span>Generating...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-3.5 h-3.5" fill="currentColor" />
-                            <span>Generate</span>
-                          </>
-                        )}
-                      </button>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={handleEnhanceDescription}
-                        disabled={suggestionsLoading}
-                        className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 border-2 border-purple-200 dark:border-purple-700 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30 hover:bg-purple-100 dark:hover:bg-purple-900/40 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:outline-none"
-                        style={{ minHeight: '32px' }}
-                      >
-                        {suggestionsLoading ? (
-                          <>
-                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                            <span>Enhancing...</span>
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="w-3.5 h-3.5" fill="currentColor" />
-                            <span>Enhance</span>
-                          </>
-                        )}
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {/* AI Suggestions */}
-                {aiSuggestions.length > 0 && (
-                  <div className="mb-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                      <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
-                        Example intentions - Click to use or get inspired
-                      </span>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      {aiSuggestions.map((suggestion, index) => (
-                        <button
-                          key={index}
-                          type="button"
-                          onClick={() => handleUseSuggestion(suggestion)}
-                          className="text-left p-3 text-sm border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-xl transition-all duration-200 hover:shadow-md hover:border-purple-300 dark:hover:border-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950/30 group cursor-pointer focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2 focus-visible:outline-none"
-                        >
-                          <div className="flex items-start gap-2">
-                            <Sparkles className="w-4 h-4 mt-0.5 flex-shrink-0 text-gray-400 dark:text-gray-500 group-hover:text-purple-500 dark:group-hover:text-purple-400 transition-colors" />
-                            <span className="text-gray-700 dark:text-gray-300 leading-relaxed">{suggestion}</span>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <label
+                  htmlFor="project-description"
+                  className="block text-sm font-bold text-gray-700 dark:text-gray-300"
+                  style={{ marginBottom: 'var(--sp-space-2)' }}
+                >
+                  Project Description <span className="text-purple-600 dark:text-purple-400">*</span>
+                </label>
 
                 <textarea
                   id="project-description"

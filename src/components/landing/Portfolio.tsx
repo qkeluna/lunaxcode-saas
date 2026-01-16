@@ -46,7 +46,7 @@ export default async function Portfolio() {
           </p>
           <h2
             id="portfolio-heading"
-            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6"
+            className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6"
           >
             Recent projects
           </h2>
@@ -132,7 +132,7 @@ export default async function Portfolio() {
         <div className="mt-16 pt-16 border-t border-border">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="max-w-xl">
-              <h3 className="text-2xl font-bold text-foreground tracking-tight mb-2">
+              <h3 className="font-display text-2xl font-bold text-foreground tracking-tight mb-2">
                 Ready to see your project here?
               </h3>
               <p className="text-muted-foreground">

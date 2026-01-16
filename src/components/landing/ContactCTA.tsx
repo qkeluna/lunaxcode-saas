@@ -28,7 +28,7 @@ export default function ContactCTA() {
                 </p>
                 <h2
                   id="contact-heading"
-                  className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6"
+                  className="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6"
                 >
                   Ready to transform your business?
                 </h2>

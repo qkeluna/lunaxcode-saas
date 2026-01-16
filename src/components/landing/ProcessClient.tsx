@@ -1,7 +1,7 @@
 'use client';
 
-import { ArrowRight, Search, FileText, Code, TestTube, Rocket, type LucideIcon } from 'lucide-react';
-import { useEffect, useState, useRef } from 'react';
+import { ArrowRight, Search, FileText, Code, TestTube, Rocket, Pause, Play, type LucideIcon } from 'lucide-react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 
 interface Step {
   number: string;
@@ -17,10 +17,17 @@ interface ProcessClientProps {
 // Icons for process steps - defined in client component
 const processIcons: LucideIcon[] = [Search, FileText, Code, TestTube, Rocket];
 
+const AUTO_ADVANCE_DURATION = 5000; // 5 seconds per step
+
 export default function ProcessClient({ steps }: ProcessClientProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [progress, setProgress] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
+  const progressRef = useRef<number>(0);
+  const lastTimeRef = useRef<number>(0);
+  const animationFrameRef = useRef<number>();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -40,16 +47,56 @@ export default function ProcessClient({ steps }: ProcessClientProps) {
     return () => observer.disconnect();
   }, []);
 
-  // Auto-advance through steps for engagement
+  // Animate progress bar with requestAnimationFrame for smooth animation
+  const animate = useCallback((timestamp: number) => {
+    if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+    const deltaTime = timestamp - lastTimeRef.current;
+    lastTimeRef.current = timestamp;
+
+    if (!isPaused) {
+      progressRef.current += deltaTime;
+      const newProgress = (progressRef.current / AUTO_ADVANCE_DURATION) * 100;
+      setProgress(Math.min(newProgress, 100));
+
+      if (progressRef.current >= AUTO_ADVANCE_DURATION) {
+        // Move to next step
+        setActiveStep((prev) => (prev + 1) % steps.length);
+        progressRef.current = 0;
+        setProgress(0);
+      }
+    }
+
+    animationFrameRef.current = requestAnimationFrame(animate);
+  }, [isPaused, steps.length]);
+
+  // Start/stop animation based on visibility
   useEffect(() => {
     if (!isVisible) return;
 
-    const interval = setInterval(() => {
-      setActiveStep((prev) => (prev + 1) % steps.length);
-    }, 3000);
+    animationFrameRef.current = requestAnimationFrame(animate);
 
-    return () => clearInterval(interval);
-  }, [isVisible, steps.length]);
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [isVisible, animate]);
+
+  // Reset progress when manually changing steps
+  const handleStepClick = (index: number) => {
+    setActiveStep(index);
+    progressRef.current = 0;
+    setProgress(0);
+    lastTimeRef.current = 0;
+  };
+
+  // Toggle pause
+  const togglePause = () => {
+    setIsPaused((prev) => !prev);
+    if (isPaused) {
+      lastTimeRef.current = 0; // Reset timing on resume
+    }
+  };
 
   return (
     <section
@@ -57,6 +104,8 @@ export default function ProcessClient({ steps }: ProcessClientProps) {
       id="process"
       className="relative py-24 lg:py-32 bg-background overflow-hidden"
       aria-labelledby="process-heading"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
     >
       {/* Background decoration */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -71,7 +120,7 @@ export default function ProcessClient({ steps }: ProcessClientProps) {
           </p>
           <h2
             id="process-heading"
-            className={`text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6 transition-all duration-700 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+            className={`font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6 transition-all duration-700 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
           >
             From idea to launch
           </h2>
@@ -82,13 +131,27 @@ export default function ProcessClient({ steps }: ProcessClientProps) {
 
         {/* Desktop Timeline */}
         <div className="hidden lg:block">
-          {/* Progress bar */}
+          {/* Progress bar with timer */}
           <div className="relative mb-12">
+            {/* Background track */}
             <div className="absolute top-1/2 left-0 right-0 h-1 bg-border rounded-full -translate-y-1/2" />
+
+            {/* Completed progress */}
             <div
-              className="absolute top-1/2 left-0 h-1 bg-gradient-to-r from-violet-500 to-blue-500 rounded-full -translate-y-1/2 transition-all duration-500"
+              className="absolute top-1/2 left-0 h-1 bg-gradient-to-r from-violet-500 to-blue-500 rounded-full -translate-y-1/2 transition-all duration-300"
               style={{ width: `${(activeStep / (steps.length - 1)) * 100}%` }}
             />
+
+            {/* Current step progress indicator */}
+            {activeStep < steps.length - 1 && (
+              <div
+                className="absolute top-1/2 h-1 bg-violet-300 dark:bg-violet-700 rounded-full -translate-y-1/2 transition-all duration-100"
+                style={{
+                  left: `${(activeStep / (steps.length - 1)) * 100}%`,
+                  width: `${(progress / 100) * (100 / (steps.length - 1))}%`,
+                }}
+              />
+            )}
 
             {/* Step indicators */}
             <div className="relative flex justify-between">
@@ -100,11 +163,12 @@ export default function ProcessClient({ steps }: ProcessClientProps) {
                 return (
                   <button
                     key={index}
-                    onClick={() => setActiveStep(index)}
+                    onClick={() => handleStepClick(index)}
                     className={`group relative flex flex-col items-center transition-all duration-500 ${
                       isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
                     }`}
                     style={{ transitionDelay: `${index * 100 + 300}ms` }}
+                    aria-label={`Go to step ${index + 1}: ${step.title}`}
                   >
                     {/* Icon circle */}
                     <div
@@ -112,13 +176,33 @@ export default function ProcessClient({ steps }: ProcessClientProps) {
                         isActive
                           ? 'bg-gradient-to-br from-violet-500 to-blue-500 text-white shadow-lg shadow-violet-500/30'
                           : 'bg-card border-2 border-border text-muted-foreground hover:border-violet-300 dark:hover:border-violet-700'
-                      } ${isCurrent ? 'scale-110' : 'scale-100'}`}
+                      } ${isCurrent ? 'scale-110 ring-4 ring-violet-200 dark:ring-violet-800' : 'scale-100'}`}
                     >
                       <IconComponent className="w-6 h-6" />
 
-                      {/* Pulse effect for current step */}
+                      {/* Progress ring for current step */}
                       {isCurrent && (
-                        <span className="absolute inset-0 rounded-full bg-violet-500/30 animate-ping" />
+                        <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 64 64">
+                          <circle
+                            cx="32"
+                            cy="32"
+                            r="30"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            className="text-violet-200 dark:text-violet-800"
+                          />
+                          <circle
+                            cx="32"
+                            cy="32"
+                            r="30"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeDasharray={`${progress * 1.885} 188.5`}
+                            className="text-white transition-all duration-100"
+                          />
+                        </svg>
                       )}
                     </div>
 
@@ -136,6 +220,27 @@ export default function ProcessClient({ steps }: ProcessClientProps) {
                 );
               })}
             </div>
+          </div>
+
+          {/* Pause/Play indicator */}
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <button
+              onClick={togglePause}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors rounded-full hover:bg-muted"
+              aria-label={isPaused ? 'Resume auto-advance' : 'Pause auto-advance'}
+            >
+              {isPaused ? (
+                <>
+                  <Play className="w-3.5 h-3.5" />
+                  <span>Paused - hover to pause</span>
+                </>
+              ) : (
+                <>
+                  <Pause className="w-3.5 h-3.5" />
+                  <span>Auto-advancing</span>
+                </>
+              )}
+            </button>
           </div>
 
           {/* Active step content */}
@@ -158,7 +263,7 @@ export default function ProcessClient({ steps }: ProcessClientProps) {
                     <span className="text-sm font-medium text-violet-600 dark:text-violet-400 mb-2 block">
                       Step {step.number}
                     </span>
-                    <h3 className="text-2xl font-bold text-foreground mb-3">
+                    <h3 className="font-display text-2xl font-bold text-foreground mb-3">
                       {step.title}
                     </h3>
                     <p className="text-muted-foreground leading-relaxed max-w-2xl">
@@ -199,7 +304,7 @@ export default function ProcessClient({ steps }: ProcessClientProps) {
                   <span className="text-xs font-medium text-violet-600 dark:text-violet-400 mb-1 block">
                     Step {step.number}
                   </span>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                  <h3 className="font-display text-lg font-semibold text-foreground mb-2">
                     {step.title}
                   </h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
@@ -215,7 +320,7 @@ export default function ProcessClient({ steps }: ProcessClientProps) {
         <div className={`mt-16 pt-16 border-t border-border transition-all duration-700 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             <div>
-              <p className="text-lg font-medium text-foreground mb-1">
+              <p className="font-display text-lg font-medium text-foreground mb-1">
                 Ready to start your project?
               </p>
               <p className="text-sm text-muted-foreground">
@@ -224,8 +329,8 @@ export default function ProcessClient({ steps }: ProcessClientProps) {
             </div>
             <a
               href="#pricing"
-              className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-foreground text-background font-medium rounded-full hover:bg-foreground/90 transition-all hover:shadow-lg hover:shadow-foreground/20 hover:-translate-y-0.5"
-              aria-label="View pricing plans"
+              className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 text-white font-medium rounded-full transition-all hover:shadow-lg hover:shadow-violet-500/25 hover:-translate-y-0.5"
+              aria-label="Start your project"
             >
               Get Started
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />

@@ -84,7 +84,7 @@ export default function FeaturesClient({ features }: FeaturesClientProps) {
           </p>
           <h2
             id="features-heading"
-            className={`text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6 transition-all duration-700 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
+            className={`font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground tracking-tight mb-6 transition-all duration-700 delay-100 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}
           >
             Everything you need to succeed
           </h2>
@@ -129,7 +129,7 @@ export default function FeaturesClient({ features }: FeaturesClientProps) {
         <div className={`mt-16 pt-16 border-t border-border transition-all duration-700 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="max-w-xl">
-              <h3 className="text-2xl font-bold text-foreground tracking-tight mb-2">
+              <h3 className="font-display text-2xl font-bold text-foreground tracking-tight mb-2">
                 Ready to transform your business?
               </h3>
               <p className="text-muted-foreground">
