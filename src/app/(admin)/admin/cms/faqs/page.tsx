@@ -236,7 +236,7 @@ export default function AdminFaqsPage() {
                   </TableCell>
                   <TableCell>{faq.order}</TableCell>
                   <TableCell>
-                    <Badge className={faq.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100'}>
+                    <Badge className={faq.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-muted text-foreground'}>
                       {faq.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>

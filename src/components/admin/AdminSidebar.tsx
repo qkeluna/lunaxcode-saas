@@ -49,7 +49,7 @@ export default function AdminSidebar() {
 
   return (
     <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-      <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 pb-4">
+      <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-card px-6 pb-4">
         <div className="flex h-16 shrink-0 items-center">
           <Link href="/admin" className="flex items-center gap-2">
             <span className="text-2xl font-bold text-white">Lunaxcode</span>
@@ -70,8 +70,8 @@ export default function AdminSidebar() {
                         href={item.href}
                         className={`group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold transition-colors ${
                           pathname === item.href
-                            ? 'bg-gray-800 text-white'
-                            : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                            ? 'bg-muted text-white'
+                            : 'text-muted-foreground hover:text-white hover:bg-muted'
                         }`}
                       >
                         <item.icon className="h-6 w-6 shrink-0" aria-hidden="true" />
@@ -79,7 +79,7 @@ export default function AdminSidebar() {
                       </Link>
                     ) : (
                       <div>
-                        <div className="text-xs font-semibold leading-6 text-gray-400 mb-2 px-2">
+                        <div className="text-xs font-semibold leading-6 text-muted-foreground mb-2 px-2">
                           {item.name}
                         </div>
                         <ul role="list" className="-mx-2 space-y-1">
@@ -89,8 +89,8 @@ export default function AdminSidebar() {
                                 href={child.href}
                                 className={`group flex gap-x-3 rounded-md p-2 pl-8 text-sm leading-6 font-semibold transition-colors ${
                                   pathname === child.href
-                                    ? 'bg-gray-800 text-white'
-                                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                    ? 'bg-muted text-white'
+                                    : 'text-muted-foreground hover:text-white hover:bg-muted'
                                 }`}
                               >
                                 <child.icon className="h-5 w-5 shrink-0" aria-hidden="true" />

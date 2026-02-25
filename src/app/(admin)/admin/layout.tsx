@@ -12,7 +12,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { getRequestContext } from '@cloudflare/next-on-pages';
+import { getCloudflareContext } from '@/lib/db/context';
 import { drizzle } from 'drizzle-orm/d1';
 import { users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
@@ -32,7 +32,7 @@ export default async function AdminLayout({
 
   // Check if user has admin role from database (not from cached JWT)
   try {
-    const context = getRequestContext();
+    const context = getCloudflareContext();
 
     if (!context?.env?.DB) {
       console.error('[Admin Layout] Database not available');

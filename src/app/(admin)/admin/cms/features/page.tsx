@@ -338,7 +338,7 @@ export default function AdminFeaturesPage() {
                       className={
                         feature.isActive
                           ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
-                          : 'bg-gray-100 text-foreground'
+                          : 'bg-muted text-foreground'
                       }
                     >
                       {feature.isActive ? 'Active' : 'Inactive'}

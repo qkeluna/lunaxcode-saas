@@ -237,7 +237,7 @@ export default function AdminQuestionsPage() {
       checkbox: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-100',
       number: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100',
     };
-    return colors[type] || 'bg-gray-100 text-foreground';
+    return colors[type] || 'bg-muted text-foreground';
   };
 
   return (
@@ -354,7 +354,7 @@ export default function AdminQuestionsPage() {
                     <Badge variant="outline">{question.serviceName}</Badge>
                   </TableCell>
                   <TableCell>
-                    <code className="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
+                    <code className="text-xs bg-muted dark:bg-muted px-2 py-1 rounded">
                       {question.questionKey}
                     </code>
                   </TableCell>

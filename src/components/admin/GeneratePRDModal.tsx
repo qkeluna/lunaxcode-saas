@@ -154,10 +154,10 @@ export default function GeneratePRDModal({
           <div className="py-6">
             {!isGenerating && !isComplete && !error && (
               <div className="space-y-4">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   This will use AI to generate:
                 </p>
-                <ul className="space-y-2 text-sm text-gray-700">
+                <ul className="space-y-2 text-sm text-muted-foreground">
                   <li className="flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full bg-purple-600"></div>
                     Comprehensive Project Requirements Document (PRD)
@@ -179,7 +179,7 @@ export default function GeneratePRDModal({
                   <p className="text-sm text-amber-600">
                     ⚠️ This will replace any existing PRD and tasks.
                   </p>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className="text-xs text-muted-foreground mt-2">
                     Expected time: 20-40 seconds
                   </p>
                 </div>
@@ -205,12 +205,12 @@ export default function GeneratePRDModal({
                         ) : isActive ? (
                           <Loader2 className="h-5 w-5 text-purple-600 animate-spin" />
                         ) : (
-                          <div className="h-5 w-5 rounded-full border-2 border-gray-300"></div>
+                          <div className="h-5 w-5 rounded-full border-2 border-border"></div>
                         )}
                       </div>
                       <div className="flex-1">
                         <p className={`text-sm font-medium ${
-                          isActive ? 'text-purple-600' : isCompleted ? 'text-gray-600' : 'text-gray-400'
+                          isActive ? 'text-purple-600' : isCompleted ? 'text-muted-foreground' : 'text-muted-foreground'
                         }`}>
                           {step.text}
                         </p>
@@ -229,7 +229,7 @@ export default function GeneratePRDModal({
                   </div>
                 </div>
                 <div className="text-center space-y-2">
-                  <h4 className="text-lg font-semibold text-gray-900">
+                  <h4 className="text-lg font-semibold text-foreground">
                     ✨ PRD Generated Successfully!
                   </h4>
                   <div className="grid grid-cols-2 gap-4 mt-4 max-w-sm mx-auto">
@@ -237,16 +237,16 @@ export default function GeneratePRDModal({
                       <p className="text-2xl font-bold text-purple-600">
                         {result.prdLength.toLocaleString()}
                       </p>
-                      <p className="text-xs text-gray-600">characters</p>
+                      <p className="text-xs text-muted-foreground">characters</p>
                     </div>
                     <div className="bg-blue-50 rounded-lg p-4">
                       <p className="text-2xl font-bold text-blue-600">
                         {result.tasksCount}
                       </p>
-                      <p className="text-xs text-gray-600">tasks</p>
+                      <p className="text-xs text-muted-foreground">tasks</p>
                     </div>
                   </div>
-                  <p className="text-sm text-gray-500 pt-2">
+                  <p className="text-sm text-muted-foreground pt-2">
                     Closing automatically...
                   </p>
                 </div>
@@ -265,11 +265,11 @@ export default function GeneratePRDModal({
                     Failed to Generate PRD
                   </h4>
                   <div className="max-w-md mx-auto">
-                    <p className="text-sm text-gray-700 bg-red-50 p-3 rounded-md font-mono text-left">
+                    <p className="text-sm text-muted-foreground bg-red-50 p-3 rounded-md font-mono text-left">
                       {error}
                     </p>
                   </div>
-                  <p className="text-xs text-gray-500 pt-2">
+                  <p className="text-xs text-muted-foreground pt-2">
                     {error.includes('GEMINI_API_KEY') ? (
                       <>Set GEMINI_API_KEY in Cloudflare secrets</>
                     ) : error.includes('quota') ? (

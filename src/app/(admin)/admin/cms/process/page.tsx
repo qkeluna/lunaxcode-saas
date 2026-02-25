@@ -229,7 +229,7 @@ export default function AdminProcessPage() {
                   </TableCell>
                   <TableCell>{step.order}</TableCell>
                   <TableCell>
-                    <Badge className={step.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-gray-100 text-foreground'}>
+                    <Badge className={step.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-muted text-foreground'}>
                       {step.isActive ? 'Active' : 'Inactive'}
                     </Badge>
                   </TableCell>

@@ -127,8 +127,8 @@ export default function AdminUsersPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-foreground">User Management</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
             Manage all user accounts and permissions
           </p>
         </div>
@@ -136,18 +136,18 @@ export default function AdminUsersPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <Users className="h-6 w-6 text-gray-400" />
+                <Users className="h-6 w-6 text-muted-foreground" />
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+                  <dt className="text-sm font-medium text-muted-foreground truncate">
                     Total Users
                   </dt>
-                  <dd className="text-lg font-semibold text-gray-900">
+                  <dd className="text-lg font-semibold text-foreground">
                     {users.length}
                   </dd>
                 </dl>
@@ -156,7 +156,7 @@ export default function AdminUsersPage() {
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -164,17 +164,17 @@ export default function AdminUsersPage() {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">
+                  <dt className="text-sm font-medium text-muted-foreground truncate">
                     Administrators
                   </dt>
-                  <dd className="text-lg font-semibold text-gray-900">{adminCount}</dd>
+                  <dd className="text-lg font-semibold text-foreground">{adminCount}</dd>
                 </dl>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-white overflow-hidden shadow rounded-lg">
+        <div className="bg-card overflow-hidden shadow rounded-lg">
           <div className="p-5">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -182,8 +182,8 @@ export default function AdminUsersPage() {
               </div>
               <div className="ml-5 w-0 flex-1">
                 <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">Clients</dt>
-                  <dd className="text-lg font-semibold text-gray-900">
+                  <dt className="text-sm font-medium text-muted-foreground truncate">Clients</dt>
+                  <dd className="text-lg font-semibold text-foreground">
                     {clientCount}
                   </dd>
                 </dl>
@@ -194,9 +194,9 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Search */}
-      <div className="bg-white p-4 rounded-lg shadow">
+      <div className="bg-card p-4 rounded-lg shadow">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Search users by name or email..."
@@ -208,7 +208,7 @@ export default function AdminUsersPage() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="bg-card shadow rounded-lg overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -223,13 +223,13 @@ export default function AdminUsersPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                   Loading users...
                 </TableCell>
               </TableRow>
             ) : filteredUsers.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                   No users found.
                 </TableCell>
               </TableRow>
@@ -245,15 +245,15 @@ export default function AdminUsersPage() {
                           className="h-8 w-8 rounded-full"
                         />
                       ) : (
-                        <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center">
-                          <Users className="h-4 w-4 text-gray-500" />
+                        <div className="h-8 w-8 rounded-full bg-muted/80 flex items-center justify-center">
+                          <Users className="h-4 w-4 text-muted-foreground" />
                         </div>
                       )}
                       <span>{user.name}</span>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2 text-gray-600">
+                    <div className="flex items-center gap-2 text-muted-foreground">
                       <Mail className="h-4 w-4" />
                       {user.email}
                     </div>
@@ -262,8 +262,8 @@ export default function AdminUsersPage() {
                     <Badge
                       className={
                         user.role === 'admin'
-                          ? 'bg-purple-100 text-purple-800'
-                          : 'bg-blue-100 text-blue-800'
+                          ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100'
+                          : 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100'
                       }
                     >
                       {user.role === 'admin' ? (
@@ -281,13 +281,13 @@ export default function AdminUsersPage() {
                   </TableCell>
                   <TableCell>
                     {user.emailVerified ? (
-                      <Badge className="bg-green-100 text-green-800">Verified</Badge>
+                      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Verified</Badge>
                     ) : (
-                      <Badge className="bg-gray-100 text-gray-800">Not Verified</Badge>
+                      <Badge className="bg-muted text-foreground">Not Verified</Badge>
                     )}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2 text-gray-600 text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground text-sm">
                       <Calendar className="h-4 w-4" />
                       {formatDate(user.createdAt)}
                     </div>
@@ -340,7 +340,7 @@ export default function AdminUsersPage() {
                   </SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 {newRole === 'admin'
                   ? 'Admins have full access to all features and can manage users.'
                   : 'Clients can only access their own projects and dashboard.'}

@@ -383,7 +383,7 @@ export async function seed(env: Env) {
       },
       {
         title: 'Crystal-Clear Project Timeline',
-        description: 'See exactly what we're building, when it'll be done, and how much it costs. No surprises, no hidden fees—just complete transparency.',
+        description: 'See exactly what we\'re building, when it\'ll be done, and how much it costs. No surprises, no hidden fees—just complete transparency.',
         icon: 'FileText',
         category: 'core',
         order: 2,
@@ -419,7 +419,7 @@ export async function seed(env: Env) {
       },
       {
         title: 'Bank-Level Security',
-        description: 'Your data and your customers' information are protected with enterprise-grade security. Sleep easy knowing everything is safe.',
+        description: 'Your data and your customers\' information are protected with enterprise-grade security. Sleep easy knowing everything is safe.',
         icon: 'Shield',
         category: 'technical',
         order: 6,
@@ -520,7 +520,7 @@ export async function seed(env: Env) {
           .insert(projects)
           .values({
             userId: client2.id,
-            serviceTypeId: null,
+            serviceTypeId: service1.id,
             name: 'E-Commerce Store',
             service: 'E-Commerce Website',
             description: 'Full-featured online store for selling clothing',

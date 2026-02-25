@@ -247,7 +247,7 @@ export default function AdminAddOnsPage() {
       communication: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
       payment: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
       social: 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-100',
-      other: 'bg-gray-100 text-foreground',
+      other: 'bg-muted text-foreground',
     };
     return colors[category] || colors.other;
   };
@@ -428,7 +428,7 @@ export default function AdminAddOnsPage() {
                       className={
                         addOn.isActive
                           ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
-                          : 'bg-gray-100 text-foreground'
+                          : 'bg-muted text-foreground'
                       }
                     >
                       {addOn.isActive ? 'Active' : 'Inactive'}

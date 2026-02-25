@@ -364,7 +364,7 @@ export default function AdminServicesPage() {
                       <Badge variant="outline">{features.length} features</Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge className={service.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-gray-100 text-foreground'}>
+                      <Badge className={service.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' : 'bg-muted text-foreground'}>
                         {service.isActive ? 'Active' : 'Inactive'}
                       </Badge>
                     </TableCell>

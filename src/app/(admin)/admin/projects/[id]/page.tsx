@@ -47,8 +47,8 @@ function DroppableColumn({ children, id }: { children: React.ReactNode; id: stri
     <div
       ref={setNodeRef}
       className={`space-y-2 min-h-[200px] p-3 rounded-lg transition-all duration-200 ${isOver
-          ? 'bg-blue-50 border-2 border-blue-400 border-dashed shadow-lg scale-[1.02]'
-          : 'bg-gray-50/50 border-2 border-transparent'
+        ? 'bg-blue-50 border-2 border-blue-400 border-dashed shadow-lg scale-[1.02]'
+        : 'bg-muted/50/50 border-2 border-transparent'
         }`}
     >
       {isOver && (
@@ -67,9 +67,9 @@ function markdownToHtml(markdown: string): string {
   let html = markdown;
 
   // Headers
-  html = html.replace(/^### (.*?)$/gm, '<h3 class="text-lg font-semibold text-gray-900 mt-4 mb-2">$1</h3>');
-  html = html.replace(/^## (.*?)$/gm, '<h2 class="text-xl font-bold text-gray-900 mt-6 mb-3">$1</h2>');
-  html = html.replace(/^# (.*?)$/gm, '<h1 class="text-2xl font-bold text-gray-900 mt-8 mb-4">$1</h1>');
+  html = html.replace(/^### (.*?)$/gm, '<h3 class="text-lg font-semibold text-foreground mt-4 mb-2">$1</h3>');
+  html = html.replace(/^## (.*?)$/gm, '<h2 class="text-xl font-bold text-foreground mt-6 mb-3">$1</h2>');
+  html = html.replace(/^# (.*?)$/gm, '<h1 class="text-2xl font-bold text-foreground mt-8 mb-4">$1</h1>');
 
   // Bold
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>');
@@ -82,26 +82,26 @@ function markdownToHtml(markdown: string): string {
   // Code blocks
   html = html.replace(/```[\s\S]*?```/g, (match) => {
     const code = match.replace(/```/g, '').trim();
-    return `<pre class="bg-gray-100 border border-gray-300 rounded p-3 text-sm text-gray-800 overflow-x-auto my-3"><code>${escapeHtml(code)}</code></pre>`;
+    return `<pre class="bg-muted border border-border rounded p-3 text-sm text-foreground overflow-x-auto my-3"><code>${escapeHtml(code)}</code></pre>`;
   });
 
   // Inline code
-  html = html.replace(/`(.*?)`/g, '<code class="bg-gray-100 px-2 py-1 rounded text-sm text-gray-800">$1</code>');
+  html = html.replace(/`(.*?)`/g, '<code class="bg-muted px-2 py-1 rounded text-sm text-foreground">$1</code>');
 
   // Unordered lists
-  html = html.replace(/^\- (.*?)$/gm, '<li class="list-item text-gray-700">$1</li>');
+  html = html.replace(/^\- (.*?)$/gm, '<li class="list-item text-muted-foreground">$1</li>');
   html = html.replace(/(<li class="list-item[^>]*>.*?<\/li>)/s, (match) => `<ul class="list-disc list-inside space-y-1 my-2">${match}</ul>`);
 
   // Numbered lists
-  html = html.replace(/^\d+\. (.*?)$/gm, '<li class="list-item text-gray-700">$1</li>');
+  html = html.replace(/^\d+\. (.*?)$/gm, '<li class="list-item text-muted-foreground">$1</li>');
 
   // Line breaks
-  html = html.replace(/\n\n/g, '</p><p class="text-gray-700 my-3">');
+  html = html.replace(/\n\n/g, '</p><p class="text-muted-foreground my-3">');
   html = html.replace(/\n/g, '<br />');
 
   // Wrap in paragraph tags
   if (!html.startsWith('<h') && !html.startsWith('<pre') && !html.startsWith('<ul')) {
-    html = `<p class="text-gray-700 my-3">${html}</p>`;
+    html = `<p class="text-muted-foreground my-3">${html}</p>`;
   }
 
   return html;
@@ -161,35 +161,35 @@ interface Task {
 }
 
 const statusColors: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  'in-progress': 'bg-blue-100 text-blue-800',
-  completed: 'bg-green-100 text-green-800',
-  'on-hold': 'bg-red-100 text-red-800',
+  pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+  'in-progress': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
+  completed: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
+  'on-hold': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
 };
 
 const paymentStatusColors: Record<string, string> = {
-  pending: 'bg-red-100 text-red-800',
-  'partially-paid': 'bg-yellow-100 text-yellow-800',
-  paid: 'bg-green-100 text-green-800',
+  pending: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+  'partially-paid': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+  paid: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
 };
 
 const priorityColors: Record<string, string> = {
-  high: 'bg-red-100 text-red-800',
-  medium: 'bg-yellow-100 text-yellow-800',
-  low: 'bg-green-100 text-green-800',
+  high: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100',
+  medium: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
+  low: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
 };
 
 const taskStatusColors: Record<string, string> = {
-  'pending': 'bg-gray-100 text-gray-800',
-  'to-do': 'bg-gray-100 text-gray-800',
-  'in-progress': 'bg-blue-100 text-blue-800',
-  'testing': 'bg-purple-100 text-purple-800',
-  'done': 'bg-green-100 text-green-800',
+  'pending': 'bg-muted text-foreground',
+  'to-do': 'bg-muted text-foreground',
+  'in-progress': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
+  'testing': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100',
+  'done': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100',
 };
 
 // Kanban board statuses (excludes 'pending' which is for backlog)
 const TASK_STATUSES = [
-  { value: 'to-do', label: 'To Do', color: 'bg-gray-50 border-gray-200' },
+  { value: 'to-do', label: 'To Do', color: 'bg-muted/50 border-border' },
   { value: 'in-progress', label: 'In Progress', color: 'bg-blue-50 border-blue-200' },
   { value: 'testing', label: 'Testing', color: 'bg-purple-50 border-purple-200' },
   { value: 'done', label: 'Done', color: 'bg-green-50 border-green-200' },
@@ -455,7 +455,7 @@ export default function AdminProjectDetailPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <Clock className="h-8 w-8 animate-spin text-purple-600 mx-auto" />
-          <p className="mt-2 text-gray-600">Loading project...</p>
+          <p className="mt-2 text-muted-foreground">Loading project...</p>
         </div>
       </div>
     );
@@ -466,8 +466,8 @@ export default function AdminProjectDetailPage() {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-600 mx-auto" />
-          <h2 className="mt-4 text-xl font-semibold text-gray-900">Project Not Found</h2>
-          <p className="mt-2 text-gray-600">The project you&apos;re looking for doesn&apos;t exist.</p>
+          <h2 className="mt-4 text-xl font-semibold text-foreground">Project Not Found</h2>
+          <p className="mt-2 text-muted-foreground">The project you&apos;re looking for doesn&apos;t exist.</p>
           <Button onClick={() => router.push('/admin/projects')} className="mt-4">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Projects
@@ -497,8 +497,8 @@ export default function AdminProjectDetailPage() {
             Back
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
-            <p className="text-sm text-gray-500">Project ID: {project.id}</p>
+            <h1 className="text-2xl font-bold text-foreground">{project.name}</h1>
+            <p className="text-sm text-muted-foreground">Project ID: {project.id}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -525,8 +525,8 @@ export default function AdminProjectDetailPage() {
                 <FileText className="h-5 w-5 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Status</p>
-                <Badge className={statusColors[project.status] || 'bg-gray-100'}>
+                <p className="text-sm text-muted-foreground">Status</p>
+                <Badge className={statusColors[project.status] || 'bg-muted'}>
                   {project.status}
                 </Badge>
               </div>
@@ -541,7 +541,7 @@ export default function AdminProjectDetailPage() {
                 <DollarSign className="h-5 w-5 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Payment</p>
+                <p className="text-sm text-muted-foreground">Payment</p>
                 <Badge className={paymentStatusColors[project.paymentStatus]}>
                   {project.paymentStatus}
                 </Badge>
@@ -557,7 +557,7 @@ export default function AdminProjectDetailPage() {
                 <CheckCircle2 className="h-5 w-5 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Progress</p>
+                <p className="text-sm text-muted-foreground">Progress</p>
                 <p className="text-lg font-semibold">
                   {completedTasks}/{tasks.length} tasks
                 </p>
@@ -573,7 +573,7 @@ export default function AdminProjectDetailPage() {
                 <Clock className="h-5 w-5 text-orange-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Estimated</p>
+                <p className="text-sm text-muted-foreground">Estimated</p>
                 <p className="text-lg font-semibold">{totalHours}h</p>
               </div>
             </div>
@@ -600,41 +600,41 @@ export default function AdminProjectDetailPage() {
               {/* Details Tab */}
               <TabsContent value="details" className="space-y-4 mt-4">
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Service Type</label>
-                  <p className="text-base text-gray-900">{project.service}</p>
+                  <label className="text-sm font-medium text-muted-foreground">Service Type</label>
+                  <p className="text-base text-foreground">{project.service}</p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-gray-500">Description</label>
-                  <p className="text-base text-gray-900">{project.description}</p>
+                  <label className="text-sm font-medium text-muted-foreground">Description</label>
+                  <p className="text-base text-foreground">{project.description}</p>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Budget</label>
-                    <p className="text-base text-gray-900">{formatCurrency(project.budget)}</p>
+                    <label className="text-sm font-medium text-muted-foreground">Budget</label>
+                    <p className="text-base text-foreground">{formatCurrency(project.budget)}</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Price</label>
-                    <p className="text-base text-gray-900">{formatCurrency(project.price)}</p>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Timeline</label>
-                    <p className="text-base text-gray-900">{project.timeline} days</p>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-500">Deposit</label>
-                    <p className="text-base text-gray-900">{formatCurrency(project.depositAmount)}</p>
+                    <label className="text-sm font-medium text-muted-foreground">Price</label>
+                    <p className="text-base text-foreground">{formatCurrency(project.price)}</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-500">Start Date</label>
-                    <p className="text-base text-gray-900">{formatDate(project.startDate)}</p>
+                    <label className="text-sm font-medium text-muted-foreground">Timeline</label>
+                    <p className="text-base text-foreground">{project.timeline} days</p>
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-500">End Date</label>
-                    <p className="text-base text-gray-900">{formatDate(project.endDate)}</p>
+                    <label className="text-sm font-medium text-muted-foreground">Deposit</label>
+                    <p className="text-base text-foreground">{formatCurrency(project.depositAmount)}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">Start Date</label>
+                    <p className="text-base text-foreground">{formatDate(project.startDate)}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground">End Date</label>
+                    <p className="text-base text-foreground">{formatDate(project.endDate)}</p>
                   </div>
                 </div>
               </TabsContent>
@@ -643,21 +643,21 @@ export default function AdminProjectDetailPage() {
               <TabsContent value="onboarding" className="space-y-4 mt-4">
                 {onboardingAnswers.length === 0 ? (
                   <div className="text-center py-12">
-                    <HelpCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    <HelpCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-foreground mb-2">
                       No Onboarding Data
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm text-muted-foreground">
                       This project doesn&apos;t have any onboarding responses yet
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {onboardingAnswers.map((answer, idx) => (
-                      <div key={answer.id} className="border rounded-lg p-3 bg-white hover:bg-gray-50 transition-colors">
+                      <div key={answer.id} className="border rounded-lg p-3 bg-card hover:bg-muted/50 transition-colors">
                         <div className="mb-2">
-                          <p className="text-xs text-gray-500 font-medium">Q{idx + 1}</p>
-                          <h4 className="font-semibold text-gray-900 text-sm mt-1">
+                          <p className="text-xs text-muted-foreground font-medium">Q{idx + 1}</p>
+                          <h4 className="font-semibold text-foreground text-sm mt-1">
                             {answer.questionText}
                           </h4>
                         </div>
@@ -669,19 +669,19 @@ export default function AdminProjectDetailPage() {
                                 try {
                                   const values = JSON.parse(answer.answerValue);
                                   return Array.isArray(values) ? values.map((v: string, i: number) => (
-                                    <Badge key={i} className="bg-blue-100 text-blue-800 text-xs">
+                                    <Badge key={i} className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100 text-xs">
                                       {v}
                                     </Badge>
                                   )) : (
-                                    <p className="text-gray-700 text-sm">{answer.answerValue}</p>
+                                    <p className="text-muted-foreground text-sm">{answer.answerValue}</p>
                                   );
                                 } catch {
-                                  return <p className="text-gray-700 text-sm">{answer.answerValue}</p>;
+                                  return <p className="text-muted-foreground text-sm">{answer.answerValue}</p>;
                                 }
                               })()}
                             </div>
                           ) : (
-                            <p className="text-gray-700 text-sm whitespace-pre-wrap break-words">
+                            <p className="text-muted-foreground text-sm whitespace-pre-wrap break-words">
                               {answer.answerValue}
                             </p>
                           )}
@@ -702,17 +702,17 @@ export default function AdminProjectDetailPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gray-100 rounded-full">
-                <User className="h-5 w-5 text-gray-600" />
+              <div className="p-2 bg-muted rounded-full">
+                <User className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-900">{project.clientName}</p>
-                <p className="text-sm text-gray-500">{project.clientEmail}</p>
+                <p className="text-sm font-medium text-foreground">{project.clientName}</p>
+                <p className="text-sm text-muted-foreground">{project.clientEmail}</p>
               </div>
             </div>
             <div className="pt-4 border-t">
-              <label className="text-sm font-medium text-gray-500">Created</label>
-              <p className="text-base text-gray-900">{formatDate(project.createdAt)}</p>
+              <label className="text-sm font-medium text-muted-foreground">Created</label>
+              <p className="text-base text-foreground">{formatDate(project.createdAt)}</p>
             </div>
           </CardContent>
         </Card>
@@ -741,11 +741,11 @@ export default function AdminProjectDetailPage() {
             <TabsContent value="proposal" className="space-y-4">
               {!project.proposal ? (
                 <div className="text-center py-12">
-                  <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
                     No Proposal Generated Yet
                   </h3>
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     Click the Generate button below to create a detailed proposal using Gemini AI.
                   </p>
                   <GenerateProposalModal
@@ -764,7 +764,7 @@ export default function AdminProjectDetailPage() {
                     />
                   </div>
                   <div
-                    className="text-gray-800"
+                    className="text-foreground"
                     dangerouslySetInnerHTML={{ __html: markdownToHtml(project.proposal) }}
                   />
                 </div>
@@ -775,11 +775,11 @@ export default function AdminProjectDetailPage() {
             <TabsContent value="prd" className="space-y-4">
               {!project.prd ? (
                 <div className="text-center py-12">
-                  <Sparkles className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <Sparkles className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
                     No PRD Generated Yet
                   </h3>
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     Click the Sparkles button above to generate a comprehensive PRD with AI
                   </p>
                   <GeneratePRDModalEnhanced
@@ -791,7 +791,7 @@ export default function AdminProjectDetailPage() {
               ) : (
                 <div className="prose max-w-none">
                   <div
-                    className="text-gray-800"
+                    className="text-foreground"
                     dangerouslySetInnerHTML={{ __html: markdownToHtml(project.prd) }}
                   />
                 </div>
@@ -802,11 +802,11 @@ export default function AdminProjectDetailPage() {
             <TabsContent value="tasks" className="space-y-4">
               {tasks.length === 0 ? (
                 <div className="text-center py-12">
-                  <CheckCircle2 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <CheckCircle2 className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
                     No Tasks Generated Yet
                   </h3>
-                  <p className="text-sm text-gray-600 mb-4">
+                  <p className="text-sm text-muted-foreground mb-4">
                     Tasks are generated automatically when you create a PRD
                   </p>
                 </div>
@@ -824,9 +824,9 @@ export default function AdminProjectDetailPage() {
                         <div key={status.value} className="space-y-2">
                           {/* Kanban Column Header */}
                           <div className={`p-2 rounded-lg border ${status.color}`}>
-                            <h3 className="font-semibold text-gray-900 text-sm flex items-center justify-between">
+                            <h3 className="font-semibold text-foreground text-sm flex items-center justify-between">
                               <span>{status.label}</span>
-                              <span className="text-xs font-normal text-gray-500">
+                              <span className="text-xs font-normal text-muted-foreground">
                                 {kanbanTasks[status.value]?.length || 0}
                               </span>
                             </h3>
@@ -841,14 +841,14 @@ export default function AdminProjectDetailPage() {
                               {kanbanTasks[status.value]?.map((task) => (
                                 <SortableItem key={task.id} id={`task-${task.id}`} asChild>
                                   <SortableItemTrigger asChild>
-                                    <div className="bg-white border rounded p-2 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing group">
+                                    <div className="bg-card border rounded p-2 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing group">
                                       <div className="flex items-start gap-2">
-                                        <div className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
                                           <GripVertical className="h-3 w-3" />
                                         </div>
                                         <div className="flex-1">
                                           <div className="mb-1">
-                                            <h4 className="font-medium text-xs text-gray-900 mb-1">
+                                            <h4 className="font-medium text-xs text-foreground mb-1">
                                               {task.title}
                                             </h4>
                                             <div className="flex items-center gap-1 mb-1">
@@ -858,11 +858,11 @@ export default function AdminProjectDetailPage() {
                                             </div>
                                           </div>
 
-                                          <p className="text-xs text-gray-600 mb-1 line-clamp-2">
+                                          <p className="text-xs text-muted-foreground mb-1 line-clamp-2">
                                             {task.description}
                                           </p>
 
-                                          <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                                          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
                                             <span className="flex items-center gap-1">
                                               <Clock className="h-3 w-3" />
                                               {task.estimatedHours}h
@@ -877,7 +877,7 @@ export default function AdminProjectDetailPage() {
                                               handleStatusChange(task.id, e.target.value);
                                             }}
                                             onClick={(e) => e.stopPropagation()}
-                                            className="w-full text-xs border rounded px-1 py-0.5 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                                            className="w-full text-xs border rounded px-1 py-0.5 bg-card hover:bg-muted/50 focus:outline-none focus:ring-1 focus:ring-purple-500"
                                           >
                                             {ALL_TASK_STATUSES.map((s) => (
                                               <option key={s.value} value={s.value}>
@@ -904,18 +904,18 @@ export default function AdminProjectDetailPage() {
                         if (!activeTask) return null;
 
                         return (
-                          <div className="bg-white border-2 border-blue-400 rounded-lg p-3 shadow-2xl cursor-grabbing rotate-2 opacity-90">
+                          <div className="bg-card border-2 border-blue-400 rounded-lg p-3 shadow-2xl cursor-grabbing rotate-2 opacity-90">
                             <div className="flex items-start gap-2">
                               <GripVertical className="h-4 w-4 text-blue-500" />
                               <div className="flex-1">
-                                <h4 className="font-semibold text-sm text-gray-900 mb-2">
+                                <h4 className="font-semibold text-sm text-foreground mb-2">
                                   {activeTask.title}
                                 </h4>
                                 <div className="flex items-center gap-2">
                                   <Badge className={`text-xs ${priorityColors[activeTask.priority]}`}>
                                     {activeTask.priority}
                                   </Badge>
-                                  <span className="text-xs text-gray-500 flex items-center gap-1">
+                                  <span className="text-xs text-muted-foreground flex items-center gap-1">
                                     <Clock className="h-3 w-3" />
                                     {activeTask.estimatedHours}h
                                   </span>
@@ -932,10 +932,10 @@ export default function AdminProjectDetailPage() {
                       <div className="mt-8">
                         <div className="flex items-center justify-between mb-4">
                           <div>
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <h3 className="text-lg font-semibold text-foreground">
                               Backlog ({backlogTasks.length})
                             </h3>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-muted-foreground">
                               Tasks waiting to be added to the Kanban board - drag to columns above
                             </p>
                           </div>
@@ -950,8 +950,8 @@ export default function AdminProjectDetailPage() {
                         </div>
 
                         {backlogTasks.length === 0 ? (
-                          <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-                            <p className="text-sm text-gray-500">
+                          <div className="text-center py-8 border-2 border-dashed border-border rounded-lg">
+                            <p className="text-sm text-muted-foreground">
                               No tasks in backlog. All tasks are in the Kanban board!
                             </p>
                           </div>
@@ -975,24 +975,24 @@ export default function AdminProjectDetailPage() {
                                 <TableBody>
                                   {backlogTasks.map((task) => (
                                     <SortableItem key={task.id} id={`backlog-${task.id}`} asChild>
-                                      <TableRow className="cursor-grab active:cursor-grabbing hover:bg-gray-50">
+                                      <TableRow className="cursor-grab active:cursor-grabbing hover:bg-muted/50">
                                         <TableCell>
                                           <SortableItemTrigger asChild>
                                             <div className="flex items-center justify-center">
-                                              <GripVertical className="h-4 w-4 text-gray-400" />
+                                              <GripVertical className="h-4 w-4 text-muted-foreground" />
                                             </div>
                                           </SortableItemTrigger>
                                         </TableCell>
                                         <TableCell>
                                           <div>
                                             <p className="font-medium text-sm">{task.title}</p>
-                                            <p className="text-xs text-gray-500 line-clamp-1">
+                                            <p className="text-xs text-muted-foreground line-clamp-1">
                                               {task.description}
                                             </p>
                                           </div>
                                         </TableCell>
                                         <TableCell>
-                                          <span className="text-xs text-gray-600">{task.section}</span>
+                                          <span className="text-xs text-muted-foreground">{task.section}</span>
                                         </TableCell>
                                         <TableCell>
                                           <Badge className={`text-xs ${priorityColors[task.priority]}`}>
@@ -1000,7 +1000,7 @@ export default function AdminProjectDetailPage() {
                                           </Badge>
                                         </TableCell>
                                         <TableCell>
-                                          <span className="text-sm text-gray-600">
+                                          <span className="text-sm text-muted-foreground">
                                             {task.estimatedHours}h
                                           </span>
                                         </TableCell>
@@ -1036,7 +1036,7 @@ export default function AdminProjectDetailPage() {
       {/* Messages Section */}
       <Link
         href={`/admin/projects/${projectId}/messages`}
-        className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow p-6 border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-purple-500 dark:hover:border-purple-500"
+        className="block bg-card dark:bg-muted rounded-lg shadow hover:shadow-md transition-shadow p-6 border-2 border-dashed border-border hover:border-purple-500 dark:hover:border-purple-500"
       >
         <div className="flex items-center gap-4">
           <div className="flex-shrink-0 w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
