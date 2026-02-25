@@ -57,6 +57,7 @@ export const projects = sqliteTable('projects', {
   service: text('service').notNull(), // Keep for backward compatibility, but use serviceTypeId
   description: text('description').notNull(),
   prd: text('prd'), // Generated PRD (nullable until AI generates it)
+  proposal: text('proposal'), // Generated Proposal draft (nullable until AI generates it)
   clientName: text('client_name').notNull(),
   clientEmail: text('client_email').notNull(),
   clientPhone: text('client_phone'),

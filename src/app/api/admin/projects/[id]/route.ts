@@ -83,7 +83,7 @@ export async function GET(
         .from(users)
         .where(eq(users.id, project.userId))
         .limit(1);
-      
+
       if (userResult) {
         user = {
           id: userResult.id,
@@ -108,6 +108,7 @@ export async function GET(
         paymentStatus: project.paymentStatus,
         depositAmount: project.depositAmount,
         prd: project.prd,
+        proposal: project.proposal,
         startDate: project.startDate,
         endDate: project.endDate,
         createdAt: project.createdAt,
@@ -304,9 +305,9 @@ export async function DELETE(
       .delete(projects)
       .where(eq(projects.id, projectId));
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
-      message: 'Project deleted successfully' 
+      message: 'Project deleted successfully'
     });
 
   } catch (error) {

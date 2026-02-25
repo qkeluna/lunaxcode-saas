@@ -37,6 +37,7 @@ import {
   SortableOverlay,
 } from '@/components/ui/sortable';
 import GeneratePRDModalEnhanced from '@/components/admin/GeneratePRDModalEnhanced';
+import GenerateProposalModal from '@/components/admin/GenerateProposalModal';
 
 // Droppable Column Component
 function DroppableColumn({ children, id }: { children: React.ReactNode; id: string }) {
@@ -45,11 +46,10 @@ function DroppableColumn({ children, id }: { children: React.ReactNode; id: stri
   return (
     <div
       ref={setNodeRef}
-      className={`space-y-2 min-h-[200px] p-3 rounded-lg transition-all duration-200 ${
-        isOver
+      className={`space-y-2 min-h-[200px] p-3 rounded-lg transition-all duration-200 ${isOver
           ? 'bg-blue-50 border-2 border-blue-400 border-dashed shadow-lg scale-[1.02]'
           : 'bg-gray-50/50 border-2 border-transparent'
-      }`}
+        }`}
     >
       {isOver && (
         <div className="flex items-center justify-center py-4 text-blue-600 text-sm font-medium animate-pulse">
@@ -65,45 +65,45 @@ function DroppableColumn({ children, id }: { children: React.ReactNode; id: stri
 // Markdown to HTML converter
 function markdownToHtml(markdown: string): string {
   let html = markdown;
-  
+
   // Headers
   html = html.replace(/^### (.*?)$/gm, '<h3 class="text-lg font-semibold text-gray-900 mt-4 mb-2">$1</h3>');
   html = html.replace(/^## (.*?)$/gm, '<h2 class="text-xl font-bold text-gray-900 mt-6 mb-3">$1</h2>');
   html = html.replace(/^# (.*?)$/gm, '<h1 class="text-2xl font-bold text-gray-900 mt-8 mb-4">$1</h1>');
-  
+
   // Bold
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>');
   html = html.replace(/__(.*?)__/g, '<strong class="font-semibold">$1</strong>');
-  
+
   // Italic
   html = html.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
   html = html.replace(/_(.*?)_/g, '<em class="italic">$1</em>');
-  
+
   // Code blocks
   html = html.replace(/```[\s\S]*?```/g, (match) => {
     const code = match.replace(/```/g, '').trim();
     return `<pre class="bg-gray-100 border border-gray-300 rounded p-3 text-sm text-gray-800 overflow-x-auto my-3"><code>${escapeHtml(code)}</code></pre>`;
   });
-  
+
   // Inline code
   html = html.replace(/`(.*?)`/g, '<code class="bg-gray-100 px-2 py-1 rounded text-sm text-gray-800">$1</code>');
-  
+
   // Unordered lists
   html = html.replace(/^\- (.*?)$/gm, '<li class="list-item text-gray-700">$1</li>');
   html = html.replace(/(<li class="list-item[^>]*>.*?<\/li>)/s, (match) => `<ul class="list-disc list-inside space-y-1 my-2">${match}</ul>`);
-  
+
   // Numbered lists
   html = html.replace(/^\d+\. (.*?)$/gm, '<li class="list-item text-gray-700">$1</li>');
-  
+
   // Line breaks
   html = html.replace(/\n\n/g, '</p><p class="text-gray-700 my-3">');
   html = html.replace(/\n/g, '<br />');
-  
+
   // Wrap in paragraph tags
   if (!html.startsWith('<h') && !html.startsWith('<pre') && !html.startsWith('<ul')) {
     html = `<p class="text-gray-700 my-3">${html}</p>`;
   }
-  
+
   return html;
 }
 
@@ -132,6 +132,7 @@ interface Project {
   paymentStatus: string;
   depositAmount: number;
   prd: string | null;
+  proposal: string | null;
   startDate: string | null;
   endDate: string | null;
   createdAt: string;
@@ -660,7 +661,7 @@ export default function AdminProjectDetailPage() {
                             {answer.questionText}
                           </h4>
                         </div>
-                        
+
                         <div className="mt-2">
                           {answer.questionType === 'checkbox' ? (
                             <div className="flex flex-wrap gap-2">
@@ -717,13 +718,17 @@ export default function AdminProjectDetailPage() {
         </Card>
       </div>
 
-      {/* PRD & Tasks Tabs - Below */}
+      {/* PRD, Proposals & Tasks Tabs - Below */}
       <Card>
         <CardContent className="p-6">
           <Tabs defaultValue="tasks">
             <TabsList>
-              <TabsTrigger value="prd">
+              <TabsTrigger value="proposal">
                 <FileText className="h-4 w-4 mr-2" />
+                Proposal
+              </TabsTrigger>
+              <TabsTrigger value="prd">
+                <Sparkles className="h-4 w-4 mr-2" />
                 PRD
               </TabsTrigger>
               <TabsTrigger value="tasks">
@@ -731,6 +736,40 @@ export default function AdminProjectDetailPage() {
                 Tasks ({tasks.length})
               </TabsTrigger>
             </TabsList>
+
+            {/* Proposal Tab */}
+            <TabsContent value="proposal" className="space-y-4">
+              {!project.proposal ? (
+                <div className="text-center py-12">
+                  <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    No Proposal Generated Yet
+                  </h3>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Click the Generate button below to create a detailed proposal using Gemini AI.
+                  </p>
+                  <GenerateProposalModal
+                    projectId={project.id}
+                    projectName={project.name}
+                    onSuccess={fetchProjectDetails}
+                  />
+                </div>
+              ) : (
+                <div className="prose max-w-none">
+                  <div className="flex justify-end mb-4">
+                    <GenerateProposalModal
+                      projectId={project.id}
+                      projectName={project.name}
+                      onSuccess={fetchProjectDetails}
+                    />
+                  </div>
+                  <div
+                    className="text-gray-800"
+                    dangerouslySetInnerHTML={{ __html: markdownToHtml(project.proposal) }}
+                  />
+                </div>
+              )}
+            </TabsContent>
 
             {/* PRD Tab */}
             <TabsContent value="prd" className="space-y-4">
@@ -773,220 +812,220 @@ export default function AdminProjectDetailPage() {
                 </div>
               ) : (
                 <>
-                <DndContext
-                  onDragStart={handleDragStart}
-                  onDragOver={handleDragOver}
-                  onDragEnd={handleDragEnd}
-                  collisionDetection={closestCorners}
-                >
-                  {/* Kanban Board */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                    {TASK_STATUSES.map((status) => (
-                      <div key={status.value} className="space-y-2">
-                        {/* Kanban Column Header */}
-                        <div className={`p-2 rounded-lg border ${status.color}`}>
-                          <h3 className="font-semibold text-gray-900 text-sm flex items-center justify-between">
-                            <span>{status.label}</span>
-                            <span className="text-xs font-normal text-gray-500">
-                              {kanbanTasks[status.value]?.length || 0}
-                            </span>
-                          </h3>
-                        </div>
+                  <DndContext
+                    onDragStart={handleDragStart}
+                    onDragOver={handleDragOver}
+                    onDragEnd={handleDragEnd}
+                    collisionDetection={closestCorners}
+                  >
+                    {/* Kanban Board */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                      {TASK_STATUSES.map((status) => (
+                        <div key={status.value} className="space-y-2">
+                          {/* Kanban Column Header */}
+                          <div className={`p-2 rounded-lg border ${status.color}`}>
+                            <h3 className="font-semibold text-gray-900 text-sm flex items-center justify-between">
+                              <span>{status.label}</span>
+                              <span className="text-xs font-normal text-gray-500">
+                                {kanbanTasks[status.value]?.length || 0}
+                              </span>
+                            </h3>
+                          </div>
 
-                        {/* Droppable Column */}
-                        <SortableContext
-                          items={kanbanTasks[status.value]?.map((t) => `task-${t.id}`) || []}
-                          strategy={verticalListSortingStrategy}
-                        >
-                          <DroppableColumn id={`column-${status.value}`}>
-                            {kanbanTasks[status.value]?.map((task) => (
-                              <SortableItem key={task.id} id={`task-${task.id}`} asChild>
-                                <SortableItemTrigger asChild>
-                                  <div className="bg-white border rounded p-2 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing group">
-                                    <div className="flex items-start gap-2">
-                                      <div className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <GripVertical className="h-3 w-3" />
-                                      </div>
-                                      <div className="flex-1">
-                                        <div className="mb-1">
-                                          <h4 className="font-medium text-xs text-gray-900 mb-1">
-                                            {task.title}
-                                          </h4>
-                                          <div className="flex items-center gap-1 mb-1">
-                                            <Badge className={`text-xs ${priorityColors[task.priority]}`}>
-                                              {task.priority}
-                                            </Badge>
+                          {/* Droppable Column */}
+                          <SortableContext
+                            items={kanbanTasks[status.value]?.map((t) => `task-${t.id}`) || []}
+                            strategy={verticalListSortingStrategy}
+                          >
+                            <DroppableColumn id={`column-${status.value}`}>
+                              {kanbanTasks[status.value]?.map((task) => (
+                                <SortableItem key={task.id} id={`task-${task.id}`} asChild>
+                                  <SortableItemTrigger asChild>
+                                    <div className="bg-white border rounded p-2 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing group">
+                                      <div className="flex items-start gap-2">
+                                        <div className="text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <GripVertical className="h-3 w-3" />
+                                        </div>
+                                        <div className="flex-1">
+                                          <div className="mb-1">
+                                            <h4 className="font-medium text-xs text-gray-900 mb-1">
+                                              {task.title}
+                                            </h4>
+                                            <div className="flex items-center gap-1 mb-1">
+                                              <Badge className={`text-xs ${priorityColors[task.priority]}`}>
+                                                {task.priority}
+                                              </Badge>
+                                            </div>
                                           </div>
-                                        </div>
-                                        
-                                        <p className="text-xs text-gray-600 mb-1 line-clamp-2">
-                                          {task.description}
-                                        </p>
 
-                                        <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
-                                          <span className="flex items-center gap-1">
-                                            <Clock className="h-3 w-3" />
-                                            {task.estimatedHours}h
-                                          </span>
-                                        </div>
+                                          <p className="text-xs text-gray-600 mb-1 line-clamp-2">
+                                            {task.description}
+                                          </p>
 
-                                        {/* Status Change Dropdown */}
-                                        <select
-                                          value={task.status}
-                                          onChange={(e) => {
-                                            e.stopPropagation();
-                                            handleStatusChange(task.id, e.target.value);
-                                          }}
-                                          onClick={(e) => e.stopPropagation()}
-                                          className="w-full text-xs border rounded px-1 py-0.5 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-purple-500"
-                                        >
-                                          {ALL_TASK_STATUSES.map((s) => (
-                                            <option key={s.value} value={s.value}>
-                                              {s.label}
-                                            </option>
-                                          ))}
-                                        </select>
+                                          <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
+                                            <span className="flex items-center gap-1">
+                                              <Clock className="h-3 w-3" />
+                                              {task.estimatedHours}h
+                                            </span>
+                                          </div>
+
+                                          {/* Status Change Dropdown */}
+                                          <select
+                                            value={task.status}
+                                            onChange={(e) => {
+                                              e.stopPropagation();
+                                              handleStatusChange(task.id, e.target.value);
+                                            }}
+                                            onClick={(e) => e.stopPropagation()}
+                                            className="w-full text-xs border rounded px-1 py-0.5 bg-white hover:bg-gray-50 focus:outline-none focus:ring-1 focus:ring-purple-500"
+                                          >
+                                            {ALL_TASK_STATUSES.map((s) => (
+                                              <option key={s.value} value={s.value}>
+                                                {s.label}
+                                              </option>
+                                            ))}
+                                          </select>
+                                        </div>
                                       </div>
                                     </div>
-                                  </div>
-                                </SortableItemTrigger>
-                              </SortableItem>
-                            ))}
-                          </DroppableColumn>
-                        </SortableContext>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Drag Overlay */}
-                  <DragOverlay>
-                    {activeTaskId ? (() => {
-                      const activeTask = tasks.find((t) => t.id === activeTaskId);
-                      if (!activeTask) return null;
+                                  </SortableItemTrigger>
+                                </SortableItem>
+                              ))}
+                            </DroppableColumn>
+                          </SortableContext>
+                        </div>
+                      ))}
+                    </div>
 
-                      return (
-                        <div className="bg-white border-2 border-blue-400 rounded-lg p-3 shadow-2xl cursor-grabbing rotate-2 opacity-90">
-                          <div className="flex items-start gap-2">
-                            <GripVertical className="h-4 w-4 text-blue-500" />
-                            <div className="flex-1">
-                              <h4 className="font-semibold text-sm text-gray-900 mb-2">
-                                {activeTask.title}
-                              </h4>
-                              <div className="flex items-center gap-2">
-                                <Badge className={`text-xs ${priorityColors[activeTask.priority]}`}>
-                                  {activeTask.priority}
-                                </Badge>
-                                <span className="text-xs text-gray-500 flex items-center gap-1">
-                                  <Clock className="h-3 w-3" />
-                                  {activeTask.estimatedHours}h
-                                </span>
+                    {/* Drag Overlay */}
+                    <DragOverlay>
+                      {activeTaskId ? (() => {
+                        const activeTask = tasks.find((t) => t.id === activeTaskId);
+                        if (!activeTask) return null;
+
+                        return (
+                          <div className="bg-white border-2 border-blue-400 rounded-lg p-3 shadow-2xl cursor-grabbing rotate-2 opacity-90">
+                            <div className="flex items-start gap-2">
+                              <GripVertical className="h-4 w-4 text-blue-500" />
+                              <div className="flex-1">
+                                <h4 className="font-semibold text-sm text-gray-900 mb-2">
+                                  {activeTask.title}
+                                </h4>
+                                <div className="flex items-center gap-2">
+                                  <Badge className={`text-xs ${priorityColors[activeTask.priority]}`}>
+                                    {activeTask.priority}
+                                  </Badge>
+                                  <span className="text-xs text-gray-500 flex items-center gap-1">
+                                    <Clock className="h-3 w-3" />
+                                    {activeTask.estimatedHours}h
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           </div>
+                        );
+                      })() : null}
+                    </DragOverlay>
+
+                    {/* Backlog Section */}
+                    {tasks.length > 0 && (
+                      <div className="mt-8">
+                        <div className="flex items-center justify-between mb-4">
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900">
+                              Backlog ({backlogTasks.length})
+                            </h3>
+                            <p className="text-sm text-gray-500">
+                              Tasks waiting to be added to the Kanban board - drag to columns above
+                            </p>
+                          </div>
+                          <Button
+                            onClick={() => setIsAddingTask(true)}
+                            size="sm"
+                            className="gap-2"
+                          >
+                            <Plus className="h-4 w-4" />
+                            Add Task
+                          </Button>
                         </div>
-                      );
-                    })() : null}
-                  </DragOverlay>
 
-              {/* Backlog Section */}
-              {tasks.length > 0 && (
-                <div className="mt-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <div>
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        Backlog ({backlogTasks.length})
-                      </h3>
-                      <p className="text-sm text-gray-500">
-                        Tasks waiting to be added to the Kanban board - drag to columns above
-                      </p>
-                    </div>
-                    <Button
-                      onClick={() => setIsAddingTask(true)}
-                      size="sm"
-                      className="gap-2"
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add Task
-                    </Button>
-                  </div>
-
-                  {backlogTasks.length === 0 ? (
-                    <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
-                      <p className="text-sm text-gray-500">
-                        No tasks in backlog. All tasks are in the Kanban board!
-                      </p>
-                    </div>
-                  ) : (
-                    <SortableContext
-                      items={backlogTasks.map((t) => `backlog-${t.id}`)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      <div className="border rounded-lg overflow-hidden">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="w-12"></TableHead>
-                              <TableHead>Task</TableHead>
-                              <TableHead>Section</TableHead>
-                              <TableHead>Priority</TableHead>
-                              <TableHead>Estimated Hours</TableHead>
-                              <TableHead className="text-right">Actions</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {backlogTasks.map((task) => (
-                              <SortableItem key={task.id} id={`backlog-${task.id}`} asChild>
-                                <TableRow className="cursor-grab active:cursor-grabbing hover:bg-gray-50">
-                                  <TableCell>
-                                    <SortableItemTrigger asChild>
-                                      <div className="flex items-center justify-center">
-                                        <GripVertical className="h-4 w-4 text-gray-400" />
-                                      </div>
-                                    </SortableItemTrigger>
-                                  </TableCell>
-                                  <TableCell>
-                                    <div>
-                                      <p className="font-medium text-sm">{task.title}</p>
-                                      <p className="text-xs text-gray-500 line-clamp-1">
-                                        {task.description}
-                                      </p>
-                                    </div>
-                                  </TableCell>
-                                  <TableCell>
-                                    <span className="text-xs text-gray-600">{task.section}</span>
-                                  </TableCell>
-                                  <TableCell>
-                                    <Badge className={`text-xs ${priorityColors[task.priority]}`}>
-                                      {task.priority}
-                                    </Badge>
-                                  </TableCell>
-                                  <TableCell>
-                                    <span className="text-sm text-gray-600">
-                                      {task.estimatedHours}h
-                                    </span>
-                                  </TableCell>
-                                  <TableCell className="text-right">
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={() => handleStatusChange(task.id, 'to-do')}
-                                      className="gap-2"
-                                    >
-                                      <MoveRight className="h-3 w-3" />
-                                      Move to Board
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
-                              </SortableItem>
-                            ))}
-                          </TableBody>
-                        </Table>
+                        {backlogTasks.length === 0 ? (
+                          <div className="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+                            <p className="text-sm text-gray-500">
+                              No tasks in backlog. All tasks are in the Kanban board!
+                            </p>
+                          </div>
+                        ) : (
+                          <SortableContext
+                            items={backlogTasks.map((t) => `backlog-${t.id}`)}
+                            strategy={verticalListSortingStrategy}
+                          >
+                            <div className="border rounded-lg overflow-hidden">
+                              <Table>
+                                <TableHeader>
+                                  <TableRow>
+                                    <TableHead className="w-12"></TableHead>
+                                    <TableHead>Task</TableHead>
+                                    <TableHead>Section</TableHead>
+                                    <TableHead>Priority</TableHead>
+                                    <TableHead>Estimated Hours</TableHead>
+                                    <TableHead className="text-right">Actions</TableHead>
+                                  </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                  {backlogTasks.map((task) => (
+                                    <SortableItem key={task.id} id={`backlog-${task.id}`} asChild>
+                                      <TableRow className="cursor-grab active:cursor-grabbing hover:bg-gray-50">
+                                        <TableCell>
+                                          <SortableItemTrigger asChild>
+                                            <div className="flex items-center justify-center">
+                                              <GripVertical className="h-4 w-4 text-gray-400" />
+                                            </div>
+                                          </SortableItemTrigger>
+                                        </TableCell>
+                                        <TableCell>
+                                          <div>
+                                            <p className="font-medium text-sm">{task.title}</p>
+                                            <p className="text-xs text-gray-500 line-clamp-1">
+                                              {task.description}
+                                            </p>
+                                          </div>
+                                        </TableCell>
+                                        <TableCell>
+                                          <span className="text-xs text-gray-600">{task.section}</span>
+                                        </TableCell>
+                                        <TableCell>
+                                          <Badge className={`text-xs ${priorityColors[task.priority]}`}>
+                                            {task.priority}
+                                          </Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                          <span className="text-sm text-gray-600">
+                                            {task.estimatedHours}h
+                                          </span>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => handleStatusChange(task.id, 'to-do')}
+                                            className="gap-2"
+                                          >
+                                            <MoveRight className="h-3 w-3" />
+                                            Move to Board
+                                          </Button>
+                                        </TableCell>
+                                      </TableRow>
+                                    </SortableItem>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </div>
+                          </SortableContext>
+                        )}
                       </div>
-                    </SortableContext>
-                  )}
-                </div>
-              )}
-                </DndContext>
+                    )}
+                  </DndContext>
                 </>
               )}
             </TabsContent>

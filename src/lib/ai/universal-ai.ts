@@ -21,6 +21,17 @@ interface GenerateTasksParams {
   config: AIConfig;
 }
 
+interface GenerateProposalParams {
+  projectName: string;
+  serviceName: string;
+  clientName: string;
+  description: string;
+  questionAnswers: Record<string, any>;
+  budget: number;
+  timeline: number;
+  config: AIConfig;
+}
+
 /**
  * Generate PRD using any AI provider
  */
@@ -31,6 +42,39 @@ export async function generatePRDUniversal({
   config
 }: GeneratePRDParams): Promise<string> {
   const prompt = buildPRDPrompt(serviceName, description, questionAnswers);
+
+  switch (config.provider) {
+    case 'openai':
+      return await generateOpenAI(prompt, config);
+    case 'anthropic':
+      return await generateAnthropic(prompt, config);
+    case 'google':
+      return await generateGoogle(prompt, config);
+    case 'deepseek':
+      return await generateDeepSeek(prompt, config);
+    case 'groq':
+      return await generateGroq(prompt, config);
+    case 'together':
+      return await generateTogether(prompt, config);
+    default:
+      throw new Error(`Unsupported AI provider: ${config.provider}`);
+  }
+}
+
+/**
+ * Generate a Proposal Draft using any AI provider
+ */
+export async function generateProposalUniversal({
+  projectName,
+  clientName,
+  serviceName,
+  description,
+  questionAnswers,
+  budget,
+  timeline,
+  config
+}: GenerateProposalParams): Promise<string> {
+  const prompt = buildProposalPrompt(projectName, clientName, serviceName, description, questionAnswers, budget, timeline);
 
   switch (config.provider) {
     case 'openai':
@@ -108,11 +152,11 @@ Project Description: ${description}
 
 Client Requirements:
 ${Object.entries(questionAnswers)
-  .map(([key, value]) => {
-    const formattedValue = Array.isArray(value) ? value.join(', ') : value;
-    return `- ${key.replace(/_/g, ' ')}: ${formattedValue}`;
-  })
-  .join('\n')}
+      .map(([key, value]) => {
+        const formattedValue = Array.isArray(value) ? value.join(', ') : value;
+        return `- ${key.replace(/_/g, ' ')}: ${formattedValue}`;
+      })
+      .join('\n')}
 
 Generate a detailed PRD with the following sections:
 
@@ -160,6 +204,67 @@ How will we measure project success?
 Any limitations or assumptions made.
 
 Format the PRD in clean Markdown with clear headings, bullet points, and organized sections.
+`;
+}
+
+function buildProposalPrompt(
+  projectName: string,
+  clientName: string,
+  serviceName: string,
+  description: string,
+  questionAnswers: Record<string, any>,
+  budget: number,
+  timeline: number
+): string {
+  const formattedBudget = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(budget);
+
+  return `
+You are a highly professional Web Development Agency Project Manager writing a persuasive and detailed Project Proposal for a prospective client.
+The tone should be confident, clear, and reassuring.
+
+Client Name: ${clientName}
+Project Name: ${projectName}
+Service Type: ${serviceName}
+Estimated Budget: ${formattedBudget}
+Estimated Timeline: ${timeline} days
+
+Project Description & Context:
+${description}
+
+Client Onboarding Answers (Use these to tailor the proposal to their exact needs):
+${Object.entries(questionAnswers)
+      .map(([key, value]) => {
+        const formattedValue = Array.isArray(value) ? value.join(', ') : value;
+        return `- ${key.replace(/_/g, ' ')}: ${formattedValue}`;
+      })
+      .join('\n')}
+
+Generate a comprehensive formal Proposal in Markdown. Do not include a cover letter, just the proposal document itself. Use the following structure:
+
+# Project Proposal: [Project Name]
+Prepared for: [Client Name]
+Date: [Current Formatted Date]
+
+## 1. Project Objective
+A strong, synthesized summary of what the client wants to achieve and how we will help them achieve it. Don't just copy the description; make it sound professional and goal-oriented.
+
+## 2. Proposed Solution
+Explain how we will address their needs based on the "Service Type" and their specific "Onboarding Answers". Highlight key features and the value they bring.
+
+## 3. Scope of Work
+Break down the main deliverables (e.g., Discovery & Design, Development, Testing, Launch).
+
+## 4. Timeline & Milestones
+Create a realistic schedule based on the ${timeline} days timeline. Break this down into 3-4 distinct phases with estimated durations.
+
+## 5. Investment
+Clearly state the total investment required: ${formattedBudget}. Add a brief explanation that this covers all design, development, and launch activities as outlined in the Scope of Work.
+Mention that standard payment terms are 50% deposit to begin, and 50% upon completion/handover.
+
+## 6. Next Steps
+Clear call to action on how to proceed (e.g., signing a contract or paying the deposit).
+
+Format this beautifully using Markdown (headers, bold text, bullet points). Ensure the copy is tailored to their specific needs mentioned in the onboarding answers.
 `;
 }
 

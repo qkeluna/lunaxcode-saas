@@ -19,11 +19,11 @@ Project Description: ${description}
 
 Client Requirements:
 ${Object.entries(questionAnswers)
-  .map(([key, value]) => {
-    const formattedValue = Array.isArray(value) ? value.join(', ') : value;
-    return `- ${key.replace(/_/g, ' ')}: ${formattedValue}`;
-  })
-  .join('\n')}
+      .map(([key, value]) => {
+        const formattedValue = Array.isArray(value) ? value.join(', ') : value;
+        return `- ${key.replace(/_/g, ' ')}: ${formattedValue}`;
+      })
+      .join('\n')}
 
 Generate a detailed PRD with the following sections:
 
@@ -132,6 +132,70 @@ Return the JSON array now:
 }
 
 /**
+ * Build Proposal Prompt (extracted from universal-ai.ts for preview)
+ */
+function buildProposalPrompt(
+  projectName: string,
+  clientName: string,
+  serviceName: string,
+  description: string,
+  questionAnswers: Record<string, any>,
+  budget: number,
+  timeline: number
+): string {
+  const formattedBudget = new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP' }).format(budget);
+
+  return `
+You are a highly professional Web Development Agency Project Manager writing a persuasive and detailed Project Proposal for a prospective client.
+The tone should be confident, clear, and reassuring.
+
+Client Name: ${clientName}
+Project Name: ${projectName}
+Service Type: ${serviceName}
+Estimated Budget: ${formattedBudget}
+Estimated Timeline: ${timeline} days
+
+Project Description & Context:
+${description}
+
+Client Onboarding Answers (Use these to tailor the proposal to their exact needs):
+${Object.entries(questionAnswers)
+      .map(([key, value]) => {
+        const formattedValue = Array.isArray(value) ? value.join(', ') : value;
+        return `- ${key.replace(/_/g, ' ')}: ${formattedValue}`;
+      })
+      .join('\n')}
+
+Generate a comprehensive formal Proposal in Markdown. Do not include a cover letter, just the proposal document itself. Use the following structure:
+
+# Project Proposal: [Project Name]
+Prepared for: [Client Name]
+Date: [Current Formatted Date]
+
+## 1. Project Objective
+A strong, synthesized summary of what the client wants to achieve and how we will help them achieve it. Don't just copy the description; make it sound professional and goal-oriented.
+
+## 2. Proposed Solution
+Explain how we will address their needs based on the "Service Type" and their specific "Onboarding Answers". Highlight key features and the value they bring.
+
+## 3. Scope of Work
+Break down the main deliverables (e.g., Discovery & Design, Development, Testing, Launch).
+
+## 4. Timeline & Milestones
+Create a realistic schedule based on the ${timeline} days timeline. Break this down into 3-4 distinct phases with estimated durations.
+
+## 5. Investment
+Clearly state the total investment required: ${formattedBudget}. Add a brief explanation that this covers all design, development, and launch activities as outlined in the Scope of Work.
+Mention that standard payment terms are 50% deposit to begin, and 50% upon completion/handover.
+
+## 6. Next Steps
+Clear call to action on how to proceed (e.g., signing a contract or paying the deposit).
+
+Format this beautifully using Markdown (headers, bold text, bullet points). Ensure the copy is tailored to their specific needs mentioned in the onboarding answers.
+`;
+}
+
+/**
  * Admin endpoint to preview PRD and tasks prompt without executing AI
  * GET /api/admin/projects/[id]/preview-prompt
  */
@@ -220,6 +284,16 @@ export async function GET(
       project.prd || '[PRD will be generated first]'
     );
 
+    const proposalPrompt = buildProposalPrompt(
+      project.name,
+      project.clientName,
+      project.service,
+      project.description,
+      questionAnswers,
+      project.budget || (service?.basePrice ?? 0),
+      project.timeline || 30
+    );
+
     // 7. Build actual JSON request payloads for different providers
     // These are the EXACT payloads that will be sent to each AI API
 
@@ -250,6 +324,22 @@ export async function GET(
         body: {
           contents: [{
             parts: [{ text: tasksPrompt }]
+          }],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 8000,
+          }
+        }
+      },
+      proposal: {
+        url: `https://generativelanguage.googleapis.com/v1/models/{model}:generateContent?key={apiKey}`,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: {
+          contents: [{
+            parts: [{ text: proposalPrompt }]
           }],
           generationConfig: {
             temperature: 0.7,
@@ -288,6 +378,20 @@ export async function GET(
           temperature: 0.7,
           max_tokens: 4000
         }
+      },
+      proposal: {
+        url: 'https://api.openai.com/v1/chat/completions',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer {apiKey}'
+        },
+        body: {
+          model: '{model}',
+          messages: [{ role: 'user', content: proposalPrompt }],
+          temperature: 0.7,
+          max_tokens: 4000
+        }
       }
     };
 
@@ -314,6 +418,18 @@ export async function GET(
           prdAvailable: !!project.prd,
           prdLength: project.prd?.length || 0,
           estimatedTokens: Math.ceil(tasksPrompt.length / 4),
+        },
+      },
+      proposal: {
+        provider: 'Default AI provider from settings',
+        model: 'Configured model',
+        googlePayload: googlePayload.proposal,
+        openaiLikePayload: openaiLikePayload.proposal,
+        metadata: {
+          serviceName: project.service,
+          descriptionLength: project.description.length,
+          requirementsCount: Object.keys(questionAnswers).length,
+          estimatedTokens: Math.ceil(proposalPrompt.length / 4),
         },
       },
       project: {

@@ -1,6 +1,7 @@
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { ClientSidebar } from '@/components/client-sidebar';
+import { CommandMenu } from '@/components/ui/command-menu';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -44,7 +45,8 @@ export default async function DashboardLayout({
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <div className="ml-auto">
+          <div className="ml-auto flex flex-row items-center gap-4">
+            <CommandMenu />
             <NotificationBadgeIcon size={22} />
           </div>
         </header>
